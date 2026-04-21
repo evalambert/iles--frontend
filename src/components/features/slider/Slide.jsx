@@ -1,0 +1,1 @@
+//src/components/features/slider/Slide.jsx

@@ -1,0 +1,61 @@
+@import 'tailwindcss';
+
+/* -------------------------------------------------------------------- */
+/* GLOBAL */
+/* Sommaire :
+/* -------------------------------------------------------------------- */
+/* TYPOGRAPHY 
+/* TAILWIND 
+/* RESET 
+/* STYLES 
+/* ANIMATIONS 
+/* -------------------------------------------------------------------- */
+
+/* -------------------------------------------------------------------- */
+/* TYPOGRAPHY */
+/* -------------------------------------------------------------------- */
+
+@font-face {
+    font-family: 'Inter-Regular';
+    src: url('/fonts/Inter-Regular.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+}
+
+/* -------------------------------------------------------------------- */
+/* TAILWIND */
+/* -------------------------------------------------------------------- */
+
+/* GLOBAL & DESKTOP */
+@theme {
+    /* Typography •••••••••••• */
+    --font-inter: 'Inter-Regular', 'sans-serif';
+    --text-base: 16px;
+    --text-base--line-height: 23px;
+
+    /* Spacing •••••••••••• */
+    --spacing-y-body: 13px;
+    --spacing-x-body: 25px;
+
+    --spacing-header-height: 95px;
+}
+
+/* MOBILE (breakpoint lg:) */
+@media (width < 48rem) {
+    body {
+        /* Typography •••••••••••• */
+        --font-inter: 'Inter-Regular', 'sans-serif';
+        --text-base: 16px;
+        --text-base--line-height: 20px;
+
+        /* Spacing •••••••••••• */
+        --spacing-y-body: 13px;
+        --spacing-x-body: 10px;
+
+        --spacing-header-height: 95px;
+    }
+}
+
+/* -------------------------------------------------------------------- */
+/* Gap & space between sections */
+/* -------------------------------------------------------------------- */
