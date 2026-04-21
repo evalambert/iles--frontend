@@ -4,19 +4,17 @@ import fetchApi from '../../assets/scripts/libs/strapi.js';
 import Layout from '../../layouts/Layout.astro';
 import WrapperIndex from '../../layouts/WrapperIndex.jsx';
 
-const articles = await fetchApi({
-    endpoint: 'about',
-    query: {
-        populate: '*',
-        'pagination[page]': '1',
-        'pagination[pageSize]': '6',
-    },
+const about = await fetchApi({
+    endpoint: 'about?populate[Sections][populate]=*',
+    wrappedByKey: 'data',
+});
+
+const members = await fetchApi({
+    endpoint: 'members?populate=*',
     wrappedByKey: 'data',
 });
 ---
 
 <Layout>
-    <WrapperIndex />
-    <h1>Articles</h1>
-    <pre>{JSON.stringify(articles, null, 2)}</pre>
+    <WrapperIndex about={about} members={members} />
 </Layout>
