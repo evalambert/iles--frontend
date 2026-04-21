@@ -7,7 +7,7 @@ export default function WrapperIndex({ about, members }) {
     return (
         <div className='border-2 border-black'>
             <h1 className='color'>WrapperIndex</h1>
-            <NavIndex />
+            <NavIndex about={about} members={members}/>
             <div>
                 <Members data={members} />
                 <About data={about} />

@@ -11,11 +11,11 @@ export default function MemberSection({
     practices,
     images,
 }) {
-    const fullName = [firstName, lastName].filter(Boolean).join(' ');
 
     return (
         <section className="border-1 border-yellow-200 text-yellow-200 p-4">
-            {fullName ? <h2>{fullName}</h2> : null}
+            
+            <h2>{[firstName, lastName].filter(Boolean).join(' ')}</h2>
 
             {bio ? <p>{bio}</p> : null}
             
