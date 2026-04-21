@@ -18,6 +18,7 @@ export default function MemberSection({
             {fullName ? <h2>{fullName}</h2> : null}
 
             {bio ? <p>{bio}</p> : null}
+            
 
             {practices.length ? (
                 <ul>
