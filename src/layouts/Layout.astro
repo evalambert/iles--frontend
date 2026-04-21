@@ -1,15 +1,18 @@
 ---
 //layouts/Layout.astro
 import '../assets/styles/global.css';
-import Header from './Header.jsx';
+import Header from './Header.astro';
+
+const { lang } = Astro.params;
 ---
 
 <!doctype html>
-<html class='scroll-smooth'>
+<html lang={lang ?? 'fr'}>
     <head>
         <meta charset='UTF-8' />
         <meta name='viewport' content='width=device-width' />
         <title>Les Îles mardi</title>
+        <meta name='astro-view-transitions' content='true' />
     </head>
     <body class='font-inter text-base border-2 border-teal-600'>
         <Header />
