@@ -4,13 +4,19 @@ import fetchApi from '../../assets/scripts/libs/strapi.js';
 import Layout from '../../layouts/Layout.astro';
 import WrapperIndex from '../../layouts/WrapperIndex.jsx';
 
+const { lang } = Astro.params;
+
 const about = await fetchApi({
-    endpoint: 'about?populate[Sections][populate]=*',
+    endpoint: 'about',
+    query: { 'populate[Sections][populate]': '*' },
+    locale: lang,
     wrappedByKey: 'data',
 });
 
 const members = await fetchApi({
-    endpoint: 'members?populate=*',
+    endpoint: 'members',
+    query: { populate: '*' },
+    locale: lang,
     wrappedByKey: 'data',
 });
 ---
