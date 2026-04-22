@@ -78,7 +78,7 @@ export default function NavIndex({ about, members, lang, selectedPractice, onPra
                         </a>
 
                         {/* About ANCHORS */}
-                        <ul className='py-[6px] flex-1 bg-linear-to-t from-primary to-white to-40%'>
+                        <ul className='py-[6px] flex-1 bg-linear-to-t from-primary to-light to-40%'>
                             {aboutAnchors.map((anchor) => (
                                 <li key={anchor} className='nav-li nav-li-off'>
                                     <a href={`#${normalizeAnchor(anchor)}`} className='block h-full w-full'>{anchor}</a>
@@ -102,7 +102,7 @@ export default function NavIndex({ about, members, lang, selectedPractice, onPra
                         </button>
 
                         {/* Practices List */}
-                        <ul className='py-[6px] h-full bg-linear-to-t from-primary to-white to-40%'>
+                        <ul className='py-[6px] h-full bg-linear-to-t from-primary to-light to-40%'>
                             {practicesAnchors.map((practice) => {
                                 return (
                                     <li key={practice}
@@ -133,7 +133,7 @@ export default function NavIndex({ about, members, lang, selectedPractice, onPra
                         </a>
 
                     {/* Members List */}
-                    <ul className='py-[6px] flex-1 bg-linear-to-t from-primary to-white to-50%'>
+                    <ul className='py-[6px] flex-1 bg-linear-to-t from-primary to-light to-50%'>
                         {membersAnchors.map((anchor) => (
                                  <li key={anchor} className='nav-li nav-li-off'>
                                  <a href={`#${normalizeAnchor(anchor)}`} className='block h-full w-full'>{anchor}</a>

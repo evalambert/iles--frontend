@@ -26,9 +26,9 @@ export default function AboutSection({ title, chapo, paragraphs, images }) {
     return (
 
 
-        <section id={normalizeAnchor(title)} className="border text-blue-300 scroll-mt-header-height">
+        <section id={normalizeAnchor(title)} className="border scroll-mt-[calc(var(--spacing-header-height)+10px)] mb-[10px] p-[10px] bg-linear-to-t from-primary to-light to-40%">
 
-            <h2>{title}</h2>
+            <h2 className='text-title mb-title-margin'>{title}</h2>
 
             {chapo ? <p>{chapo}</p> : null}
 

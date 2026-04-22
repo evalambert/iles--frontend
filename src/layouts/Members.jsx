@@ -11,7 +11,7 @@ export default function Members({ data, lang, selectedPractice }) {
     
     return (
 
-        <div id={normalizeAnchor(`${lang === "fr" ? "Membres" : "Members"}`)} className='scroll-mt-header-height'>
+        <div id={normalizeAnchor(`${lang === "fr" ? "Membres" : "Members"}`)} className='scroll-mt-[calc(var(--spacing-header-height)+10px)]'>
 
             {filteredMembers.map((member) => (
                 <MemberSection

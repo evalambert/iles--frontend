@@ -24,7 +24,7 @@ export default function MemberSection({
     return (
         <section
             id={normalizeAnchor(`${fullName}`)}
-            className='border border-yellow-200 text-yellow-200 p-4 scroll-mt-header-height'
+            className='border border-yellow-200 text-yellow-200 p-4 scroll-mt-[calc(var(--spacing-header-height)+10px)]'
         >
             <h2>{fullName}</h2>
 

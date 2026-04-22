@@ -7,7 +7,7 @@ export default function About({ data, lang }) {
   const sections = data?.Sections ?? [];
 
   return (
-    <div id={normalizeAnchor(`${lang === "fr" ? "À propos" : "About"}`)} className="text-blue-300 mt-header-height scroll-mt-header-height">
+    <div id={normalizeAnchor(`${lang === "fr" ? "À propos" : "About"}`)} className=" mt-header-height scroll-mt-[calc(var(--spacing-header-height)+10px)] p-[10px] bg-linear-to-t from-primary to-light to-40%">
 
 
 
