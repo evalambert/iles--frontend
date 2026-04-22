@@ -9,26 +9,35 @@ export default function NavIndex({ about, members, lang, selectedPractice, onPra
 
     const getMemberFullName = (member) => `${member?.FirstName ?? ''} ${member?.LastName ?? ''}`.trim();
 
-    const handlePracticeClick = (practice) => {
+    const membersAnchorId = normalizeAnchor(lang === "fr" ? "Membres" : "Members");
+
+    const handlePracticeClick = (event, practice) => {
+        event.preventDefault();
+
         const nextSelectedPractice = selectedPractice === practice ? '' : practice;
-        const firstMatchingMember = (members ?? []).find((member) => {
-            if (!nextSelectedPractice) return true;
-            return (member?.practices ?? []).some((memberPractice) => memberPractice?.Name === nextSelectedPractice);
-        });
-        const firstMatchingMemberName = getMemberFullName(firstMatchingMember);
 
         onPracticeSelect(nextSelectedPractice);
 
-        if (!firstMatchingMemberName) return;
+        scrollToMembersAnchor();
+    };
 
-        // Wait for filtered members render before scrolling to the first anchor.
+    const scrollToMembersAnchor = () => {
         requestAnimationFrame(() => {
             requestAnimationFrame(() => {
-                const anchorId = normalizeAnchor(firstMatchingMemberName);
-                const section = document.getElementById(anchorId);
-                section?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                const targetHash = `#${membersAnchorId}`;
+
+                if (window.location.hash === targetHash) {
+                    window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}`);
+                }
+
+                window.location.hash = membersAnchorId;
             });
         });
+    };
+
+    const handlePracticesTitleClick = () => {
+        onPracticeSelect('');
+        scrollToMembersAnchor();
     };
 
     const filteredMembers = (members ?? []).filter(matchesSelectedPractice);
@@ -55,10 +64,11 @@ export default function NavIndex({ about, members, lang, selectedPractice, onPra
             <div className='flex h-full'>
 
 
-                <div className='flex-1  border-r' >
+                <div className='flex-1 border-r flex flex-col' >
 
+                    {/* ————————————————————————————————————————————— */}
                     {/* About */}
-                    <div>
+                    <div className='flex flex-col'>
 
                         {/* About Title */}
                         <a href={`#${normalizeAnchor(lang === "fr" ? "À propos" : "About")}`} className="block-title">
@@ -68,7 +78,7 @@ export default function NavIndex({ about, members, lang, selectedPractice, onPra
                         </a>
 
                         {/* About ANCHORS */}
-                        <ul className='py-[6px]'>
+                        <ul className='py-[6px] flex-1 bg-linear-to-t from-primary to-light to-40%'>
                             {aboutAnchors.map((anchor) => (
                                 <li key={anchor} className='nav-li nav-li-off'>
                                     <a href={`#${normalizeAnchor(anchor)}`} className='block h-full w-full'>{anchor}</a>
@@ -77,39 +87,44 @@ export default function NavIndex({ about, members, lang, selectedPractice, onPra
                         </ul>
                     </div>
 
+                    {/* ————————————————————————————————————————————— */}
                     {/* Practices */}
-                    <div className='border-t'>
+                    <div className='flex-1 border-t'>
 
                         {/* Practices Title */}
                         <button
                             type="button"
-                            onClick={() => onPracticeSelect('')}
-                            className={`${selectedPractice === '' ? 'text-pink-500' : ''} block-title w-full cursor-pointer`}
+                            onClick={handlePracticesTitleClick}
+                            // className={`${selectedPractice === '' ? 'block-title--on' : ''} block-title w-full cursor-pointer`}
+                            className={`block-title w-full cursor-pointer`}
                         >
                             <h2>{lang === "fr" ? "Pratiques" : "Practices"}</h2>
                         </button>
 
                         {/* Practices List */}
-                        <ul className='py-[6px]'>
-                            {practicesAnchors.map((practice) => (
-                                <li key={practice} 
-                                className={`${selectedPractice === practice ? 'nav-li-on' : 'nav-li-off'} nav-li`}>
-                                    <button
-                                        type="button"
-                                        onClick={() => handlePracticeClick(practice)}
-                                        className={`cursor-pointer w-full h-full`}
-                                        aria-pressed={selectedPractice === practice}
-                                    >
-                                        {practice}
-                                    </button>
-                                </li>
-                            ))}
+                        <ul className='py-[6px] h-full bg-linear-to-t from-primary to-light to-40%'>
+                            {practicesAnchors.map((practice) => {
+                                return (
+                                    <li key={practice}
+                                        className={`${selectedPractice === practice ? 'nav-li-on' : 'nav-li-off'} nav-li`}>
+                                        <a
+                                            href={`#${membersAnchorId}`}
+                                            onClick={(event) => handlePracticeClick(event, practice)}
+                                            className='cursor-pointer w-full h-full block'
+                                            aria-current={selectedPractice === practice ? 'true' : undefined}
+                                        >
+                                            {practice}
+                                        </a>
+                                    </li>
+                                );
+                            })}
                         </ul>
                     </div>
                 </div>
 
-                <div className='flex-1 lg:border-r'>
+                <div className='flex-1 lg:border-r flex flex-col' >
 
+                    {/* ————————————————————————————————————————————— */}
                     {/* Members */}
                     <a href={`#${normalizeAnchor(lang === "fr" ? "Membres" : "Members")}`} className="block-title">
                             <h2>
@@ -118,13 +133,15 @@ export default function NavIndex({ about, members, lang, selectedPractice, onPra
                         </a>
 
                     {/* Members List */}
-                    <ul className='py-[6px]'>
+                    <ul className='py-[6px] flex-1 bg-linear-to-t from-primary to-light to-50%'>
                         {membersAnchors.map((anchor) => (
                                  <li key={anchor} className='nav-li nav-li-off'>
                                  <a href={`#${normalizeAnchor(anchor)}`} className='block h-full w-full'>{anchor}</a>
                              </li>
                         ))}
                     </ul>
+
+
                 </div>
             </div>
         </>

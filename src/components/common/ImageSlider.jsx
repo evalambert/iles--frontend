@@ -6,6 +6,7 @@ export default function ImageSlider({
     className = '',
     loading = 'lazy',
     sizes = '100vw', // fallback
+    onClick,
 }) {
     if (!image) return null;
 
@@ -21,7 +22,8 @@ export default function ImageSlider({
             alt={alt ?? image?.alternativeText ?? image?.name ?? 'image'}
             loading={loading}
             decoding='async'
-            className={className}
+            className={`${className} ${onClick ? 'cursor-pointer' : ''}`}
+            onClick={onClick}
         />
     );
 }

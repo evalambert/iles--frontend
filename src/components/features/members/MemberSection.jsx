@@ -1,11 +1,13 @@
 //src/components/features/members/MemberSection.jsx
 
+import { useState } from 'react';
 import { normalizeAnchor } from '../../../assets/scripts/utils/normalizeAnchor';
 import ImageSlider from '../../common/ImageSlider';
+import Lightbox from '../lightbox/Lightbox';
 import Slider from '../slider/Slider';
 
-
 export default function MemberSection({
+    lang,
     firstName,
     lastName,
     bio,
@@ -17,62 +19,111 @@ export default function MemberSection({
     images,
 }) {
     const fullName = [firstName, lastName].filter(Boolean).join(' ');
-
+    const [lightboxIndex, setLightboxIndex] = useState(null);
+    const hasImages = Array.isArray(images) && images.length > 0;
 
     return (
+        <section
+            id={normalizeAnchor(`${fullName}`)}
+            className='border scroll-mt-[calc(var(--spacing-header-height)+10px)] mb-[10px]'
+        >
+            <a href={`#${normalizeAnchor(fullName)}`} className="block-title border-b border-transparent">
+                <h2 className='text-title text-center'>{fullName}</h2>
+            </a>
 
-        <section id={normalizeAnchor(`${fullName}`)} className="border border-yellow-200 text-yellow-200 p-4 scroll-mt-header-height">
-            
-            <h2>{fullName}</h2>
+            <div>
 
-            {bio ? <p>{bio}</p> : null}
-
-            {practices.length ? (
-                <ul>
-                    {practices.map((practice) => (
-                        <li key={practice.id}>{practice?.Name}</li>
-                    ))}
-                </ul>
-            ) : null}
-
-            {website ? (
-                <p>
-                    Site :{' '}
-                    <a href={`https://${website}`} target='_blank'>
-                        {website}
-                    </a>
-                </p>
-            ) : null}
-
-            {email ? (
-                <p>
-                    Email : <a href={`mailto:${email}`}>{email}</a>
-                </p>
-            ) : null}
-
-            {instagramUrl ? (
-                <p>
-                    Instagram :{' '}
-                    <a href={instagramUrl} target='_blank'>
-                        {instagramName ?? instagramUrl}
-                    </a>
-                </p>
-            ) : null}
-
-            <Slider
-                items={images}
-                className=''
-                slideClassName='!w-fit'
-                spaceBetween={0}
-                renderSlide={(image) => (
-                    <ImageSlider
-                        image={image}
+                <Slider
+                    items={images}
+                    className=''
+                    slideClassName='!w-fit'
+                    spaceBetween={0}
+                    renderSlide={(image, index) => (
+                        <ImageSlider
+                            image={image}
+                            alt={fullName || 'member image'}
+                            className='w-auto h-[371px] object-cover'
+                            preferredFormat='medium'
+                            onClick={() => setLightboxIndex(index)}
+                        />
+                    )}
+                />
+                {lightboxIndex !== null && hasImages ? (
+                    <Lightbox
+                        images={images}
+                        currentIndex={lightboxIndex}
                         alt={fullName || 'member image'}
-                        className='w-auto h-[371px] object-cover'
-                        preferredFormat='medium'
+                        onClose={() => setLightboxIndex(null)}
+                        onPrev={() =>
+                            setLightboxIndex(
+                                (prev) => (prev - 1 + images.length) % images.length
+                            )
+                        }
+                        onNext={() =>
+                            setLightboxIndex((prev) => (prev + 1) % images.length)
+                        }
                     />
-                )}
-            /> 
+                ) : null}
+                <div className='bg-linear-to-t from-primary to-light to-80% p-[10px]'>
+                    <div className='md:grid md:grid-cols-6 md:gap-[10px]'>
+                        <div className='md:col-span-4'>
+                            <div className='max-w-[90%]'>
+                                {bio ? <p>{bio}</p> : null}
+                            </div>
+                        </div>
+                        <div className='md:col-span-1 '>
+                            <h3 className='mb-h3-margin'>
+                                {lang === "fr" ? "Pratique(s) :" : "Practice(s) :"}
+                            </h3>
+
+                            {practices.length ? (
+                                <ul>
+                                    {practices.map((practice) => (
+                                        <li key={practice.id}>{practice?.Name}</li>
+                                    ))}
+                                </ul>
+                            ) : null}
+                        </div>
+                        <div className='md:col-span-1 '>
+                            {website || email || instagramUrl ? (
+                                <h3 className='mb-h3-margin'>
+                                    Contact :
+                                </h3>
+                            ) : null}
+
+                            {website ? (
+                                <>
+
+                                    <a href={`https://${website}`} target='_blank' className='block'>
+                                        {website}
+                                    </a>
+                                </>
+                            ) : null}
+
+                            {email ? (
+                                <a href={`mailto:${email}`} className='block'>{email}</a>
+                            ) : null}
+
+                            {instagramUrl ? (
+                                <a href={instagramUrl} target='_blank' className='block'>
+                                    {instagramName ?? instagramUrl}
+                                </a>
+                            ) : null}
+                        </div>
+
+                    </div>
+
+
+
+
+
+                </div>
+
+
+
+
+            </div>
+
         </section>
     );
 }
