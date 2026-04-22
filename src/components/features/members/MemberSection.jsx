@@ -1,9 +1,10 @@
 //src/components/features/members/MemberSection.jsx
 
+import { useState } from 'react';
 import { normalizeAnchor } from '../../../assets/scripts/utils/normalizeAnchor';
 import ImageSlider from '../../common/ImageSlider';
+import Lightbox from '../lightbox/Lightbox';
 import Slider from '../slider/Slider';
-
 
 export default function MemberSection({
     firstName,
@@ -17,12 +18,14 @@ export default function MemberSection({
     images,
 }) {
     const fullName = [firstName, lastName].filter(Boolean).join(' ');
-
+    const [lightboxIndex, setLightboxIndex] = useState(null);
+    const hasImages = Array.isArray(images) && images.length > 0;
 
     return (
-
-        <section id={normalizeAnchor(`${fullName}`)} className="border border-yellow-200 text-yellow-200 p-4 scroll-mt-header-height">
-            
+        <section
+            id={normalizeAnchor(`${fullName}`)}
+            className='border border-yellow-200 text-yellow-200 p-4 scroll-mt-header-height'
+        >
             <h2>{fullName}</h2>
 
             {bio ? <p>{bio}</p> : null}
@@ -64,15 +67,33 @@ export default function MemberSection({
                 className=''
                 slideClassName='!w-fit'
                 spaceBetween={0}
-                renderSlide={(image) => (
+                renderSlide={(image, index) => (
                     <ImageSlider
                         image={image}
                         alt={fullName || 'member image'}
                         className='w-auto h-[371px] object-cover'
                         preferredFormat='medium'
+                        onClick={() => setLightboxIndex(index)}
                     />
                 )}
-            /> 
+            />
+
+            {lightboxIndex !== null && hasImages ? (
+                <Lightbox
+                    images={images}
+                    currentIndex={lightboxIndex}
+                    alt={fullName || 'member image'}
+                    onClose={() => setLightboxIndex(null)}
+                    onPrev={() =>
+                        setLightboxIndex(
+                            (prev) => (prev - 1 + images.length) % images.length
+                        )
+                    }
+                    onNext={() =>
+                        setLightboxIndex((prev) => (prev + 1) % images.length)
+                    }
+                />
+            ) : null}
         </section>
     );
 }

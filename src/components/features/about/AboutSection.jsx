@@ -1,12 +1,15 @@
 //src/components/features/about/AboutSection.jsx
-
-
+import { useState } from 'react';
 import { normalizeAnchor } from '../../../assets/scripts/utils/normalizeAnchor';
 import ImageSlider from '../../common/ImageSlider';
+import Lightbox from '../lightbox/Lightbox';
 import Slider from '../slider/Slider';
 
 
 export default function AboutSection({ title, chapo, paragraphs, images }) {
+    const [lightboxIndex, setLightboxIndex] = useState(null);
+    const hasImages = Array.isArray(images) && images.length > 0;
+
     // Fonction pour extraire le texte d'un noeud Rich Text
     const getNodeText = (node) => {
         if (!node) return '';
@@ -50,14 +53,34 @@ export default function AboutSection({ title, chapo, paragraphs, images }) {
                 slideClassName='!w-fit'
                 slideSeparatorClassName='border-r border-black'
                 spaceBetween={0}
-                renderSlide={(image) => (
+                renderSlide={(image, index) => (
                     <ImageSlider
                         image={image}
                         alt={title || 'about image'}
                         className='w-auto h-[742px] object-cover'
+                        onClick={() => setLightboxIndex(index)}
                     />
                 )}
-            /> 
+            />
+
+            {lightboxIndex !== null && hasImages ? (
+                <Lightbox
+                    images={images}
+                    currentIndex={lightboxIndex}
+                    alt={title || 'about image'}
+                    onClose={() => setLightboxIndex(null)}
+                    onPrev={() =>
+                        setLightboxIndex(
+                            (prev) => (prev - 1 + images.length) % images.length
+                        )
+                    }
+                    onNext={() =>
+                        setLightboxIndex(
+                            (prev) => (prev + 1) % images.length
+                        )
+                    }
+                />
+            ) : null}
         </section>
     );
 }
