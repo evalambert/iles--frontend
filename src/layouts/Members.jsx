@@ -6,6 +6,7 @@ export default function Members({ data, lang }) {
     const members = Array.isArray(data) ? data : (data?.data ?? []);
     
     return (
+
         <div id={normalizeAnchor(`${lang === "fr" ? "Membres" : "Members"}`)} className='scroll-mt-header-height'>
 
             {members.map((member) => (
