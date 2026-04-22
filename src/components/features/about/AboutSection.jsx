@@ -27,7 +27,7 @@ export default function AboutSection({ title, chapo, paragraphs, images }) {
 
     return (
 
-        <section id={normalizeAnchor(title)} className="border-1 border-blue-00 text-blue-300 p-4">
+        <section id={normalizeAnchor(title)} className="border border-blue-00 text-blue-300 p-4">
 
             <h2>{title}</h2>
 

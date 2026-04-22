@@ -12,7 +12,10 @@ const otherUrl = `/${otherLang}${restPath}`;
 ---
 
 <nav aria-label='Language switcher'>
-    <a href={currentUrl} aria-current='page' class='font-semibold'
+    
+    <a href="/" class="text-title">FR</a>
+    
+    <!-- <a href={currentUrl} aria-current='page' class=''
         >{safeLang.toUpperCase()}</a
     >
     {' / '}
@@ -20,5 +23,6 @@ const otherUrl = `/${otherLang}${restPath}`;
         href={otherUrl}
         data-astro-transition
         class='opacity-80 hover:opacity-100'>{otherLang.toUpperCase()}</a
-    >
+    > -->
+
 </nav>

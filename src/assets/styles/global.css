@@ -33,11 +33,21 @@
     --text-base: 16px;
     --text-base--line-height: 23px;
 
+    --text-title: 25.8px;
+    --text-title--line-height: 25.9px;
+  
+  
+
+
+
     /* Spacing •••••••••••• */
     --spacing-y-body: 13px;
     --spacing-x-body: 25px;
 
-    --spacing-header-height: 95px;
+    --spacing-header-height: 60px;
+
+    /* Colors •••••••••••• */
+    --color-primary: #EAFE00;
 }
 
 /* MOBILE (breakpoint lg:) */
@@ -52,10 +62,20 @@
         --spacing-y-body: 13px;
         --spacing-x-body: 10px;
 
-        --spacing-header-height: 95px;
+        --spacing-header-height: 50px;
     }
 }
 
 /* -------------------------------------------------------------------- */
 /* Gap & space between sections */
 /* -------------------------------------------------------------------- */
+
+
+
+/* -------------------------------------------------------------------- */
+/* Global styles */
+/* -------------------------------------------------------------------- */
+
+* {
+    @apply font-inter;
+} 

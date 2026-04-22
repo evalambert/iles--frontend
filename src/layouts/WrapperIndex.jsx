@@ -5,7 +5,7 @@ import Members from './Members';
 
 export default function WrapperIndex({ about, members }) {
     return (
-        <div className='border-2 border-black'>
+        <div className='border-2 border-black mt-header-height'>
             <h1 className='color'>WrapperIndex</h1>
             <NavIndex about={about} members={members}/>
             <div>
