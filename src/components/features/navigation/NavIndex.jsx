@@ -1,10 +1,11 @@
 //src/components/features/navigation/NavIndex.jsx
 
 export default function NavIndex({ about, members }) {
-    const aboutAnchors = about?.Sections?.map((section) => section.Title);
-    const membersAnchors = members
-        ?.map((member) => `${member?.FirstName ?? ''} ${member?.LastName ?? ''}`.trim())
-        .filter(Boolean);
+    const aboutAnchors = about?.Sections?.map((section) => section.Title) ?? [];
+    const membersAnchors =
+        members
+            ?.map((member) => `${member?.FirstName ?? ''} ${member?.LastName ?? ''}`.trim())
+            .filter(Boolean) ?? [];
 
     // Fonction pour normaliser une chaîne de texte en une chaîne de caractères valide pour un anc
     const normalizeAnchor = (value) =>
