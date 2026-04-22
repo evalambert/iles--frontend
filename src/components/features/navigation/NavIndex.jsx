@@ -9,26 +9,35 @@ export default function NavIndex({ about, members, lang, selectedPractice, onPra
 
     const getMemberFullName = (member) => `${member?.FirstName ?? ''} ${member?.LastName ?? ''}`.trim();
 
-    const handlePracticeClick = (practice) => {
+    const membersAnchorId = normalizeAnchor(lang === "fr" ? "Membres" : "Members");
+
+    const handlePracticeClick = (event, practice) => {
+        event.preventDefault();
+
         const nextSelectedPractice = selectedPractice === practice ? '' : practice;
-        const firstMatchingMember = (members ?? []).find((member) => {
-            if (!nextSelectedPractice) return true;
-            return (member?.practices ?? []).some((memberPractice) => memberPractice?.Name === nextSelectedPractice);
-        });
-        const firstMatchingMemberName = getMemberFullName(firstMatchingMember);
 
         onPracticeSelect(nextSelectedPractice);
 
-        if (!firstMatchingMemberName) return;
+        scrollToMembersAnchor();
+    };
 
-        // Wait for filtered members render before scrolling to the first anchor.
+    const scrollToMembersAnchor = () => {
         requestAnimationFrame(() => {
             requestAnimationFrame(() => {
-                const anchorId = normalizeAnchor(firstMatchingMemberName);
-                const section = document.getElementById(anchorId);
-                section?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                const targetHash = `#${membersAnchorId}`;
+
+                if (window.location.hash === targetHash) {
+                    window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}`);
+                }
+
+                window.location.hash = membersAnchorId;
             });
         });
+    };
+
+    const handlePracticesTitleClick = () => {
+        onPracticeSelect('');
+        scrollToMembersAnchor();
     };
 
     const filteredMembers = (members ?? []).filter(matchesSelectedPractice);
@@ -83,7 +92,7 @@ export default function NavIndex({ about, members, lang, selectedPractice, onPra
                         {/* Practices Title */}
                         <button
                             type="button"
-                            onClick={() => onPracticeSelect('')}
+                            onClick={handlePracticesTitleClick}
                             className={`${selectedPractice === '' ? 'text-pink-500' : ''} block-title w-full cursor-pointer`}
                         >
                             <h2>{lang === "fr" ? "Pratiques" : "Practices"}</h2>
@@ -91,19 +100,21 @@ export default function NavIndex({ about, members, lang, selectedPractice, onPra
 
                         {/* Practices List */}
                         <ul className='py-[6px]'>
-                            {practicesAnchors.map((practice) => (
-                                <li key={practice} 
-                                className={`${selectedPractice === practice ? 'nav-li-on' : 'nav-li-off'} nav-li`}>
-                                    <button
-                                        type="button"
-                                        onClick={() => handlePracticeClick(practice)}
-                                        className={`cursor-pointer w-full h-full`}
-                                        aria-pressed={selectedPractice === practice}
-                                    >
-                                        {practice}
-                                    </button>
-                                </li>
-                            ))}
+                            {practicesAnchors.map((practice) => {
+                                return (
+                                    <li key={practice}
+                                        className={`${selectedPractice === practice ? 'nav-li-on' : 'nav-li-off'} nav-li`}>
+                                        <a
+                                            href={`#${membersAnchorId}`}
+                                            onClick={(event) => handlePracticeClick(event, practice)}
+                                            className='cursor-pointer w-full h-full block'
+                                            aria-current={selectedPractice === practice ? 'true' : undefined}
+                                        >
+                                            {practice}
+                                        </a>
+                                    </li>
+                                );
+                            })}
                         </ul>
                     </div>
                 </div>
