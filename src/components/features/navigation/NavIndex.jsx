@@ -64,10 +64,11 @@ export default function NavIndex({ about, members, lang, selectedPractice, onPra
             <div className='flex h-full'>
 
 
-                <div className='flex-1  border-r' >
+                <div className='flex-1 border-r flex flex-col' >
 
+                    {/* ————————————————————————————————————————————— */}
                     {/* About */}
-                    <div>
+                    <div className='flex flex-col'>
 
                         {/* About Title */}
                         <a href={`#${normalizeAnchor(lang === "fr" ? "À propos" : "About")}`} className="block-title">
@@ -77,7 +78,7 @@ export default function NavIndex({ about, members, lang, selectedPractice, onPra
                         </a>
 
                         {/* About ANCHORS */}
-                        <ul className='py-[6px]'>
+                        <ul className='py-[6px] flex-1 bg-linear-to-t from-primary to-white to-40%'>
                             {aboutAnchors.map((anchor) => (
                                 <li key={anchor} className='nav-li nav-li-off'>
                                     <a href={`#${normalizeAnchor(anchor)}`} className='block h-full w-full'>{anchor}</a>
@@ -86,20 +87,22 @@ export default function NavIndex({ about, members, lang, selectedPractice, onPra
                         </ul>
                     </div>
 
+                    {/* ————————————————————————————————————————————— */}
                     {/* Practices */}
-                    <div className='border-t'>
+                    <div className='flex-1 border-t'>
 
                         {/* Practices Title */}
                         <button
                             type="button"
                             onClick={handlePracticesTitleClick}
-                            className={`${selectedPractice === '' ? 'text-pink-500' : ''} block-title w-full cursor-pointer`}
+                            // className={`${selectedPractice === '' ? 'block-title--on' : ''} block-title w-full cursor-pointer`}
+                            className={`block-title w-full cursor-pointer`}
                         >
                             <h2>{lang === "fr" ? "Pratiques" : "Practices"}</h2>
                         </button>
 
                         {/* Practices List */}
-                        <ul className='py-[6px]'>
+                        <ul className='py-[6px] h-full bg-linear-to-t from-primary to-white to-40%'>
                             {practicesAnchors.map((practice) => {
                                 return (
                                     <li key={practice}
@@ -119,8 +122,9 @@ export default function NavIndex({ about, members, lang, selectedPractice, onPra
                     </div>
                 </div>
 
-                <div className='flex-1 lg:border-r'>
+                <div className='flex-1 lg:border-r flex flex-col' >
 
+                    {/* ————————————————————————————————————————————— */}
                     {/* Members */}
                     <a href={`#${normalizeAnchor(lang === "fr" ? "Membres" : "Members")}`} className="block-title">
                             <h2>
@@ -129,13 +133,15 @@ export default function NavIndex({ about, members, lang, selectedPractice, onPra
                         </a>
 
                     {/* Members List */}
-                    <ul className='py-[6px]'>
+                    <ul className='py-[6px] flex-1 bg-linear-to-t from-primary to-white to-50%'>
                         {membersAnchors.map((anchor) => (
                                  <li key={anchor} className='nav-li nav-li-off'>
                                  <a href={`#${normalizeAnchor(anchor)}`} className='block h-full w-full'>{anchor}</a>
                              </li>
                         ))}
                     </ul>
+
+
                 </div>
             </div>
         </>
