@@ -7,11 +7,35 @@ export default function NavIndex({ about, members, lang, selectedPractice, onPra
         return (member?.practices ?? []).some((practice) => practice?.Name === selectedPractice);
     };
 
+    const getMemberFullName = (member) => `${member?.FirstName ?? ''} ${member?.LastName ?? ''}`.trim();
+
+    const handlePracticeClick = (practice) => {
+        const nextSelectedPractice = selectedPractice === practice ? '' : practice;
+        const firstMatchingMember = (members ?? []).find((member) => {
+            if (!nextSelectedPractice) return true;
+            return (member?.practices ?? []).some((memberPractice) => memberPractice?.Name === nextSelectedPractice);
+        });
+        const firstMatchingMemberName = getMemberFullName(firstMatchingMember);
+
+        onPracticeSelect(nextSelectedPractice);
+
+        if (!firstMatchingMemberName) return;
+
+        // Wait for filtered members render before scrolling to the first anchor.
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                const anchorId = normalizeAnchor(firstMatchingMemberName);
+                const section = document.getElementById(anchorId);
+                section?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        });
+    };
+
     const filteredMembers = (members ?? []).filter(matchesSelectedPractice);
     const aboutAnchors = about?.Sections?.map((section) => section.Title) ?? [];
     const membersAnchors =
         filteredMembers
-            ?.map((member) => `${member?.FirstName ?? ''} ${member?.LastName ?? ''}`.trim())
+            ?.map((member) => getMemberFullName(member))
             .filter(Boolean) ?? [];
     const practicesAnchors = Array.from(
         new Set(
@@ -72,7 +96,7 @@ export default function NavIndex({ about, members, lang, selectedPractice, onPra
                                 className={`${selectedPractice === practice ? 'nav-li-on' : 'nav-li-off'} nav-li`}>
                                     <button
                                         type="button"
-                                        onClick={() => onPracticeSelect(selectedPractice === practice ? '' : practice)}
+                                        onClick={() => handlePracticeClick(practice)}
                                         className={`cursor-pointer w-full h-full`}
                                         aria-pressed={selectedPractice === practice}
                                     >
