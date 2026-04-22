@@ -1,11 +1,12 @@
 //src/layouts/Members.jsx
 import MemberSection from '../components/features/members/MemberSection';
+import { normalizeAnchor } from '../assets/scripts/utils/normalizeAnchor';
 
-export default function Members({ data }) {
+export default function Members({ data, lang }) {
     const members = Array.isArray(data) ? data : (data?.data ?? []);
     
     return (
-        <div className=''>
+        <div id={normalizeAnchor(`${lang === "fr" ? "Membres" : "Members"}`)} className='scroll-mt-header-height'>
 
             {members.map((member) => (
                 <MemberSection

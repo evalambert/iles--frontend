@@ -1,4 +1,5 @@
 //src/components/features/members/MemberSection.jsx
+import { normalizeAnchor } from '../../../assets/scripts/utils/normalizeAnchor';
 
 export default function MemberSection({
     firstName,
@@ -12,10 +13,12 @@ export default function MemberSection({
     images,
 }) {
 
+    const fullName = [firstName, lastName].filter(Boolean).join(' ');
+
     return (
-        <section className="border border-yellow-200 text-yellow-200 p-4">
+        <section id={normalizeAnchor(`${fullName}`)} className="border border-yellow-200 text-yellow-200 p-4 scroll-mt-header-height">
             
-            <h2>{[firstName, lastName].filter(Boolean).join(' ')}</h2>
+            <h2>{fullName}</h2>
 
             {bio ? <p>{bio}</p> : null}
             

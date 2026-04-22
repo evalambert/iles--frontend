@@ -1,5 +1,7 @@
 //src/components/features/about/AboutSection.jsx
 
+import { normalizeAnchor } from '../../../assets/scripts/utils/normalizeAnchor';
+
 export default function AboutSection({ title, chapo, paragraphs, images }) {
 
     // Fonction pour extraire le texte d'un noeud Rich Text
@@ -14,16 +16,6 @@ export default function AboutSection({ title, chapo, paragraphs, images }) {
     const getRichTextAsString = (richTextBlocks = []) => {
         return richTextBlocks.map(getNodeText).join(' ');
     };
-
-    // Fonction pour normaliser une chaîne de texte en une chaîne de caractères valide pour un anc
-    const normalizeAnchor = (value) =>
-        value
-            ?.normalize('NFD')
-            .replace(/[\u0300-\u036f]/g, '')
-            .replace(/[^a-zA-Z0-9\s-]/g, '')
-            .trim()
-            .replace(/\s+/g, '-')
-            .toLowerCase();
 
     return (
 

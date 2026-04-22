@@ -1,12 +1,13 @@
 //src/layouts/About.jsx
 
 import AboutSection from '../components/features/about/AboutSection';
+import { normalizeAnchor } from '../assets/scripts/utils/normalizeAnchor';
 
-export default function About({ data }) {
+export default function About({ data, lang }) {
   const sections = data?.Sections ?? [];
 
   return (
-    <div className="text-blue-300 mt-header-height">
+    <div id={normalizeAnchor(`${lang === "fr" ? "À propos" : "About"}`)} className="text-blue-300 mt-header-height scroll-mt-header-height">
 
 
 

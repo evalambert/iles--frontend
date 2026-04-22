@@ -1,5 +1,6 @@
 //src/components/features/navigation/NavIndex.jsx
 import TitleBlock from '../../common/TitleBlock';
+import { normalizeAnchor } from '../../../assets/scripts/utils/normalizeAnchor';
 
 export default function NavIndex({ about, members, lang }) {
     const aboutAnchors = about?.Sections?.map((section) => section.Title) ?? [];
@@ -7,16 +8,6 @@ export default function NavIndex({ about, members, lang }) {
         members
             ?.map((member) => `${member?.FirstName ?? ''} ${member?.LastName ?? ''}`.trim())
             .filter(Boolean) ?? [];
-
-    // Fonction pour normaliser une chaîne de texte en une chaîne de caractères valide pour un anc
-    const normalizeAnchor = (value) =>
-        value
-            ?.normalize('NFD')
-            .replace(/[\u0300-\u036f]/g, '')
-            .replace(/[^a-zA-Z0-9\s-]/g, '')
-            .trim()
-            .replace(/\s+/g, '-')
-            .toLowerCase();
 
     return (
         <>

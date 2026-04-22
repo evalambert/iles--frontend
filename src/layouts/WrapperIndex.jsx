@@ -14,8 +14,8 @@ export default function WrapperIndex({ about, members, lang }) {
 
             {/* Content */}
             <div className='lg:col-span-4'>
-                <About data={about} />
-                <Members data={members} />
+                <About data={about} lang={lang} />
+                <Members data={members} lang={lang} />
             </div>
         </div>
     );
