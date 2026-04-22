@@ -14,8 +14,8 @@ const { lang } = Astro.params;
         <title>Les Îles mardi</title>
         <meta name='astro-view-transitions' content='true' />
     </head>
-    <body class='font-inter text-base border-2 border-teal-600'>
-        <Header />
+    <body class='font-inter text-base'>
+        <Header lang={lang} />
         <main>
             <slot />
         </main>

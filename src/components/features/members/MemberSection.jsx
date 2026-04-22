@@ -13,7 +13,7 @@ export default function MemberSection({
 }) {
 
     return (
-        <section className="border-1 border-yellow-200 text-yellow-200 p-4">
+        <section className="border border-yellow-200 text-yellow-200 p-4">
             
             <h2>{[firstName, lastName].filter(Boolean).join(' ')}</h2>
 

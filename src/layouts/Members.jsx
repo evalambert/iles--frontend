@@ -5,8 +5,7 @@ export default function Members({ data }) {
     const members = Array.isArray(data) ? data : (data?.data ?? []);
     
     return (
-        <div className='border-1 border-yellow-200 text-yellow-200'>
-            <h2 className="text-2xl font-bold mb-4">SECTION MEMBERS</h2>
+        <div className=''>
 
             {members.map((member) => (
                 <MemberSection

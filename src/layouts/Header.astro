@@ -4,7 +4,7 @@ import LangSwitcher from "../components/common/LangSwitcher.astro";
 const { lang } = Astro.params;
 ---
 
-<header class="h-header-height border-b fixed top-0 left-0 w-full bg-white">
+<header class="h-header-height border-b fixed top-0 left-0 w-full bg-white z-10">
     <div class="grid grid-cols-6 h-full">
         <div
             class="col-span-3 lg:col-span-1 h-full bg-linear-to-t from-primary from-10% to-white to-70%"
@@ -19,7 +19,7 @@ const { lang } = Astro.params;
         </div>
 
         <div
-            class="col-span-3 lg:col-span-4 flex border-l bg-linear-to-t from-white from-10% to-primary to-70%"
+            class="col-span-3 lg:col-span-4 flex border-l bg-linear-to-t from-white from-10% to-primary to-70% lg:-ml-px"
         >
             <h2
                 class="font-semibold text-center h-full w-full flex items-center justify-center"

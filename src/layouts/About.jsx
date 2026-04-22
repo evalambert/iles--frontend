@@ -6,9 +6,8 @@ export default function About({ data }) {
   const sections = data?.Sections ?? [];
 
   return (
-    <div className="border-1 border-blue-00 text-blue-300 p-4">
+    <div className="text-blue-300 mt-header-height">
 
-      <h2 className="text-2xl font-bold mb-4">SECTION ABOUT</h2>
 
 
       {sections.map((section) => {

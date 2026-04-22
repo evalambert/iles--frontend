@@ -3,14 +3,19 @@ import NavIndex from '../components/features/navigation/NavIndex';
 import About from './About.jsx';
 import Members from './Members';
 
-export default function WrapperIndex({ about, members }) {
+export default function WrapperIndex({ about, members, lang }) {
     return (
-        <div className='border-2 border-black mt-header-height'>
-            <h1 className='color'>WrapperIndex</h1>
-            <NavIndex about={about} members={members}/>
-            <div>
-                <Members data={members} />
+        <div className='lg:grid lg:grid-cols-6'>
+            
+            {/* Navigation */}
+            <div className='lg:col-span-2 lg:h-[calc(100vh-var(--spacing-header-height))] lg:sticky top-0'>
+                <NavIndex about={about} members={members} lang={lang}/>
+            </div>
+
+            {/* Content */}
+            <div className='lg:col-span-4'>
                 <About data={about} />
+                <Members data={members} />
             </div>
         </div>
     );
