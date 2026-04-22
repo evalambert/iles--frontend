@@ -33,11 +33,21 @@
     --text-base: 16px;
     --text-base--line-height: 23px;
 
+    --text-title: 25.8px;
+    --text-title--line-height: 25.9px;
+  
+  
+
+
+
     /* Spacing •••••••••••• */
     --spacing-y-body: 13px;
     --spacing-x-body: 25px;
 
-    --spacing-header-height: 95px;
+    --spacing-header-height: 60px;
+
+    /* Colors •••••••••••• */
+    --color-primary: #EAFE00;
 }
 
 /* MOBILE (breakpoint lg:) */
@@ -52,10 +62,44 @@
         --spacing-y-body: 13px;
         --spacing-x-body: 10px;
 
-        --spacing-header-height: 95px;
+        --spacing-header-height: 50px;
     }
 }
 
 /* -------------------------------------------------------------------- */
 /* Gap & space between sections */
 /* -------------------------------------------------------------------- */
+html{
+    scroll-behavior: smooth;
+}
+
+
+
+/* -------------------------------------------------------------------- */
+/* Global styles */
+/* -------------------------------------------------------------------- */
+
+* {
+    @apply font-inter;
+} 
+
+
+/* -------------------------------------------------------------------- */
+/* Components styles */
+/* -------------------------------------------------------------------- */
+.block-title {
+    @apply block border-b bg-linear-to-t from-primary to-white to-40% py-[15px] px-[10px] min-h-header-height hover:to-90% transition-all duration-300;
+}
+.block-title h2{
+    @apply text-title text-center;
+}
+
+.nav-li{
+    @apply list-none text-center p-[2px] cursor-pointer -mt-px;
+}
+.nav-li-off{
+    @apply border-y border-transparent hover:border-black;
+}
+.nav-li-on{
+    @apply border-y cursor-pointer border-black;
+}

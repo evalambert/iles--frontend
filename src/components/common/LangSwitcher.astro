@@ -1,0 +1,28 @@
+---
+// src/components/common/LangSwitcher.astro
+
+const pathname = Astro.url.pathname;
+const [, currentLang, ...rest] = pathname.split('/');
+const supported = ['fr', 'en'];
+const safeLang = supported.includes(currentLang) ? currentLang : 'fr';
+const otherLang = safeLang === 'fr' ? 'en' : 'fr';
+const restPath = rest.length ? `/${rest.join('/')}` : '';
+const currentUrl = `/${safeLang}${restPath}`;
+const otherUrl = `/${otherLang}${restPath}`;
+---
+
+<nav aria-label='Language switcher'>
+    
+    <a href="/" class="text-title">FR</a>
+    
+    <!-- <a href={currentUrl} aria-current='page' class=''
+        >{safeLang.toUpperCase()}</a
+    >
+    {' / '}
+    <a
+        href={otherUrl}
+        data-astro-transition
+        class='opacity-80 hover:opacity-100'>{otherLang.toUpperCase()}</a
+    > -->
+
+</nav>
