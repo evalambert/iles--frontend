@@ -72,7 +72,7 @@ export default function MemberSection({
                         preferredFormat='medium'
                     />
                 )}
-            />
+            /> 
         </section>
     );
 }

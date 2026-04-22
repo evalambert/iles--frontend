@@ -57,7 +57,7 @@ export default function AboutSection({ title, chapo, paragraphs, images }) {
                         className='w-auto h-[742px] object-cover'
                     />
                 )}
-            />
+            /> 
         </section>
     );
 }
