@@ -40,28 +40,31 @@ export default function AboutSection({ title, chapo, paragraphs, images }) {
                 return (
                     <article key={paragraph.id} className='mt-4'>
                         {paragraph?.Subtitle ? (
-                            <h3>{paragraph.Subtitle}</h3>
+                            <h3 className='mb-h3-margin'>{paragraph.Subtitle}</h3>
                         ) : null}
                         {paragraphText ? <p>{paragraphText}</p> : null}
                     </article>
                 );
             })}
 
-            <Slider
-                items={images}
-                className=''
-                slideClassName='!w-fit'
-                slideSeparatorClassName='border-r border-black'
-                spaceBetween={0}
-                renderSlide={(image, index) => (
-                    <ImageSlider
-                        image={image}
-                        alt={title || 'about image'}
-                        className='w-auto h-[742px] object-cover'
-                        onClick={() => setLightboxIndex(index)}
-                    />
-                )}
-            />
+            <div className='mt-[10px]'>
+                <Slider
+                    items={images}
+                    className=''
+                    slideClassName='!w-fit'
+                    slideSeparatorClassName='border-r border-black'
+                    spaceBetween={0}
+                    renderSlide={(image, index) => (
+                        <ImageSlider
+                            image={image}
+                            alt={title || 'about image'}
+                            className='w-auto h-[742px] object-cover'
+                            onClick={() => setLightboxIndex(index)}
+                        />
+                    )}
+                />
+            </div>
+
 
             {lightboxIndex !== null && hasImages ? (
                 <Lightbox

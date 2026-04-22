@@ -47,6 +47,7 @@
     --spacing-header-height: 60px;
 
     --spacing-title-margin: 20px;
+    --spacing-h3-margin: 5px;
     --spacing-text-margin: 20px;
 
     /* Colors •••••••••••• */
@@ -87,10 +88,13 @@ html{
     @apply font-inter;
 } 
 
+
 p{
     @apply mb-text-margin;
 }
-
+p:last-child{
+    @apply mb-0;
+}
 
 
 

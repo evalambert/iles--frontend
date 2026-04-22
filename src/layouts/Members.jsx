@@ -11,7 +11,7 @@ export default function Members({ data, lang, selectedPractice }) {
     
     return (
 
-        <div id={normalizeAnchor(`${lang === "fr" ? "Membres" : "Members"}`)} className='scroll-mt-[calc(var(--spacing-header-height)+10px)]'>
+        <div id={normalizeAnchor(`${lang === "fr" ? "Membres" : "Members"}`)} className='mt-header-height scroll-mt-[calc(var(--spacing-header-height)+10px)] p-[10px] bg-linear-to-t from-primary to-light to-40%'>
 
             {filteredMembers.map((member) => (
                 <MemberSection
@@ -25,6 +25,7 @@ export default function Members({ data, lang, selectedPractice }) {
                     instagramName={member?.InstagramName}
                     practices={member?.practices ?? []}
                     images={member?.Images ?? []}
+                    lang={lang}
                 />
             ))}
         </div>
