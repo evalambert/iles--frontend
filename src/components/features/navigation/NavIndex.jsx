@@ -194,6 +194,7 @@ export default function NavIndex({ about, members, lang, selectedPractice, activ
                             })}
                         </ul>
 
+                        {/* Mobile Nav Link */}
                         <ul className="lg:hidden border-t hover">
                             <li className='relative overflow-hidden block border-b bg-linear-to-t from-primary to-light to-40% py-[15px] px-[10px] min-h-header-height;'>
                                 <a
