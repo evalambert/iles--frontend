@@ -6,6 +6,25 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 
+function MaskIcon({ src, className = '' }) {
+    return (
+        <span
+            aria-hidden='true'
+            className={`pointer-events-none block shrink-0 bg-current ${className}`}
+            style={{
+                maskImage: `url(${src})`,
+                WebkitMaskImage: `url(${src})`,
+                maskRepeat: 'no-repeat',
+                WebkitMaskRepeat: 'no-repeat',
+                maskPosition: 'center',
+                WebkitMaskPosition: 'center',
+                maskSize: 'contain',
+                WebkitMaskSize: 'contain',
+            }}
+        />
+    );
+}
+
 export default function Slider({
     items = [],
     renderSlide,
@@ -13,7 +32,7 @@ export default function Slider({
     spaceBetween = 0,
     navigation = true,
     pagination = false,
-    loop = false,
+    loop = true,
     className = '',
     slideClassName = '',
     slideSeparatorClassName = '',
@@ -45,17 +64,23 @@ export default function Slider({
                 <>
                     <button
                         type='button'
-                        className={`${prevClassName} absolute left-2 top-1/2 z-10 -translate-y-1/2 ${arrowClassName}`}
+                        className={`${prevClassName} absolute left-2 top-1/2 z-10 -translate-y-1/2 cursor-pointer text-black transition-colors duration-200 hover:text-primary ${arrowClassName}`}
                         aria-label='Slide precedente'
                     >
-                        <img src={prevIconSrc} alt='' aria-hidden='true' />
+                        <MaskIcon
+                            src={prevIconSrc}
+                            className='h-19.5 w-y-body'
+                        />
                     </button>
                     <button
                         type='button'
-                        className={`${nextClassName} absolute right-2 top-1/2 z-10 -translate-y-1/2 ${arrowClassName}`}
+                        className={`${nextClassName} absolute right-2 top-1/2 z-10 -translate-y-1/2 cursor-pointer text-black transition-colors duration-200 hover:text-primary ${arrowClassName}`}
                         aria-label='Slide suivante'
                     >
-                        <img src={nextIconSrc} alt='' aria-hidden='true' />
+                        <MaskIcon
+                            src={nextIconSrc}
+                            className='h-19.5 w-y-body'
+                        />
                     </button>
                 </>
             ) : null}

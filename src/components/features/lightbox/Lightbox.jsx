@@ -2,6 +2,25 @@
 import { useEffect, useMemo } from 'react';
 import { buildSrcSet } from '../../../assets/scripts/libs/getImageUrl';
 
+function MaskIcon({ src, className = '' }) {
+    return (
+        <span
+            aria-hidden='true'
+            className={`pointer-events-none block shrink-0 bg-current ${className}`}
+            style={{
+                maskImage: `url(${src})`,
+                WebkitMaskImage: `url(${src})`,
+                maskRepeat: 'no-repeat',
+                WebkitMaskRepeat: 'no-repeat',
+                maskPosition: 'center',
+                WebkitMaskPosition: 'center',
+                maskSize: 'contain',
+                WebkitMaskSize: 'contain',
+            }}
+        />
+    );
+}
+
 export default function Lightbox({
     images = [],
     currentIndex = 0,
@@ -63,19 +82,19 @@ export default function Lightbox({
                 <button
                     type='button'
                     onClick={onClose}
-                    className='absolute -top-[-10px] -right-[-10px] z-20 flex h-9 w-9 items-center justify-center'
+                    className='absolute top-2.5 right-2.5 z-20 flex h-9 w-9 items-center justify-center cursor-pointer text-black transition-colors duration-200 hover:text-primary'
                     aria-label='Fermer la lightbox'
                 >
-                    <img src='/svg/croix.svg' alt='' aria-hidden='true' />
+                    <MaskIcon src='/svg/croix.svg' className='h-x-body w-6.5' />
                 </button>
 
                 <button
                     type='button'
-                    className={`absolute left-[20px] top-1/2 z-10 -translate-y-1/2 ${arrowClassName}`}
+                    className={`absolute left-0 top-1/2 z-10 -translate-y-1/2 cursor-pointer p-[20px] text-black transition-colors duration-200 hover:text-primary ${arrowClassName}`}
                     aria-label='Image precedente'
                     onClick={onPrev}
                 >
-                    <img src={prevIconSrc} alt='' aria-hidden='true' />
+                    <MaskIcon src={prevIconSrc} className='h-19.5 w-y-body' />
                 </button>
 
                 <img
@@ -89,11 +108,11 @@ export default function Lightbox({
 
                 <button
                     type='button'
-                    className={`absolute right-[20px] top-1/2 z-10 -translate-y-1/2 ${arrowClassName}`}
+                    className={`absolute right-0 top-1/2 z-10 -translate-y-1/2 cursor-pointer p-[20px] text-black transition-colors duration-200 hover:text-primary ${arrowClassName}`}
                     aria-label='Image suivante'
                     onClick={onNext}
                 >
-                    <img src={nextIconSrc} alt='' aria-hidden='true' />
+                    <MaskIcon src={nextIconSrc} className='h-19.5 w-y-body' />
                 </button>
             </div>
         </div>
