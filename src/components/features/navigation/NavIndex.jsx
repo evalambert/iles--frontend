@@ -6,6 +6,24 @@ export default function NavIndex({ about, members, lang, selectedPractice, activ
     const [isMobileNavHidden, setIsMobileNavHidden] = useState(false);
     const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
 
+    // **** Menu Mobile ONLY ****
+    const isArchivePage = typeof window !== 'undefined' && window.location.pathname.endsWith('/archive');
+    const navHref = isArchivePage ? `/${lang ?? 'fr'}` : `/${lang ?? 'fr'}/archive`;
+    const navLabel = isArchivePage ? (lang === 'en' ? 'Home' : 'Accueil') : 'Archives';
+    const otherLang = (lang ?? 'fr') === 'fr' ? 'en' : 'fr';
+    const switchLangPath = (() => {
+        if (typeof window === 'undefined') return `/${otherLang}`;
+
+        const [_, currentLang, ...rest] = window.location.pathname.split('/');
+        if (currentLang === 'fr' || currentLang === 'en') {
+            return `/${otherLang}${rest.length ? `/${rest.join('/')}` : ''}`;
+        }
+
+        return `/${otherLang}${window.location.pathname.startsWith('/') ? window.location.pathname : `/${window.location.pathname}`}`;
+    })();
+    // **** END — Menu Mobile ONLY ****
+
+
     const matchesSelectedPractice = (member) => {
         if (!selectedPractice) return true;
         return (member?.practices ?? []).some((practice) => practice?.Name === selectedPractice);
@@ -25,6 +43,22 @@ export default function NavIndex({ about, members, lang, selectedPractice, activ
 
         return () => {
             mediaQuery.removeEventListener('change', updatePreference);
+        };
+    }, []);
+
+    useEffect(() => {
+        const handleMobileNavToggle = () => {
+            setIsMobileNavHidden((prev) => {
+                const next = !prev;
+                console.log('[NavIndex] mobile-nav:toggle received -> isMobileNavHidden:', next);
+                return next;
+            });
+        };
+
+        window.addEventListener('mobile-nav:toggle', handleMobileNavToggle);
+
+        return () => {
+            window.removeEventListener('mobile-nav:toggle', handleMobileNavToggle);
         };
     }, []);
 
@@ -82,12 +116,13 @@ export default function NavIndex({ about, members, lang, selectedPractice, activ
                 <div className='flex-1 lg:border-r'></div>
             </div>
             <div
+                id='mobile-nav-panel'
                 className='flex h-[calc(100dvh-var(--spacing-header-height))] lg:h-full max-lg:overflow-y-scroll max-lg:fixed max-lg:left-0 max-lg:w-full max-lg:z-20 max-lg:transition-[top] max-lg:duration-500 max-lg:ease-in-out motion-reduce:max-lg:transition-none'
                 style={{
                     top: isMobileNavHidden ? '-100vh' : 'var(--spacing-header-height)',
                     transitionDuration: prefersReducedMotion ? '0ms' : undefined,
                 }}
-                aria-hidden={isMobileNavHidden ? 'true' : undefined}
+                aria-hidden={isMobileNavHidden}
             >
 
 
@@ -158,6 +193,27 @@ export default function NavIndex({ about, members, lang, selectedPractice, activ
                                 );
                             })}
                         </ul>
+
+                        <ul className="lg:hidden border-t hover">
+                            <li className='relative overflow-hidden block border-b bg-linear-to-t from-primary to-light to-40% py-[15px] px-[10px] min-h-header-height;'>
+                                <a
+                                    href={navHref}
+                                    className='h-full w-full flex items-center justify-center text-title'
+                                >
+                                    {navLabel}
+                                </a>
+                            </li>
+                            <li className='relative overflow-hidden block border-b bg-linear-to-t from-primary to-light to-40% py-[15px] px-[10px] min-h-header-height;'>
+                                <a
+                                    href={switchLangPath}
+                                    className='text-title block min-w-[2ch] text-center'
+                                    aria-label={`Switch language to ${otherLang.toUpperCase()}`}
+                                >
+                                    {otherLang.toUpperCase()}
+                                </a>
+                            </li>
+
+                        </ul>
                     </div>
                 </div>
 
@@ -166,10 +222,10 @@ export default function NavIndex({ about, members, lang, selectedPractice, activ
                     {/* ————————————————————————————————————————————— */}
                     {/* Members */}
                     <a href={`#${normalizeAnchor(lang === "fr" ? "Membres" : "Members")}`} className="block-title">
-                            <h2>
-                                {lang === "fr" ? "Membres" : "Members"}
-                            </h2>
-                        </a>
+                        <h2>
+                            {lang === "fr" ? "Membres" : "Members"}
+                        </h2>
+                    </a>
 
                     {/* Members List */}
                     <ul className='py-[6px] flex-1 bg-linear-to-t from-primary to-light to-50%'>

@@ -125,3 +125,20 @@ p:last-child{
 .nav-li-on{
     @apply border-y cursor-pointer border-black bg-linear-to-t from-light to-primary to-60%;
 }
+
+/* Mobile menu icon toggle driven by NavIndex aria-hidden state */
+body:has(#mobile-nav-panel[aria-hidden='true']) #open-nav-icon {
+    display: block;
+}
+
+body:has(#mobile-nav-panel[aria-hidden='true']) #close-nav-icon {
+    display: none;
+}
+
+body:has(#mobile-nav-panel[aria-hidden='false']) #open-nav-icon {
+    display: none;
+}
+
+body:has(#mobile-nav-panel[aria-hidden='false']) #close-nav-icon {
+    display: block;
+}
