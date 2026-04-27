@@ -1,10 +1,14 @@
 //src/components/features/members/MemberSection.jsx
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { normalizeAnchor } from '../../../assets/scripts/utils/normalizeAnchor';
 import ImageSlider from '../../common/ImageSlider';
 import Lightbox from '../lightbox/Lightbox';
 import Slider from '../slider/Slider';
+
+gsap.registerPlugin(ScrollTrigger);
 
 export default function MemberSection({
     lang,
@@ -17,17 +21,37 @@ export default function MemberSection({
     instagramName,
     practices,
     images,
+    onActiveMemberChange,
 }) {
     const fullName = [firstName, lastName].filter(Boolean).join(' ');
+    const memberAnchor = normalizeAnchor(fullName);
     const [lightboxIndex, setLightboxIndex] = useState(null);
     const hasImages = Array.isArray(images) && images.length > 0;
+    const sectionRef = useRef(null);
+
+    useEffect(() => {
+        if (!sectionRef.current) return;
+
+        const trigger = ScrollTrigger.create({
+            trigger: sectionRef.current,
+            start: 'top 100px',
+            end: 'bottom 100px',
+            onEnter: () => onActiveMemberChange?.(memberAnchor),
+            onEnterBack: () => onActiveMemberChange?.(memberAnchor),
+        });
+
+        return () => {
+            trigger.kill();
+        };
+    }, [memberAnchor, onActiveMemberChange]);
 
     return (
         <section
-            id={normalizeAnchor(`${fullName}`)}
-            className='border scroll-mt-[calc(var(--spacing-header-height)+10px)] mb-[10px]'
+            ref={sectionRef}
+            id={memberAnchor}
+            className='border scroll-mt-[calc(var(--spacing-header-height)+10px)] mt-[10px]'
         >
-            <a href={`#${normalizeAnchor(fullName)}`} className="block-title border-b border-transparent">
+            <a href={`#${memberAnchor}`} className="block-title border-b border-transparent">
                 <h2 className='text-title text-center'>{fullName}</h2>
             </a>
 

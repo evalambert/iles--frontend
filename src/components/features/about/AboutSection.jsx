@@ -1,14 +1,35 @@
 //src/components/features/about/AboutSection.jsx
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { normalizeAnchor } from '../../../assets/scripts/utils/normalizeAnchor';
 import ImageSlider from '../../common/ImageSlider';
 import Lightbox from '../lightbox/Lightbox';
 import Slider from '../slider/Slider';
 
+gsap.registerPlugin(ScrollTrigger);
 
-export default function AboutSection({ title, chapo, paragraphs, images }) {
+export default function AboutSection({ title, chapo, paragraphs, images, onActiveAboutChange }) {
     const [lightboxIndex, setLightboxIndex] = useState(null);
     const hasImages = Array.isArray(images) && images.length > 0;
+    const sectionRef = useRef(null);
+    const aboutAnchor = normalizeAnchor(title);
+
+    useEffect(() => {
+        if (!sectionRef.current) return;
+
+        const trigger = ScrollTrigger.create({
+            trigger: sectionRef.current,
+            start: 'top 100px',
+            end: 'bottom 100px',
+            onEnter: () => onActiveAboutChange?.(aboutAnchor),
+            onEnterBack: () => onActiveAboutChange?.(aboutAnchor),
+        });
+
+        return () => {
+            trigger.kill();
+        };
+    }, [aboutAnchor, onActiveAboutChange]);
 
     // Fonction pour extraire le texte d'un noeud Rich Text
     const getNodeText = (node) => {
@@ -26,7 +47,11 @@ export default function AboutSection({ title, chapo, paragraphs, images }) {
     return (
 
 
-        <section id={normalizeAnchor(title)} className="border scroll-mt-[calc(var(--spacing-header-height)+10px)] mb-[10px] p-[10px] bg-linear-to-t from-primary to-light to-40%">
+        <section
+            ref={sectionRef}
+            id={aboutAnchor}
+            className="border scroll-mt-[calc(var(--spacing-header-height)+10px)] mb-[10px] p-[10px] bg-linear-to-t from-primary to-light to-40%"
+        >
 
             <h2 className='text-title mb-title-margin'>{title}</h2>
 
