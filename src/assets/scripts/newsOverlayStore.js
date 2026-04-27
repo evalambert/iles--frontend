@@ -6,6 +6,7 @@ const initialState = {
     openIds: [],
     signature: '',
     initialized: false,
+    reopenVersion: 0,
 };
 
 function buildSignature(newsList) {
@@ -18,6 +19,7 @@ function cloneState(state) {
         openIds: [...state.openIds],
         signature: state.signature,
         initialized: state.initialized,
+        reopenVersion: state.reopenVersion,
     };
 }
 
@@ -52,6 +54,7 @@ function createStore() {
                 openIds: sanitized.map((item) => item.id),
                 signature,
                 initialized: true,
+                reopenVersion: 1,
             };
             emit();
         },
@@ -69,6 +72,7 @@ function createStore() {
             state = {
                 ...state,
                 openIds: state.allNews.map((item) => item.id),
+                reopenVersion: state.reopenVersion + 1,
             };
             emit();
         },
