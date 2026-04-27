@@ -10,8 +10,26 @@ import {
 } from '../../../assets/scripts/newsOverlayStore';
 import { normalizeNewsList } from './newsUtils';
 
+function toDisplayDate(value) {
+    if (!value) return '';
+    const parsed = new Date(value);
+    if (Number.isNaN(parsed.getTime())) return '';
+    const month = String(parsed.getMonth() + 1).padStart(2, '0');
+    const day = String(parsed.getDate()).padStart(2, '0');
+    const year = String(parsed.getFullYear()).slice(-2);
+    return `${month}/${day}/${year}`;
+}
+
+function toDisplayDateRange(startDate, endDate) {
+    const start = toDisplayDate(startDate);
+    const end = toDisplayDate(endDate);
+    if (start && end) return `${start} - ${end}`;
+    return start || end || '';
+}
+
 export default function NewsPreview({ news = [] }) {
     const normalizedNews = useMemo(() => normalizeNewsList(news), [news]);
+    const [activeIndex, setActiveIndex] = useState(0);
     const [storeState, setStoreState] = useState({
         allNews: normalizedNews,
         openIds: normalizedNews.map((item) => item.id),
@@ -28,11 +46,36 @@ export default function NewsPreview({ news = [] }) {
     }, [normalizedNews]);
 
     const closedNews = useMemo(() => getClosedNews(storeState), [storeState]);
+    const totalNewsCount = closedNews.length;
+    const displayIndex = totalNewsCount
+        ? (activeIndex % totalNewsCount) + 1
+        : 0;
 
     const handleReopenAll = () => {
         const store = getNewsOverlayStore();
         store?.reopenAll();
     };
+
+    const renderNewsLine = (item) => (
+        <div className='grid h-full grid-cols-4 text-center'>
+            <div className='flex items-center justify-center px-2 font-medium'>
+                {`Actu ${displayIndex}/${totalNewsCount}`}
+            </div>
+            <div className='flex items-center justify-center px-2'>
+                <span className='truncate'>{item?.Title || ''}</span>
+            </div>
+            <div className='flex items-center justify-center px-2'>
+                <span className='truncate'>
+                    {toDisplayDateRange(item?.StartDate, item?.EndDate)}
+                </span>
+            </div>
+            <div className='flex items-center justify-center px-2'>
+                <span className='truncate'>
+                    {item?.Place || item?.Address || ''}
+                </span>
+            </div>
+        </div>
+    );
 
     if (!closedNews.length) {
         return (
@@ -48,9 +91,7 @@ export default function NewsPreview({ news = [] }) {
                 }}
                 className='h-full w-full text-center'
                 aria-label='Reouvrir les actualites'
-            >
-                <span className='font-semibold'>News preview</span>
-            </div>
+            />
         );
     }
 
@@ -65,7 +106,7 @@ export default function NewsPreview({ news = [] }) {
                     handleReopenAll();
                 }
             }}
-            className='h-full w-full text-left'
+            className='h-full w-full text-left cursor-pointer'
             aria-label='Reouvrir tous les post-it'
         >
             {closedNews.length > 1 ? (
@@ -76,27 +117,23 @@ export default function NewsPreview({ news = [] }) {
                     effect='fade'
                     fadeEffect={{ crossFade: true }}
                     autoplay={{
-                        delay: 3000,
+                        delay: 2500,
                         disableOnInteraction: false,
                         pauseOnMouseEnter: false,
                     }}
                     allowTouchMove={false}
                     className='h-full'
+                    onSwiper={(swiper) => setActiveIndex(swiper.realIndex)}
+                    onSlideChange={(swiper) => setActiveIndex(swiper.realIndex)}
                 >
                     {closedNews.map((item) => (
                         <SwiperSlide key={item.id} className='h-full'>
-                            <div className='flex h-full flex-col justify-center px-14'>
-                                <p className='truncate text-xs'>{item.date || ' '}</p>
-                                <p className='truncate text-sm'>{item.title}</p>
-                            </div>
+                            {renderNewsLine(item)}
                         </SwiperSlide>
                     ))}
                 </Swiper>
             ) : (
-                <div className='flex h-full flex-col justify-center px-14'>
-                    <p className='truncate text-xs'>{closedNews[0]?.date || ' '}</p>
-                    <p className='truncate text-sm'>{closedNews[0]?.title || ''}</p>
-                </div>
+                renderNewsLine(closedNews[0])
             )}
         </div>
     );

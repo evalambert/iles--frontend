@@ -81,14 +81,8 @@ function generateRandomPositions(items) {
                 y: getRandomInt(bounds.minY, bounds.maxY),
                 rotation: getRandomInt(-5, 5),
             };
-            position.x = Math.min(
-                bounds.maxX,
-                position.x + (index % 3) * 24
-            );
-            position.y = Math.min(
-                bounds.maxY,
-                position.y + (index % 4) * 24
-            );
+            position.x = Math.min(bounds.maxX, position.x + (index % 3) * 24);
+            position.y = Math.min(bounds.maxY, position.y + (index % 4) * 24);
         }
 
         placed.push(position);
@@ -125,6 +119,10 @@ export default function NewsStickyOverlay({ news = [] }) {
     }, [normalizedNews]);
 
     const openNews = useMemo(() => getOpenNews(storeState), [storeState]);
+    const allPositionsReady = useMemo(
+        () => openNews.every((note) => Boolean(positions[note.id])),
+        [openNews, positions]
+    );
 
     useEffect(() => {
         const ids = openNews.map((item) => item.id);
@@ -180,7 +178,7 @@ export default function NewsStickyOverlay({ news = [] }) {
         setZOrder((current) => [...current.filter((item) => item !== id), id]);
     };
 
-    if (!isHydrated || !openNews.length) return null;
+    if (!isHydrated || !openNews.length || !allPositionsReady) return null;
 
     return (
         <div className='pointer-events-none fixed inset-0 z-[60]'>
@@ -197,7 +195,7 @@ export default function NewsStickyOverlay({ news = [] }) {
                     >
                         <NewsStickyNote
                             note={note}
-                            initialPosition={positions[note.id] ?? { x: 16, y: 120, rotation: 0 }}
+                            initialPosition={positions[note.id]}
                             zIndex={zIndex}
                             onClose={handleClose}
                             onBringToFront={handleBringToFront}
