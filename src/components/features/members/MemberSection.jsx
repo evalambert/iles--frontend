@@ -49,7 +49,7 @@ export default function MemberSection({
         <section
             ref={sectionRef}
             id={memberAnchor}
-            className='border scroll-mt-[calc(var(--spacing-header-height)+10px)] mb-[10px]'
+            className='border scroll-mt-[calc(var(--spacing-header-height)+10px)] mt-[10px]'
         >
             <a href={`#${memberAnchor}`} className="block-title border-b border-transparent">
                 <h2 className='text-title text-center'>{fullName}</h2>

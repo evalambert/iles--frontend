@@ -1,9 +1,24 @@
 ---
 //src/pages/[lang]/archive.astro
+import fetchApi from '../../assets/scripts/libs/strapi.js';
 import Layout from '../../layouts/Layout.astro';
 import WrapperArchive from '../../layouts/WrapperArchive.jsx';
+const { lang } = Astro.params;
+
+const news = await fetchApi({
+    endpoint: 'news',
+    query: {
+        'populate[Paragraphs][populate]': '*',
+        'populate[Images][populate]': '*',
+        'populate[event_categories][populate]': '*',
+        'populate[Links][populate]': '*',
+        'populate[RendezVous][populate]': '*',
+    },
+    locale: lang,
+    wrappedByKey: 'data',
+});
 ---
 
 <Layout>
-    <WrapperArchive />
+    <WrapperArchive client:load news={news} lang={lang} />
 </Layout>

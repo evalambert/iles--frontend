@@ -66,7 +66,7 @@ export default function Members({ data, lang, selectedPractice, onActiveMemberCh
         <div
             ref={sectionRef}
             id={membersAnchorId}
-            className='mt-header-height scroll-mt-[calc(var(--spacing-header-height)+10px)] p-[10px] bg-linear-to-t from-primary to-light to-40%  min-h-[calc(100vh-var(--spacing-header-height))]'
+            className='mt-header-height scroll-mt-header-height p-[10px] bg-linear-to-t from-primary to-light to-40%  min-h-[calc(100vh-var(--spacing-header-height))]'
         >
 
             {filteredMembers.map((member) => (
