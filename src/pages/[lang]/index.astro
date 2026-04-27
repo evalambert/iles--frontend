@@ -19,8 +19,21 @@ const members = await fetchApi({
     locale: lang,
     wrappedByKey: 'data',
 });
+
+
+let news = [];
+try {
+    news = await fetchApi({
+        endpoint: 'news',
+        query: { populate: '*' },
+        locale: lang,
+        wrappedByKey: 'data',
+    });
+} catch (error) {
+    news = [];
+}
 ---
 
-<Layout>
-    <WrapperIndex client:load about={about} members={members} lang={lang} />
+<Layout lang={lang} news={news}>
+    <WrapperIndex client:load about={about} members={members} news={news} lang={lang} />
 </Layout>

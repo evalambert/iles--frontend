@@ -3,14 +3,16 @@ import { useState } from 'react';
 import NavIndex from '../components/features/navigation/NavIndex';
 import About from './About.jsx';
 import Members from './Members';
+import NewsStickyOverlay from '../components/features/news/NewsStickyOverlay';
 
-export default function WrapperIndex({ about, members, lang }) {
+export default function WrapperIndex({ about, members, lang, news = [] }) {
     const [selectedPractice, setSelectedPractice] = useState('');
     const [activeAboutAnchor, setActiveAboutAnchor] = useState('');
     const [activeMemberAnchor, setActiveMemberAnchor] = useState('');
 
     return (
         <div className='lg:grid lg:grid-cols-6'>
+            <NewsStickyOverlay news={news} />
             
             {/* Navigation */}
             <div className='lg:col-span-2 lg:h-[calc(100vh-var(--spacing-header-height))] lg:sticky top-0'>

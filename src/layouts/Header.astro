@@ -1,9 +1,9 @@
 ---
 import LangSwitcher from '../components/common/LangSwitcher.astro';
-
-const { lang } = Astro.params;
+import NewsPreview from '../components/features/news/NewsPreview.jsx';
+const { lang = 'fr', news = [] } = Astro.props;
 const isArchivePage = Astro.url.pathname.endsWith('/archive');
-const navHref = isArchivePage ? `/${lang ?? 'fr'}` : `/${lang ?? 'fr'}/archive`;
+const navHref = isArchivePage ? `/${lang}` : `/${lang}/archive`;
 const navLabel = isArchivePage
     ? lang === 'en'
         ? 'Home'
@@ -30,11 +30,9 @@ const navLabel = isArchivePage
         <div
             class='col-span-3 lg:col-span-4 flex border-l bg-linear-to-t from-light from-10% to-primary to-70% lg:-ml-px'
         >
-            <h2
-                class='font-semibold text-center h-full w-full flex items-center justify-center'
-            >
-                {lang === 'fr' ? 'Entête actualités' : 'Header news'}
-            </h2>
+            <div class='h-full w-full'>
+                <NewsPreview client:load news={news} />
+            </div>
 
             <div class='block lg:hidden border-l h-full items-center p-[10px]'>
                 <button class='w-full h-full flex items-center justify-center'>
