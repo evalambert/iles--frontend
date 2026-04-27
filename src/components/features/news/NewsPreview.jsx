@@ -8,42 +8,67 @@ import {
     getClosedNews,
     getNewsOverlayStore,
 } from '../../../assets/scripts/newsOverlayStore';
-import { normalizeNewsList } from './newsUtils';
+import { getCurrentAndFutureNews } from './newsUtils';
 
 function toDisplayDate(value) {
     if (!value) return '';
     const parsed = new Date(value);
     if (Number.isNaN(parsed.getTime())) return '';
-    const month = String(parsed.getMonth() + 1).padStart(2, '0');
     const day = String(parsed.getDate()).padStart(2, '0');
+    const month = String(parsed.getMonth() + 1).padStart(2, '0');
     const year = String(parsed.getFullYear()).slice(-2);
-    return `${month}/${day}/${year}`;
+    return `${day}/${month}/${year}`;
 }
 
 function toDisplayDateRange(startDate, endDate) {
+    if (!startDate && !endDate) return '';
+
+    const startParsed = startDate ? new Date(startDate) : null;
+    const endParsed = endDate ? new Date(endDate) : null;
+    const startValid = startParsed && !Number.isNaN(startParsed.getTime());
+    const endValid = endParsed && !Number.isNaN(endParsed.getTime());
+
+    if (startValid && endValid) {
+        const sameYear =
+            startParsed.getFullYear() === endParsed.getFullYear();
+
+        if (sameYear) {
+            const startDay = String(startParsed.getDate()).padStart(2, '0');
+            const startMonth = String(startParsed.getMonth() + 1).padStart(2, '0');
+            const endDay = String(endParsed.getDate()).padStart(2, '0');
+            const endMonth = String(endParsed.getMonth() + 1).padStart(2, '0');
+            const year = String(startParsed.getFullYear()).slice(-2);
+            return `${startDay}/${startMonth}-${endDay}/${endMonth}/${year}`;
+        }
+    }
+
     const start = toDisplayDate(startDate);
     const end = toDisplayDate(endDate);
-    if (start && end) return `${start} - ${end}`;
+    if (start && end) return `${start}-${end}`;
     return start || end || '';
 }
 
+function getAttrs(item) {
+    return item?.attributes ?? item ?? {};
+}
+
 export default function NewsPreview({ news = [] }) {
-    const normalizedNews = useMemo(() => normalizeNewsList(news), [news]);
+    const filteredNews = useMemo(() => getCurrentAndFutureNews(news), [news]);
     const [activeIndex, setActiveIndex] = useState(0);
     const [storeState, setStoreState] = useState({
-        allNews: normalizedNews,
-        openIds: normalizedNews.map((item) => item.id),
+        allNews: filteredNews,
+        openIds: filteredNews.map((item) => item.id),
     });
 
     useEffect(() => {
         const store = getNewsOverlayStore();
         if (!store) return undefined;
 
-        store.initialize(normalizedNews);
+        store.initialize(filteredNews);
         setStoreState(store.getState());
         const unsubscribe = store.subscribe(setStoreState);
         return unsubscribe;
-    }, [normalizedNews]);
+    }, [filteredNews]);
 
     const closedNews = useMemo(() => getClosedNews(storeState), [storeState]);
     const totalNewsCount = closedNews.length;
@@ -56,26 +81,29 @@ export default function NewsPreview({ news = [] }) {
         store?.reopenAll();
     };
 
-    const renderNewsLine = (item) => (
-        <div className='grid h-full grid-cols-4 text-center'>
-            <div className='flex items-center justify-center px-2 font-medium'>
-                {`Actu ${displayIndex}/${totalNewsCount}`}
+    const renderNewsLine = (item) => {
+        const attrs = getAttrs(item);
+        return (
+            <div className='grid h-full grid-cols-4 text-center'>
+                <div className='flex items-center justify-center px-2 font-medium'>
+                    {`Actu ${displayIndex}/${totalNewsCount}`}
+                </div>
+                <div className='flex items-center justify-center px-2'>
+                    <span className='truncate'>{attrs.Title || ''}</span>
+                </div>
+                <div className='flex items-center justify-center px-2'>
+                    <span className='truncate'>
+                        {toDisplayDateRange(attrs.StartDate, attrs.EndDate)}
+                    </span>
+                </div>
+                <div className='flex items-center justify-center px-2'>
+                    <span className='truncate'>
+                        {attrs.Place || attrs.Address || ''}
+                    </span>
+                </div>
             </div>
-            <div className='flex items-center justify-center px-2'>
-                <span className='truncate'>{item?.Title || ''}</span>
-            </div>
-            <div className='flex items-center justify-center px-2'>
-                <span className='truncate'>
-                    {toDisplayDateRange(item?.StartDate, item?.EndDate)}
-                </span>
-            </div>
-            <div className='flex items-center justify-center px-2'>
-                <span className='truncate'>
-                    {item?.Place || item?.Address || ''}
-                </span>
-            </div>
-        </div>
-    );
+        );
+    };
 
     if (!closedNews.length) {
         return (

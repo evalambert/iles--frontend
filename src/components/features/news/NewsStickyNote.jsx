@@ -24,22 +24,66 @@ function toDisplayDate(value) {
     if (!value) return '';
     const parsed = new Date(value);
     if (Number.isNaN(parsed.getTime())) return '';
-    const month = String(parsed.getMonth() + 1).padStart(2, '0');
     const day = String(parsed.getDate()).padStart(2, '0');
+    const month = String(parsed.getMonth() + 1).padStart(2, '0');
     const year = String(parsed.getFullYear()).slice(-2);
-    return `${month}/${day}/${year}`;
+    return `${day}/${month}/${year}`;
 }
 
 function toDisplayDateRange(startDate, endDate) {
+    if (!startDate && !endDate) return '';
+
+    const startParsed = startDate ? new Date(startDate) : null;
+    const endParsed = endDate ? new Date(endDate) : null;
+    const startValid = startParsed && !Number.isNaN(startParsed.getTime());
+    const endValid = endParsed && !Number.isNaN(endParsed.getTime());
+
+    if (startValid && endValid) {
+        const sameYear = startParsed.getFullYear() === endParsed.getFullYear();
+
+        if (sameYear) {
+            const startDay = String(startParsed.getDate()).padStart(2, '0');
+            const startMonth = String(startParsed.getMonth() + 1).padStart(
+                2,
+                '0'
+            );
+            const endDay = String(endParsed.getDate()).padStart(2, '0');
+            const endMonth = String(endParsed.getMonth() + 1).padStart(2, '0');
+            const year = String(startParsed.getFullYear()).slice(-2);
+            return `${startDay}/${startMonth}-${endDay}/${endMonth}/${year}`;
+        }
+    }
+
     const start = toDisplayDate(startDate);
     const end = toDisplayDate(endDate);
-    if (start && end) return `${start} - ${end}`;
+    if (start && end) return `${start}-${end}`;
     return start || end || '';
 }
 
 function toDisplayHour(value) {
     if (!value) return '';
     return String(value).slice(0, 5);
+}
+
+function extractText(value) {
+    if (!value) return '';
+    if (typeof value === 'string') return value;
+    if (Array.isArray(value)) {
+        return value
+            .map((item) => extractText(item))
+            .filter(Boolean)
+            .join(' ');
+    }
+    if (typeof value === 'object') {
+        if (typeof value.text === 'string') return value.text;
+        if (Array.isArray(value.children)) {
+            return value.children
+                .map((child) => extractText(child))
+                .filter(Boolean)
+                .join(' ');
+        }
+    }
+    return '';
 }
 
 export default function NewsStickyNote({
@@ -102,24 +146,10 @@ export default function NewsStickyNote({
         draggingRef.current = false;
     };
 
-    const displayDate = toDisplayDateRange(note?.StartDate, note?.EndDate);
-    const displayTitle = note?.Title || '';
-    const displaySecondary = note?.Place || note?.Address || '';
-    const displayText = note?.Text || '';
-    const displayCountryCity = [note?.Country, note?.City]
-        .filter(Boolean)
-        .join(', ');
-    const categories = Array.isArray(note?.event_categories)
-        ? note.event_categories
-        : [];
-    const paragraphs = Array.isArray(note?.Paragraphs) ? note.Paragraphs : [];
-    const links = Array.isArray(note?.Links) ? note.Links : [];
-    const rendezVous = Array.isArray(note?.RendezVous) ? note.RendezVous : [];
-
     return (
         <article
             ref={rootRef}
-            className='fixed h-[556px] w-[556px] border border-black bg-primary p-4 text-sm shadow-[0_10px_30px_rgba(0,0,0,0.2)]'
+            className='fixed h-[556px] w-[556px] border border-black bg-linear-to-b from-primary from-0% via-primary via-66% to-light to-100% p-4 text-sm shadow-[0_10px_30px_rgba(0,0,0,0.2)]'
             style={{
                 transform: `translate3d(${position.x}px, ${position.y}px, 0) rotate(${position.rotation ?? 0}deg)`,
                 zIndex,
@@ -138,80 +168,71 @@ export default function NewsStickyNote({
             </button>
 
             <div className='h-full overflow-y-auto'>
-                {displayDate ? <p className=''>{displayDate}</p> : null}
-                <h3 className='text-title'>{displayTitle}</h3>
-                {displaySecondary ? (
-                    <p className=''>{displaySecondary}</p>
+                <h3 className='text-title'>{note.Title || ''}</h3>
+                {note.Place || note.Address ? (
+                    <p className=''>{note.Place || note.Address}</p>
+                ) : null}
+                {toDisplayDateRange(note.StartDate, note.EndDate) ? (
+                    <p className=''>
+                        {toDisplayDateRange(note.StartDate, note.EndDate)}
+                    </p>
                 ) : null}
 
-                {/*  {note?.Address ? <p className=''>{note.Address}</p> : null}
-                {displayCountryCity ? (
-                    <p className=''>{displayCountryCity}</p>
-                ) : null} */}
+                {extractText(note.Text) ? (
+                    <p className=''>{extractText(note.Text)}</p>
+                ) : null}
 
-                {displayText ? <p className=''>{displayText}</p> : null}
-
-                {/*   {categories.length ? (
-                    <div className='mb-3'>
-                        <p className='mb-1 text-xs font-semibold'>Categories</p>
-                        <ul className='space-y-1 text-xs'>
-                            {categories.map((category) => (
-                                <li key={category.id || category.Name}>
-                                    {category.Name}
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                ) : null} */}
-
-                {paragraphs.length ? (
+                {Array.isArray(note.Paragraphs) && note.Paragraphs.length ? (
                     <div className=''>
-                        {paragraphs.map((paragraph, index) => (
+                        {note.Paragraphs.map((paragraph, index) => (
                             <div key={paragraph.id || index}>
                                 {paragraph.Subtitle ? (
                                     <p className=''>{paragraph.Subtitle}</p>
                                 ) : null}
                                 {paragraph.Text ? (
-                                    <p className=''>{paragraph.Text}</p>
+                                    <p className=''>
+                                        {extractText(paragraph.Text)}
+                                    </p>
                                 ) : null}
                             </div>
                         ))}
                     </div>
                 ) : null}
 
-                {rendezVous.length ? (
-                    <div className=''>
-                        <p className=''>RendezVous</p>
-                        <div className=''>
-                            {rendezVous.map((item, index) => (
-                                <div key={item.id || index}>
-                                    {item.Title ? (
-                                        <p className=''>{item.Title}</p>
-                                    ) : null}
+                {Array.isArray(note.RendezVous) && note.RendezVous.length ? (
+                    <div className='pb-4'>
+                        {note.RendezVous.map((item, index) => (
+                            <div key={item.id || index}>
+                                {item.Title ? (
+                                    <h4 className=''>{item.Title}</h4>
+                                ) : null}
+                                <p>{toDisplayDate(item.EventDate)}</p>
+                                <p>
+                                    {item.StartHour || item.EndHour
+                                        ? `${toDisplayHour(item.StartHour)}-${toDisplayHour(item.EndHour)}`
+                                        : ''}
+                                </p>
+                                {[item.Place, item.Address]
+                                    .filter(Boolean)
+                                    .join(', ') ? (
                                     <p>
-                                        {toDisplayDate(item.EventDate)}
-                                        {item.StartHour || item.EndHour
-                                            ? ` ${toDisplayHour(item.StartHour)}-${toDisplayHour(item.EndHour)}`
-                                            : ''}
+                                        {[item.Place, item.Address]
+                                            .filter(Boolean)
+                                            .join(', ')}
                                     </p>
-                                    {item.Place ? <p>{item.Place}</p> : null}
-                                    {item.Address ? (
-                                        <p>{item.Address}</p>
-                                    ) : null}
-                                    {item.Text ? (
-                                        <p className=''>{item.Text}</p>
-                                    ) : null}
-                                </div>
-                            ))}
-                        </div>
+                                ) : null}
+                                {item.Text ? (
+                                    <p>{extractText(item.Text)}</p>
+                                ) : null}
+                            </div>
+                        ))}
                     </div>
                 ) : null}
 
-                {links.length ? (
-                    <div className=''>
-                        <p className=''>Liens</p>
-                        <ul className=''>
-                            {links.map((link, index) => (
+                {Array.isArray(note.Links) && note.Links.length ? (
+                    <div>
+                        <ul>
+                            {note.Links.map((link, index) => (
                                 <li key={link.id || index}>
                                     {link.LinkTitle
                                         ? `${link.LinkTitle}: `
@@ -220,7 +241,6 @@ export default function NewsStickyNote({
                                         href={link.Url}
                                         target='_blank'
                                         rel='noreferrer'
-                                        className=''
                                     >
                                         {link.Url}
                                     </a>

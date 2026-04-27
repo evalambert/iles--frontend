@@ -5,7 +5,7 @@ import {
     getNewsOverlayStore,
     getOpenNews,
 } from '../../../assets/scripts/newsOverlayStore';
-import { normalizeNewsList } from './newsUtils';
+import { getCurrentAndFutureNews } from './newsUtils';
 
 const BASE_Z_INDEX = 70;
 const NOTE_SIZE = 556;
@@ -93,10 +93,10 @@ function generateRandomPositions(items) {
 }
 
 export default function NewsStickyOverlay({ news = [] }) {
-    const normalizedNews = useMemo(() => normalizeNewsList(news), [news]);
+    const filteredNews = useMemo(() => getCurrentAndFutureNews(news), [news]);
     const [storeState, setStoreState] = useState({
-        allNews: normalizedNews,
-        openIds: normalizedNews.map((item) => item.id),
+        allNews: filteredNews,
+        openIds: filteredNews.map((item) => item.id),
     });
     const [isHydrated, setIsHydrated] = useState(false);
     const [zOrder, setZOrder] = useState([]);
@@ -112,11 +112,11 @@ export default function NewsStickyOverlay({ news = [] }) {
         const store = getNewsOverlayStore();
         if (!store) return undefined;
 
-        store.initialize(normalizedNews);
+        store.initialize(filteredNews);
         setStoreState(store.getState());
         const unsubscribe = store.subscribe(setStoreState);
         return unsubscribe;
-    }, [normalizedNews]);
+    }, [filteredNews]);
 
     const openNews = useMemo(() => getOpenNews(storeState), [storeState]);
     const allPositionsReady = useMemo(
