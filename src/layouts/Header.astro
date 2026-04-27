@@ -1,19 +1,13 @@
 ---
-<<<<<<< HEAD
 import LangSwitcher from '../components/common/LangSwitcher.astro';
-import NewsPreview from '../components/features/news/NewsPreview.jsx';
-const { lang = 'fr', news = [] } = Astro.props;
-const isArchivePage = Astro.url.pathname.endsWith('/archive');
-const navHref = isArchivePage ? `/${lang}` : `/${lang}/archive`;
-=======
-import LangSwitcher from "../components/common/LangSwitcher.astro";
 import MobileMenuBtn from "../components/features/navigation/MobileMenuBtn.jsx";
 import HeaderAnimation from "../components/features/animation/HeaderAnimation.jsx";
+import NewsPreview from '../components/features/news/NewsPreview.jsx';
+const { lang = 'fr', news = [] } = Astro.props;
+// const { lang } = Astro.params;
+const isArchivePage = Astro.url.pathname.endsWith('/archive');
+const navHref = isArchivePage ? `/${lang}` : `/${lang}/archive`;
 
-const { lang } = Astro.params;
-const isArchivePage = Astro.url.pathname.endsWith("/archive");
-const navHref = isArchivePage ? `/${lang ?? "fr"}` : `/${lang ?? "fr"}/archive`;
->>>>>>> frontend/alice/mobile-navigation
 const navLabel = isArchivePage
     ? lang === "en"
         ? "Home"
@@ -40,17 +34,10 @@ const navLabel = isArchivePage
         <div
             class="col-span-3 lg:col-span-4 flex border-l bg-linear-to-t from-light from-10% to-primary to-70% lg:-ml-px"
         >
-<<<<<<< HEAD
+
             <div class='h-full w-full'>
                 <NewsPreview client:load news={news} />
             </div>
-=======
-            <h2
-                class="font-semibold text-center h-full w-full flex items-center justify-center"
-            >
-                {lang === "fr" ? "Entête actualités" : "Header news"}
-            </h2>
->>>>>>> frontend/alice/mobile-navigation
 
             <div class="block lg:hidden border-l h-full items-center p-[10px]">
                 <MobileMenuBtn client:load />

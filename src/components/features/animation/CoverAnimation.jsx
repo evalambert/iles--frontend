@@ -8,7 +8,7 @@ export default function CoverAnimation() {
         <div
             id="cover-animation"
             onClick={() => setIsFadingOut(true)}
-            className={`w-full h-full fixed top-0 left-0 bg-linear-to-t from-primary to-light to-80% z-50 flex items-center justify-center transition-opacity duration-300 ${
+            className={`z-[999] w-full h-full fixed top-0 left-0 bg-linear-to-t from-primary to-light to-80% z-50 flex items-center justify-center transition-opacity duration-300 ${
                 isFadingOut ? 'opacity-0 pointer-events-none' : 'opacity-100'
             }`}
         >
