@@ -6,10 +6,10 @@ export default function MobileMenuBtn() {
     };
 
     return <>
-        <button id="mobile-nav-toggle" class="w-full h-full flex items-center justify-center" onClick={handleClick}>
+        <button id="mobile-nav-toggle" className="w-full h-full flex items-center justify-center" onClick={handleClick}>
             <svg
                 id="open-nav-icon"
-                class="hidden"
+                className="hidden"
                 width="25"
                 height="27"
                 viewBox="0 0 25 27"

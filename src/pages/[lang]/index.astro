@@ -3,6 +3,7 @@
 import fetchApi from '../../assets/scripts/libs/strapi.js';
 import Layout from '../../layouts/Layout.astro';
 import WrapperIndex from '../../layouts/WrapperIndex.jsx';
+import CoverAnimation from '../../components/features/animation/CoverAnimation.jsx';
 
 const { lang } = Astro.params;
 
@@ -22,5 +23,6 @@ const members = await fetchApi({
 ---
 
 <Layout>
+    <CoverAnimation client:load />
     <WrapperIndex client:load about={about} members={members} lang={lang} />
 </Layout>

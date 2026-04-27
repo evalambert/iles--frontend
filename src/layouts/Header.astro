@@ -1,7 +1,7 @@
 ---
 import LangSwitcher from "../components/common/LangSwitcher.astro";
 import MobileMenuBtn from "../components/features/navigation/MobileMenuBtn.jsx";
-
+import HeaderAnimation from "../components/features/animation/HeaderAnimation.jsx";
 
 const { lang } = Astro.params;
 const isArchivePage = Astro.url.pathname.endsWith("/archive");
@@ -25,7 +25,7 @@ const navLabel = isArchivePage
                 rel=""
                 class="font-semibold h-full w-full flex items-center justify-center"
             >
-                Les Îles mardi
+                <HeaderAnimation />
             </a>
         </div>
 
