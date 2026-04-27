@@ -209,67 +209,67 @@ export default function NewsSection({ news, lang, paragraphs, images, onActiveNe
                                 })}
                             </div>
                         </div>
+                        <div className='md:col-span-2 grid grid-cols-2 gap-[10px] max-md:mt-[20px]'>
+                            <div className='col-span-1 '>
 
-                        <div className='md:col-span-1 '>
 
-
-                            {news?.event_categories?.map((category) => (
-                                <p key={category.id}>{category.Name}</p>
-                            ))}
-                            {Array.isArray(news?.Links) && news.Links.length > 0 ? (
-                                <ul className='mt-4'>
-                                    {news.Links.map((link) => (
-                                        <li key={link.id}>
-                                            <a
-                                                href={link.Url}
-                                                target='_blank'
-                                                rel='noopener noreferrer'
-                                            >
-                                                <span className='inline pr-h3-margin'>&#8599;</span>
-                                                {link.LinkTitle || link.Url}
-                                            </a>
-                                        </li>
-                                    ))}
-                                </ul>
-                            ) : null}
-
-                        </div>
-                        <div className='md:col-span-1 '>
-
-                            {formattedDateRange || formattedHourRange ? (<>
-                                {formattedDateRange ? (
-                                    <>
-                                        <h3 className='mb-h3-margin'>
-                                            {lang === "fr" ? "Date(s) :" : "Date(s) :"}
-                                        </h3>
-                                        <p> {formattedDateRange}</p>
-                                    </>
+                                {news?.event_categories?.map((category) => (
+                                    <p key={category.id}>{category.Name}</p>
+                                ))}
+                                {Array.isArray(news?.Links) && news.Links.length > 0 ? (
+                                    <ul className='mt-4'>
+                                        {news.Links.map((link) => (
+                                            <li key={link.id}>
+                                                <a
+                                                    href={link.Url}
+                                                    target='_blank'
+                                                    rel='noopener noreferrer'
+                                                >
+                                                    <span className='inline pr-h3-margin'>&#8599;</span>
+                                                    {link.LinkTitle || link.Url}
+                                                </a>
+                                            </li>
+                                        ))}
+                                    </ul>
                                 ) : null}
 
-                                {formattedHourRange ? (
-                                    <>
-                                        <p>{formattedHourRange}</p>
-                                    </>
+                            </div>
+                            <div className='col-span-1 '>
+
+                                {formattedDateRange || formattedHourRange ? (<>
+                                    {formattedDateRange ? (
+                                        <>
+                                            <h3 className='mb-h3-margin'>
+                                                {lang === "fr" ? "Date(s) :" : "Date(s) :"}
+                                            </h3>
+                                            <p> {formattedDateRange}</p>
+                                        </>
+                                    ) : null}
+
+                                    {formattedHourRange ? (
+                                        <>
+                                            <p>{formattedHourRange}</p>
+                                        </>
+                                    ) : null}
+                                </>) : null}
+
+
+
+                                {news?.Place || news?.Address || news?.Country ? (<>
+                                    <h3 className='mb-h3-margin'>
+                                        {lang === "fr" ? "Lieu :" : "Location :"}
+                                    </h3>
+                                    <p>
+                                        {news?.Place ? <span>{news?.Place}</span> : null}
+                                        <br></br>
+                                        {news?.Address ? <address className='not-italic inline pr-h3-margin'>{news?.Address}</address> : null}
+                                        {news?.Country ? <span>{news?.Country}</span> : null}
+                                    </p>
+                                </>
                                 ) : null}
-                            </>) : null}
-
-
-
-                            {news?.Place || news?.Address || news?.Country ? (<>
-                                <h3 className='mb-h3-margin'>
-                                    {lang === "fr" ? "Lieu :" : "Location :"}
-                                </h3>
-                                <p>
-                                    {news?.Place ? <span>{news?.Place}</span> : null}
-                                    <br></br>
-                                    {/* </p>
-<p> */}
-                                    {news?.Address ? <address className='not-italic inline pr-h3-margin'>{news?.Address}</address> : null}
-                                    {news?.Country ? <span>{news?.Country}</span> : null}
-                                </p>
-                            </>
-                            ) : null}
+                            </div>
                         </div>
+
 
                     </div>
 
