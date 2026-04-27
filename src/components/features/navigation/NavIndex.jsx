@@ -1,7 +1,7 @@
 //src/components/features/navigation/NavIndex.jsx
 import { normalizeAnchor } from '../../../assets/scripts/utils/normalizeAnchor';
 
-export default function NavIndex({ about, members, lang, selectedPractice, onPracticeSelect }) {
+export default function NavIndex({ about, members, lang, selectedPractice, activeAboutAnchor, activeMemberAnchor, onPracticeSelect }) {
     const matchesSelectedPractice = (member) => {
         if (!selectedPractice) return true;
         return (member?.practices ?? []).some((practice) => practice?.Name === selectedPractice);
@@ -10,6 +10,7 @@ export default function NavIndex({ about, members, lang, selectedPractice, onPra
     const getMemberFullName = (member) => `${member?.FirstName ?? ''} ${member?.LastName ?? ''}`.trim();
 
     const membersAnchorId = normalizeAnchor(lang === "fr" ? "Membres" : "Members");
+    const isDesktopViewport = () => window.matchMedia('(min-width: 1024px)').matches;
 
     const handlePracticeClick = (event, practice) => {
         event.preventDefault();
@@ -18,26 +19,24 @@ export default function NavIndex({ about, members, lang, selectedPractice, onPra
 
         onPracticeSelect(nextSelectedPractice);
 
-        scrollToMembersAnchor();
+        if (isDesktopViewport()) {
+            scrollToMembersAnchor();
+        }
     };
 
     const scrollToMembersAnchor = () => {
-        requestAnimationFrame(() => {
-            requestAnimationFrame(() => {
-                const targetHash = `#${membersAnchorId}`;
+        const targetHash = `#${membersAnchorId}`;
 
-                if (window.location.hash === targetHash) {
-                    window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}`);
-                }
-
-                window.location.hash = membersAnchorId;
-            });
-        });
+        if (window.location.hash !== targetHash) {
+            window.history.replaceState(null, '', targetHash);
+        }
     };
 
     const handlePracticesTitleClick = () => {
         onPracticeSelect('');
-        scrollToMembersAnchor();
+        if (isDesktopViewport()) {
+            scrollToMembersAnchor();
+        }
     };
 
     const filteredMembers = (members ?? []).filter(matchesSelectedPractice);
@@ -79,11 +78,22 @@ export default function NavIndex({ about, members, lang, selectedPractice, onPra
 
                         {/* About ANCHORS */}
                         <ul className='py-[6px] flex-1 bg-linear-to-t from-primary to-light to-40%'>
-                            {aboutAnchors.map((anchor) => (
-                                <li key={anchor} className='nav-li nav-li-off'>
-                                    <a href={`#${normalizeAnchor(anchor)}`} className='block h-full w-full'>{anchor}</a>
-                                </li>
-                            ))}
+                            {aboutAnchors.map((anchor) => {
+                                const anchorId = normalizeAnchor(anchor);
+                                const isActive = activeAboutAnchor === anchorId;
+
+                                return (
+                                    <li key={anchor} className={`nav-li ${isActive ? 'nav-li-on' : 'nav-li-off'}`}>
+                                        <a
+                                            href={`#${anchorId}`}
+                                            className='block h-full w-full'
+                                            aria-current={isActive ? 'true' : undefined}
+                                        >
+                                            {anchor}
+                                        </a>
+                                    </li>
+                                );
+                            })}
                         </ul>
                     </div>
 
@@ -134,11 +144,22 @@ export default function NavIndex({ about, members, lang, selectedPractice, onPra
 
                     {/* Members List */}
                     <ul className='py-[6px] flex-1 bg-linear-to-t from-primary to-light to-50%'>
-                        {membersAnchors.map((anchor) => (
-                                 <li key={anchor} className='nav-li nav-li-off'>
-                                 <a href={`#${normalizeAnchor(anchor)}`} className='block h-full w-full'>{anchor}</a>
-                             </li>
-                        ))}
+                        {membersAnchors.map((anchor) => {
+                            const anchorId = normalizeAnchor(anchor);
+                            const isActive = activeMemberAnchor === anchorId;
+
+                            return (
+                                <li key={anchor} className={`nav-li ${isActive ? 'nav-li-on' : 'nav-li-off'}`}>
+                                    <a
+                                        href={`#${anchorId}`}
+                                        className='block h-full w-full'
+                                        aria-current={isActive ? 'true' : undefined}
+                                    >
+                                        {anchor}
+                                    </a>
+                                </li>
+                            );
+                        })}
                     </ul>
 
 

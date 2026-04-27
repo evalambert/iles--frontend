@@ -13,7 +13,7 @@ export default function Slider({
     spaceBetween = 0,
     navigation = true,
     pagination = false,
-    loop = false,
+    loop = true,
     className = '',
     slideClassName = '',
     slideSeparatorClassName = '',

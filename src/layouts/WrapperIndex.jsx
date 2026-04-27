@@ -6,6 +6,8 @@ import Members from './Members';
 
 export default function WrapperIndex({ about, members, lang }) {
     const [selectedPractice, setSelectedPractice] = useState('');
+    const [activeAboutAnchor, setActiveAboutAnchor] = useState('');
+    const [activeMemberAnchor, setActiveMemberAnchor] = useState('');
 
     return (
         <div className='lg:grid lg:grid-cols-6'>
@@ -17,14 +19,21 @@ export default function WrapperIndex({ about, members, lang }) {
                     members={members}
                     lang={lang}
                     selectedPractice={selectedPractice}
+                    activeAboutAnchor={activeAboutAnchor}
+                    activeMemberAnchor={activeMemberAnchor}
                     onPracticeSelect={setSelectedPractice}
                 />
             </div>
 
             {/* Content */}
             <div className='lg:col-span-4'>
-                <About data={about} lang={lang} />
-                <Members data={members} lang={lang} selectedPractice={selectedPractice} />
+                <About data={about} lang={lang} onActiveAboutChange={setActiveAboutAnchor} />
+                <Members
+                    data={members}
+                    lang={lang}
+                    selectedPractice={selectedPractice}
+                    onActiveMemberChange={setActiveMemberAnchor}
+                />
             </div>
         </div>
     );
