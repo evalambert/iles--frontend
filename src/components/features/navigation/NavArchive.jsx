@@ -12,10 +12,17 @@ export default function NavArchive({
     onCategorySelect,
 }) {
     const newsItems = Array.isArray(news) ? news : [];
+    const nowTimestamp = Date.now();
     const archiveAnchorId = normalizeAnchor(lang === 'fr' ? 'Archive' : 'Archive');
     const [isMobileNavHidden, setIsMobileNavHidden] = useState(false);
     const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
     const isDesktopViewport = () => window.matchMedia('(min-width: 1024px)').matches;
+
+    const getTimestamp = (dateValue) => {
+        if (!dateValue) return Number.NEGATIVE_INFINITY;
+        const timestamp = new Date(dateValue).getTime();
+        return Number.isNaN(timestamp) ? Number.NEGATIVE_INFINITY : timestamp;
+    };
 
     useEffect(() => {
         const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -97,9 +104,29 @@ export default function NavArchive({
         );
     };
 
-    const filteredNews = newsItems.filter(
-        (item) => matchesSelectedYear(item) && matchesSelectedCategory(item)
-    );
+    const getRelevantDateTimestamp = (item) => {
+        const endTimestamp = getTimestamp(item?.EndDate);
+        if (endTimestamp !== Number.NEGATIVE_INFINITY) return endTimestamp;
+        return getTimestamp(item?.StartDate);
+    };
+
+    const hasPastEventDate = (item) => {
+        const relevantTimestamp = getRelevantDateTimestamp(item);
+        return relevantTimestamp !== Number.NEGATIVE_INFINITY && relevantTimestamp < nowTimestamp;
+    };
+
+    const filteredNews = newsItems
+        .filter(
+            (item) =>
+                hasPastEventDate(item) &&
+                matchesSelectedYear(item) &&
+                matchesSelectedCategory(item)
+        )
+        .sort((a, b) => {
+            const relevantDiff = getRelevantDateTimestamp(b) - getRelevantDateTimestamp(a);
+            if (relevantDiff !== 0) return relevantDiff;
+            return getTimestamp(b?.StartDate) - getTimestamp(a?.StartDate);
+        });
 
     const handleYearClick = (event, year) => {
         event.preventDefault();

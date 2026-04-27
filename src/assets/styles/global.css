@@ -142,3 +142,8 @@ body:has(#mobile-nav-panel[aria-hidden='false']) #open-nav-icon {
 body:has(#mobile-nav-panel[aria-hidden='false']) #close-nav-icon {
     display: block;
 }
+
+
+section:first-child {
+    @apply mt-0;
+}

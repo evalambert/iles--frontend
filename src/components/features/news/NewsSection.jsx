@@ -3,6 +3,7 @@
 import Slider from '../slider/Slider';
 import ImageSlider from '../../common/ImageSlider';
 import Lightbox from '../lightbox/Lightbox';
+import NewsRdvSection from './NewsRdvSection';
 import { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -15,6 +16,103 @@ export default function NewsSection({ news, lang, paragraphs, images, onActiveNe
     const hasImages = Array.isArray(images) && images.length > 0;
     const newsAnchor = normalizeAnchor(news.Title);
     const sectionRef = useRef(null);
+
+
+
+    // *** DATE FORMATTING ***
+    const parseIsoDate = (value) => {
+        if (typeof value !== 'string') return null;
+        const parts = value.split('-');
+        if (parts.length !== 3) return null;
+
+        const year = Number(parts[0]);
+        const month = Number(parts[1]);
+        const day = Number(parts[2]);
+
+        if (!Number.isInteger(year) || !Number.isInteger(month) || !Number.isInteger(day)) {
+            return null;
+        }
+
+        if (month < 1 || month > 12 || day < 1 || day > 31) {
+            return null;
+        }
+
+        return { day, month, year };
+    };
+
+    const pad2 = (value) => String(value).padStart(2, '0');
+
+    const formatDate = (dateParts) => {
+        if (!dateParts) return '';
+        return `${pad2(dateParts.day)}/${pad2(dateParts.month)}/${dateParts.year}`;
+    };
+    const formatDateWithoutYear = (dateParts) => {
+        if (!dateParts) return '';
+        return `${pad2(dateParts.day)}/${pad2(dateParts.month)}`;
+    };
+
+    const formatDateRange = (startDateValue, endDateValue) => {
+        const startDate = parseIsoDate(startDateValue);
+        const endDate = parseIsoDate(endDateValue);
+
+        if (startDate && endDate) {
+            const sameMonthAndYear =
+                startDate.month === endDate.month && startDate.year === endDate.year;
+
+            if (sameMonthAndYear) {
+                return `${pad2(startDate.day)}-${pad2(endDate.day)}/${pad2(startDate.month)}/${startDate.year}`;
+            }
+
+            const sameYear = startDate.year === endDate.year;
+            const startFormatted = sameYear ? formatDateWithoutYear(startDate) : formatDate(startDate);
+            const endFormatted = formatDate(endDate);
+
+            if (lang === 'en') {
+                return `from ${startFormatted} to ${endFormatted}`;
+            }
+
+            return `du ${startFormatted} au ${endFormatted}`;
+        }
+
+        if (startDate) return formatDate(startDate);
+        if (endDate) return formatDate(endDate);
+        return '';
+    };
+
+    const formatHour = (value) => {
+        if (typeof value !== 'string') return '';
+        const parts = value.split(':');
+        if (parts.length < 2) return '';
+
+        const hour = parts[0];
+        const minutes = parts[1];
+
+        if (!/^\d{2}$/.test(hour) || !/^\d{2}$/.test(minutes)) return '';
+        return `${hour}:${minutes}`;
+    };
+
+    const formatHourRange = (startHourValue, endHourValue) => {
+        const startHour = formatHour(startHourValue);
+        const endHour = formatHour(endHourValue);
+
+        if (startHour && endHour) {
+            return lang === 'en'
+                ? `from ${startHour} to ${endHour}`
+                : `de ${startHour} à ${endHour}`;
+        }
+
+        const singleHour = startHour || endHour;
+        if (singleHour) {
+            return lang === 'en' ? `at ${singleHour}` : `à ${singleHour}`;
+        }
+
+        return '';
+    };
+
+    const formattedDateRange = formatDateRange(news?.StartDate, news?.EndDate);
+    const formattedHourRange = formatHourRange(news?.StartHour, news?.EndHour);
+
+    // *** END — DATE FORMATTING ***
 
     useEffect(() => {
         if (!sectionRef.current) return;
@@ -44,12 +142,13 @@ export default function NewsSection({ news, lang, paragraphs, images, onActiveNe
     const getRichTextAsString = (richTextBlocks = []) => {
         return richTextBlocks.map(getNodeText).join(' ');
     };
+    const newsText = getRichTextAsString(news?.Text ?? []);
 
     return (
         <section
             ref={sectionRef}
             id={newsAnchor}
-            className='border scroll-mt-[calc(var(--spacing-header-height)+10px)] mb-[10px]'
+            className='border scroll-mt-[calc(var(--spacing-header-height)+10px)] mt-[10px]'
         >
             <a href={`#${newsAnchor}`} className="block-title border-b border-transparent">
                 <h2 className='text-title text-center'>{news.Title}</h2>
@@ -93,8 +192,7 @@ export default function NewsSection({ news, lang, paragraphs, images, onActiveNe
                     <div className='md:grid md:grid-cols-6 md:gap-[10px]'>
                         <div className='md:col-span-4'>
                             <div className='max-w-[90%]'>
-
-
+                                {newsText ? <p>{newsText}</p> : null}
                                 {paragraphs.map((paragraph) => {
                                     const paragraphText = getRichTextAsString(
                                         paragraph?.Text ?? []
@@ -111,44 +209,66 @@ export default function NewsSection({ news, lang, paragraphs, images, onActiveNe
                                 })}
                             </div>
                         </div>
-                        <div className='md:col-span-1 '>
-                            {/* <h3 className='mb-h3-margin'>
-                                {lang === "fr" ? "Pratique(s) :" : "Practice(s) :"}
-                            </h3>
 
-                            {practices.length ? (
-                                <ul>
-                                    {practices.map((practice) => (
-                                        <li key={practice.id}>{practice?.Name}</li>
+                        <div className='md:col-span-1 '>
+
+
+                            {news?.event_categories?.map((category) => (
+                                <p key={category.id}>{category.Name}</p>
+                            ))}
+                            {Array.isArray(news?.Links) && news.Links.length > 0 ? (
+                                <ul className='mt-4'>
+                                    {news.Links.map((link) => (
+                                        <li key={link.id}>
+                                            <a
+                                                href={link.Url}
+                                                target='_blank'
+                                                rel='noopener noreferrer'
+                                            >
+                                                <span className='inline pr-h3-margin'>&#8599;</span>
+                                                {link.LinkTitle || link.Url}
+                                            </a>
+                                        </li>
                                     ))}
                                 </ul>
-                            ) : null} */}
+                            ) : null}
+
                         </div>
                         <div className='md:col-span-1 '>
-                            {/* {website || email || instagramUrl ? (
+
+                            {formattedDateRange || formattedHourRange ? (<>
+                                {formattedDateRange ? (
+                                    <>
+                                        <h3 className='mb-h3-margin'>
+                                            {lang === "fr" ? "Date(s) :" : "Date(s) :"}
+                                        </h3>
+                                        <p> {formattedDateRange}</p>
+                                    </>
+                                ) : null}
+
+                                {formattedHourRange ? (
+                                    <>
+                                        <p>{formattedHourRange}</p>
+                                    </>
+                                ) : null}
+                            </>) : null}
+
+
+
+                            {news?.Place || news?.Address || news?.Country ? (<>
                                 <h3 className='mb-h3-margin'>
-                                    Contact :
+                                    {lang === "fr" ? "Lieu :" : "Location :"}
                                 </h3>
+                                <p>
+                                    {news?.Place ? <span>{news?.Place}</span> : null}
+                                    <br></br>
+                                    {/* </p>
+<p> */}
+                                    {news?.Address ? <address className='not-italic inline pr-h3-margin'>{news?.Address}</address> : null}
+                                    {news?.Country ? <span>{news?.Country}</span> : null}
+                                </p>
+                            </>
                             ) : null}
-
-                            {website ? (
-                                <>
-
-                                    <a href={`https://${website}`} target='_blank' className='block'>
-                                        {website}
-                                    </a>
-                                </>
-                            ) : null}
-
-                            {email ? (
-                                <a href={`mailto:${email}`} className='block'>{email}</a>
-                            ) : null}
-
-                            {instagramUrl ? (
-                                <a href={instagramUrl} target='_blank' className='block'>
-                                    {instagramName ?? instagramUrl}
-                                </a>
-                            ) : null} */}
                         </div>
 
                     </div>
@@ -158,6 +278,27 @@ export default function NewsSection({ news, lang, paragraphs, images, onActiveNe
 
 
                 </div>
+                {Array.isArray(news?.RendezVous) && news.RendezVous.length > 0
+                    ? news.RendezVous.map((rendezVous) => {
+                        const rendezVousText = getRichTextAsString(rendezVous?.Text ?? []);
+                        const rendezVousDate = formatDate(parseIsoDate(rendezVous?.EventDate));
+                        const rendezVousHourRange = formatHourRange(
+                            rendezVous?.StartHour,
+                            rendezVous?.EndHour
+                        );
+
+                        return (
+                            <NewsRdvSection
+                                key={rendezVous?.id ?? `${rendezVous?.Title ?? 'rendez-vous'}-${rendezVous?.EventDate ?? ''}`}
+                                rendezVous={rendezVous}
+                                rendezVousText={rendezVousText}
+                                rendezVousDate={rendezVousDate}
+                                rendezVousHourRange={rendezVousHourRange}
+                                lang={lang}
+                            />
+                        );
+                    })
+                    : null}
 
 
 
