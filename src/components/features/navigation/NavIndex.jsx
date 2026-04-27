@@ -1,7 +1,11 @@
 //src/components/features/navigation/NavIndex.jsx
+import { useEffect, useState } from 'react';
 import { normalizeAnchor } from '../../../assets/scripts/utils/normalizeAnchor';
 
 export default function NavIndex({ about, members, lang, selectedPractice, activeAboutAnchor, activeMemberAnchor, onPracticeSelect }) {
+    const [isMobileNavHidden, setIsMobileNavHidden] = useState(false);
+    const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+
     const matchesSelectedPractice = (member) => {
         if (!selectedPractice) return true;
         return (member?.practices ?? []).some((practice) => practice?.Name === selectedPractice);
@@ -11,6 +15,23 @@ export default function NavIndex({ about, members, lang, selectedPractice, activ
 
     const membersAnchorId = normalizeAnchor(lang === "fr" ? "Membres" : "Members");
     const isDesktopViewport = () => window.matchMedia('(min-width: 1024px)').matches;
+
+    useEffect(() => {
+        const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+        const updatePreference = () => setPrefersReducedMotion(mediaQuery.matches);
+
+        updatePreference();
+        mediaQuery.addEventListener('change', updatePreference);
+
+        return () => {
+            mediaQuery.removeEventListener('change', updatePreference);
+        };
+    }, []);
+
+    const handleAnchorClick = () => {
+        if (isDesktopViewport()) return;
+        setIsMobileNavHidden(true);
+    };
 
     const handlePracticeClick = (event, practice) => {
         event.preventDefault();
@@ -56,11 +77,18 @@ export default function NavIndex({ about, members, lang, selectedPractice, activ
 
     return (
         <>
-            <div className='h-header-height flex'>
+            <div className='h-header-height hidden lg:flex'>
                 <div className='flex-1 border-r'></div>
                 <div className='flex-1 lg:border-r'></div>
             </div>
-            <div className='flex h-full'>
+            <div
+                className='flex h-[calc(100dvh-var(--spacing-header-height))] lg:h-full max-lg:overflow-y-scroll max-lg:fixed max-lg:left-0 max-lg:w-full max-lg:z-20 max-lg:transition-[top] max-lg:duration-500 max-lg:ease-in-out motion-reduce:max-lg:transition-none'
+                style={{
+                    top: isMobileNavHidden ? '-100vh' : 'var(--spacing-header-height)',
+                    transitionDuration: prefersReducedMotion ? '0ms' : undefined,
+                }}
+                aria-hidden={isMobileNavHidden ? 'true' : undefined}
+            >
 
 
                 <div className='flex-1 border-r flex flex-col' >
@@ -87,6 +115,7 @@ export default function NavIndex({ about, members, lang, selectedPractice, activ
                                         <a
                                             href={`#${anchorId}`}
                                             className='block h-full w-full'
+                                            onClick={handleAnchorClick}
                                             aria-current={isActive ? 'true' : undefined}
                                         >
                                             {anchor}
@@ -99,7 +128,7 @@ export default function NavIndex({ about, members, lang, selectedPractice, activ
 
                     {/* ————————————————————————————————————————————— */}
                     {/* Practices */}
-                    <div className='flex-1 border-t'>
+                    <div className='flex-1 border-t flex flex-col'>
 
                         {/* Practices Title */}
                         <button
@@ -112,7 +141,7 @@ export default function NavIndex({ about, members, lang, selectedPractice, activ
                         </button>
 
                         {/* Practices List */}
-                        <ul className='py-[6px] h-full bg-linear-to-t from-primary to-light to-40%'>
+                        <ul className='py-[6px] flex-1 bg-linear-to-t from-primary to-light to-40%'>
                             {practicesAnchors.map((practice) => {
                                 return (
                                     <li key={practice}
@@ -153,6 +182,7 @@ export default function NavIndex({ about, members, lang, selectedPractice, activ
                                     <a
                                         href={`#${anchorId}`}
                                         className='block h-full w-full'
+                                        onClick={handleAnchorClick}
                                         aria-current={isActive ? 'true' : undefined}
                                     >
                                         {anchor}
