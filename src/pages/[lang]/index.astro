@@ -21,7 +21,6 @@ const members = await fetchApi({
     wrappedByKey: 'data',
 });
 
-
 let news = [];
 try {
     news = await fetchApi({
@@ -35,8 +34,13 @@ try {
 }
 ---
 
-
 <Layout lang={lang} news={news}>
     <CoverAnimation client:load />
-    <WrapperIndex client:load about={about} members={members} news={news} lang={lang} />
+    <WrapperIndex
+        client:load
+        about={about}
+        members={members}
+        news={news}
+        lang={lang}
+    />
 </Layout>

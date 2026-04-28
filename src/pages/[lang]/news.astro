@@ -1,8 +1,8 @@
 ---
-//src/pages/[lang]/archive.astro
 import fetchApi from '../../assets/scripts/libs/strapi.js';
 import Layout from '../../layouts/Layout.astro';
 import WrapperArchive from '../../layouts/WrapperArchive.jsx';
+
 const { lang } = Astro.params;
 
 const news = await fetchApi({

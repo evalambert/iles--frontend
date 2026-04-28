@@ -5,7 +5,7 @@ import NavArchive from '../components/features/navigation/NavArchive.jsx';
 import Archive from '../layouts/Archive.jsx';
 
 export default function WrapperArchive({ news, lang }) {
-    const [selectedYear, setSelectedYear] = useState('');
+    const [selectedPeriod, setSelectedPeriod] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('');
     const [activeNewsAnchor, setActiveNewsAnchor] = useState('');
 
@@ -16,10 +16,10 @@ export default function WrapperArchive({ news, lang }) {
                 <NavArchive 
                     news={news}
                     lang={lang}
-                    selectedYear={selectedYear}
+                    selectedPeriod={selectedPeriod}
                     selectedCategory={selectedCategory}
                     activeNewsAnchor={activeNewsAnchor}
-                    onYearSelect={setSelectedYear}
+                    onPeriodSelect={setSelectedPeriod}
                     onCategorySelect={setSelectedCategory}
                 />
             </div>
@@ -29,7 +29,7 @@ export default function WrapperArchive({ news, lang }) {
                 <Archive
                     news={news}
                     lang={lang}
-                    selectedYear={selectedYear}
+                    selectedPeriod={selectedPeriod}
                     selectedCategory={selectedCategory}
                     onActiveNewsChange={setActiveNewsAnchor}
                 />

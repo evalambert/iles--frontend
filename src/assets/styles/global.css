@@ -17,7 +17,7 @@
 
 @font-face {
     font-family: 'Inter-Regular';
-    src: url('/fonts/Inter-Regular.woff2') format('woff2');
+    src: url('/fonts/InclusiveSans-Regular.ttf') format('ttf'), url('/fonts/InclusiveSans-Regular.woff') format('woff');
     font-weight: normal;
     font-style: normal;
 }
@@ -31,12 +31,12 @@
     /* Typography •••••••••••• */
     --font-inter: 'Inter-Regular', 'sans-serif';
     --text-base: 16px;
-    --text-base--line-height: 23px;
+    --text-base--line-height: auto;
 
     --text-title: 25.8px;
-    --text-title--line-height: 25.9px;
-  
-  
+    --text-title--line-height: auto;
+
+
 
 
 
@@ -74,7 +74,7 @@
 /* -------------------------------------------------------------------- */
 /* Gap & space between sections */
 /* -------------------------------------------------------------------- */
-html{
+html {
     scroll-behavior: smooth;
 }
 
@@ -86,13 +86,14 @@ html{
 
 * {
     @apply font-inter;
-} 
+}
 
 
-p{
+p {
     @apply mb-text-margin;
 }
-p:last-child{
+
+p:last-child {
     @apply mb-0;
 }
 
@@ -104,25 +105,44 @@ p:last-child{
 .block-title {
     @apply relative overflow-hidden block border-b bg-linear-to-t from-primary to-light to-40% py-[15px] px-[10px] min-h-header-height;
 }
+
 .block-title::before {
     content: '';
     @apply absolute inset-0 bg-linear-to-t from-light to-primary to-60% opacity-0 transition-opacity duration-300;
 }
+
 .block-title:hover::before,
 .block-title--on::before {
     @apply opacity-100;
 }
-.block-title h2{
+
+.block-title h2 {
     @apply relative z-10 text-title text-center;
 }
 
-.nav-li{
-    @apply list-none text-center p-[2px] cursor-pointer -mt-px  hover:bg-linear-to-t hover:from-light hover:to-primary hover:to-60%;
+.news-preview-trigger {
+    @apply relative overflow-hidden h-full w-full bg-linear-to-t from-light to-primary to-60%;
 }
-.nav-li-off{
+
+.news-preview-trigger::before {
+    content: '';
+    @apply absolute inset-0 bg-linear-to-t from-primary to-light to-40% opacity-0 transition-opacity duration-300;
+}
+
+.news-preview-trigger--inverted::before,
+.news-preview-trigger--hover-invert:hover::before {
+    @apply opacity-100;
+}
+
+.nav-li {
+    @apply list-none text-center p-[2px] cursor-pointer -mt-px hover:bg-linear-to-t hover:from-light hover:to-primary hover:to-60%;
+}
+
+.nav-li-off {
     @apply border-y border-transparent hover:border-black;
 }
-.nav-li-on{
+
+.nav-li-on {
     @apply border-y cursor-pointer border-black bg-linear-to-t from-light to-primary to-60%;
 }
 

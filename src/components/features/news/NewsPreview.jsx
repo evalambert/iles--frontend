@@ -29,12 +29,14 @@ function toDisplayDateRange(startDate, endDate) {
     const endValid = endParsed && !Number.isNaN(endParsed.getTime());
 
     if (startValid && endValid) {
-        const sameYear =
-            startParsed.getFullYear() === endParsed.getFullYear();
+        const sameYear = startParsed.getFullYear() === endParsed.getFullYear();
 
         if (sameYear) {
             const startDay = String(startParsed.getDate()).padStart(2, '0');
-            const startMonth = String(startParsed.getMonth() + 1).padStart(2, '0');
+            const startMonth = String(startParsed.getMonth() + 1).padStart(
+                2,
+                '0'
+            );
             const endDay = String(endParsed.getDate()).padStart(2, '0');
             const endMonth = String(endParsed.getMonth() + 1).padStart(2, '0');
             const year = String(startParsed.getFullYear()).slice(-2);
@@ -71,6 +73,15 @@ export default function NewsPreview({ news = [] }) {
     }, [filteredNews]);
 
     const closedNews = useMemo(() => getClosedNews(storeState), [storeState]);
+    const totalCount = storeState.allNews.length;
+    const openCount = storeState.openIds.length;
+    const allOpen = totalCount > 0 && openCount === totalCount;
+    const allClosed = totalCount > 0 && openCount === 0;
+    const previewStateClass = allOpen
+        ? 'news-preview-trigger--inverted'
+        : allClosed
+          ? 'news-preview-trigger--hover-invert'
+          : '';
     const totalNewsCount = closedNews.length;
     const displayIndex = totalNewsCount
         ? (activeIndex % totalNewsCount) + 1
@@ -117,7 +128,7 @@ export default function NewsPreview({ news = [] }) {
                         handleReopenAll();
                     }
                 }}
-                className='h-full w-full text-center'
+                className={`news-preview-trigger ${previewStateClass} text-center`}
                 aria-label='Reouvrir les actualites'
             />
         );
@@ -134,35 +145,39 @@ export default function NewsPreview({ news = [] }) {
                     handleReopenAll();
                 }
             }}
-            className='h-full w-full text-left cursor-pointer'
+            className={`news-preview-trigger ${previewStateClass} text-left cursor-pointer`}
             aria-label='Reouvrir tous les post-it'
         >
-            {closedNews.length > 1 ? (
-                <Swiper
-                    modules={[A11y, Autoplay, EffectFade]}
-                    slidesPerView={1}
-                    loop
-                    effect='fade'
-                    fadeEffect={{ crossFade: true }}
-                    autoplay={{
-                        delay: 2500,
-                        disableOnInteraction: false,
-                        pauseOnMouseEnter: false,
-                    }}
-                    allowTouchMove={false}
-                    className='h-full'
-                    onSwiper={(swiper) => setActiveIndex(swiper.realIndex)}
-                    onSlideChange={(swiper) => setActiveIndex(swiper.realIndex)}
-                >
-                    {closedNews.map((item) => (
-                        <SwiperSlide key={item.id} className='h-full'>
-                            {renderNewsLine(item)}
-                        </SwiperSlide>
-                    ))}
-                </Swiper>
-            ) : (
-                renderNewsLine(closedNews[0])
-            )}
+            <div className='relative z-10 h-full'>
+                {closedNews.length > 1 ? (
+                    <Swiper
+                        modules={[A11y, Autoplay, EffectFade]}
+                        slidesPerView={1}
+                        loop
+                        effect='fade'
+                        fadeEffect={{ crossFade: true }}
+                        autoplay={{
+                            delay: 2500,
+                            disableOnInteraction: false,
+                            pauseOnMouseEnter: false,
+                        }}
+                        allowTouchMove={false}
+                        className='h-full'
+                        onSwiper={(swiper) => setActiveIndex(swiper.realIndex)}
+                        onSlideChange={(swiper) =>
+                            setActiveIndex(swiper.realIndex)
+                        }
+                    >
+                        {closedNews.map((item) => (
+                            <SwiperSlide key={item.id} className='h-full'>
+                                {renderNewsLine(item)}
+                            </SwiperSlide>
+                        ))}
+                    </Swiper>
+                ) : (
+                    renderNewsLine(closedNews[0])
+                )}
+            </div>
         </div>
     );
 }
