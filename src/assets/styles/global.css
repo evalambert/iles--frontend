@@ -116,6 +116,18 @@ p:last-child{
     @apply relative z-10 text-title text-center;
 }
 
+.news-preview-trigger {
+    @apply relative overflow-hidden h-full w-full bg-linear-to-t from-light to-primary to-60%;
+}
+.news-preview-trigger::before {
+    content: '';
+    @apply absolute inset-0 bg-linear-to-t from-primary to-light to-40% opacity-0 transition-opacity duration-300;
+}
+.news-preview-trigger--inverted::before,
+.news-preview-trigger--hover-invert:hover::before {
+    @apply opacity-100;
+}
+
 .nav-li{
     @apply list-none text-center p-[2px] cursor-pointer -mt-px  hover:bg-linear-to-t hover:from-light hover:to-primary hover:to-60%;
 }
