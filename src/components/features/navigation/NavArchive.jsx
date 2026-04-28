@@ -51,6 +51,19 @@ export default function NavArchive({
         };
     }, []);
 
+    useEffect(() => {
+        const handleScrollHide = () => {
+            if (isDesktopViewport()) return;
+            setIsMobileNavHidden(true);
+        };
+
+        window.addEventListener('scroll', handleScrollHide, { passive: true });
+
+        return () => {
+            window.removeEventListener('scroll', handleScrollHide);
+        };
+    }, []);
+
     const handleAnchorClick = () => {
         if (isDesktopViewport()) return;
         setIsMobileNavHidden(true);
@@ -192,7 +205,7 @@ export default function NavArchive({
                     </button>
 
 
-                    <ul className='py-[6px] flex-1 bg-linear-to-t from-primary to-light to-40%'>
+                    <ul className='py-[10px] flex-1 bg-linear-to-t from-primary to-light to-40%'>
                         {[
                             { value: 'upcoming', label: lang === 'fr' ? 'À venir' : 'Upcoming' },
                             { value: 'past', label: lang === 'fr' ? 'Passé' : 'Past' },
@@ -231,7 +244,7 @@ export default function NavArchive({
                         </h2>
                     </button>
 
-                    <ul className='py-[6px] flex-1 bg-linear-to-t from-primary to-light to-40%'>
+                    <ul className='py-[10px] flex-1 bg-linear-to-t from-primary to-light to-40%'>
                         {categories.map((category) => {
                             return (
                                 <li
@@ -285,7 +298,7 @@ export default function NavArchive({
                 </a>
 
                 {/* Events List */}
-                <ul className='py-[6px] flex-1 bg-linear-to-t from-primary to-light to-50%'>
+                <ul className='py-[10px] flex-1 bg-linear-to-t from-primary to-light to-50%'>
                     {filteredNews.map((item) => {
                         const newsAnchor = normalizeAnchor(item.Title);
                         const isActive = activeNewsAnchor === newsAnchor;
