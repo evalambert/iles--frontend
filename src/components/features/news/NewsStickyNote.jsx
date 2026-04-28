@@ -237,7 +237,7 @@ export default function NewsStickyNote({
     return (
         <article
             ref={rootRef}
-            className='fixed h-[556px] w-[556px] border border-black bg-linear-to-b from-primary from-0% via-primary via-66% to-light to-100% text-base shadow-[0_10px_30px_rgba(0,0,0,0.2)]'
+            className='fixed h-[556px] w-[556px] cursor-grab active:cursor-grabbing border border-black bg-linear-to-b from-primary from-0% via-primary via-66% to-light to-100% text-base shadow-[0_10px_30px_rgba(0,0,0,0.2)]'
             style={{
                 transform: `translate3d(${position.x}px, ${yPosition}px, 0) rotate(${position.rotation ?? 0}deg)`,
                 transition: isDragging
@@ -281,35 +281,37 @@ export default function NewsStickyNote({
                     {extractText(note.Text) ? (
                         <p className='post-it-text'>{extractText(note.Text)}</p>
                     ) : null}
+
+                    {Array.isArray(note.Links) && note.Links.length ? (
+                        <ul className='post-it-links-list'>
+                            {note.Links.map((link, index) => (
+                                <li
+                                    className='post-it-links-list-item'
+                                    key={link.id || index}
+                                >
+                                    <a
+                                        href={link.Url}
+                                        target='_blank'
+                                        rel='noreferrer'
+                                    >
+                                        {`→ ${link.LinkTitle || 'Ouvrir le lien'}`}
+                                    </a>
+                                </li>
+                            ))}
+                        </ul>
+                    ) : null}
+
                     {firstImageUrl ? (
                         <img
                             src={firstImageUrl}
                             alt={
                                 firstImage?.alternativeText || note.Title || ''
                             }
-                            className='mt-3 h-auto w-full object-cover'
+                            className='pointer-events-none mt-3 h-auto w-full object-cover'
                             loading='lazy'
+                            draggable={false}
+                            onDragStart={(event) => event.preventDefault()}
                         />
-                    ) : null}
-
-                    {Array.isArray(note.Paragraphs) &&
-                    note.Paragraphs.length ? (
-                        <div>
-                            {note.Paragraphs.map((paragraph, index) => (
-                                <div key={paragraph.id || index}>
-                                    {paragraph.Subtitle ? (
-                                        <p className='post-it-subtitle'>
-                                            {paragraph.Subtitle}
-                                        </p>
-                                    ) : null}
-                                    {paragraph.Text ? (
-                                        <p className='post-it-subtext'>
-                                            {extractText(paragraph.Text)}
-                                        </p>
-                                    ) : null}
-                                </div>
-                            ))}
-                        </div>
                     ) : null}
                 </div>
 
@@ -359,27 +361,6 @@ export default function NewsStickyNote({
                                 ) : null}
                             </div>
                         ))}
-                    </div>
-                ) : null}
-
-                {Array.isArray(note.Links) && note.Links.length ? (
-                    <div>
-                        <ul>
-                            {note.Links.map((link, index) => (
-                                <li key={link.id || index}>
-                                    {link.LinkTitle
-                                        ? `${link.LinkTitle}: `
-                                        : ''}
-                                    <a
-                                        href={link.Url}
-                                        target='_blank'
-                                        rel='noreferrer'
-                                    >
-                                        {link.Url}
-                                    </a>
-                                </li>
-                            ))}
-                        </ul>
                     </div>
                 ) : null}
             </div>
