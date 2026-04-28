@@ -29,12 +29,14 @@ function toDisplayDateRange(startDate, endDate) {
     const endValid = endParsed && !Number.isNaN(endParsed.getTime());
 
     if (startValid && endValid) {
-        const sameYear =
-            startParsed.getFullYear() === endParsed.getFullYear();
+        const sameYear = startParsed.getFullYear() === endParsed.getFullYear();
 
         if (sameYear) {
             const startDay = String(startParsed.getDate()).padStart(2, '0');
-            const startMonth = String(startParsed.getMonth() + 1).padStart(2, '0');
+            const startMonth = String(startParsed.getMonth() + 1).padStart(
+                2,
+                '0'
+            );
             const endDay = String(endParsed.getDate()).padStart(2, '0');
             const endMonth = String(endParsed.getMonth() + 1).padStart(2, '0');
             const year = String(startParsed.getFullYear()).slice(-2);
@@ -78,8 +80,8 @@ export default function NewsPreview({ news = [] }) {
     const previewStateClass = allOpen
         ? 'news-preview-trigger--inverted'
         : allClosed
-            ? 'news-preview-trigger--hover-invert'
-            : '';
+          ? 'news-preview-trigger--hover-invert'
+          : '';
     const totalNewsCount = closedNews.length;
     const displayIndex = totalNewsCount
         ? (activeIndex % totalNewsCount) + 1
@@ -148,31 +150,33 @@ export default function NewsPreview({ news = [] }) {
         >
             <div className='relative z-10 h-full'>
                 {closedNews.length > 1 ? (
-                <Swiper
-                    modules={[A11y, Autoplay, EffectFade]}
-                    slidesPerView={1}
-                    loop
-                    effect='fade'
-                    fadeEffect={{ crossFade: true }}
-                    autoplay={{
-                        delay: 2500,
-                        disableOnInteraction: false,
-                        pauseOnMouseEnter: false,
-                    }}
-                    allowTouchMove={false}
-                    className='h-full'
-                    onSwiper={(swiper) => setActiveIndex(swiper.realIndex)}
-                    onSlideChange={(swiper) => setActiveIndex(swiper.realIndex)}
-                >
-                    {closedNews.map((item) => (
-                        <SwiperSlide key={item.id} className='h-full'>
-                            {renderNewsLine(item)}
-                        </SwiperSlide>
-                    ))}
-                </Swiper>
-            ) : (
-                renderNewsLine(closedNews[0])
-            )}
+                    <Swiper
+                        modules={[A11y, Autoplay, EffectFade]}
+                        slidesPerView={1}
+                        loop
+                        effect='fade'
+                        fadeEffect={{ crossFade: true }}
+                        autoplay={{
+                            delay: 2500,
+                            disableOnInteraction: false,
+                            pauseOnMouseEnter: false,
+                        }}
+                        allowTouchMove={false}
+                        className='h-full'
+                        onSwiper={(swiper) => setActiveIndex(swiper.realIndex)}
+                        onSlideChange={(swiper) =>
+                            setActiveIndex(swiper.realIndex)
+                        }
+                    >
+                        {closedNews.map((item) => (
+                            <SwiperSlide key={item.id} className='h-full'>
+                                {renderNewsLine(item)}
+                            </SwiperSlide>
+                        ))}
+                    </Swiper>
+                ) : (
+                    renderNewsLine(closedNews[0])
+                )}
             </div>
         </div>
     );

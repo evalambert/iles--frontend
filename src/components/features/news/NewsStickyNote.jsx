@@ -68,6 +68,29 @@ function toDisplayHour(value) {
     return String(value).slice(0, 5);
 }
 
+function toDisplayDateFullYear(value) {
+    if (!value) return '';
+    const parsed = new Date(value);
+    if (Number.isNaN(parsed.getTime())) return '';
+    const day = String(parsed.getDate()).padStart(2, '0');
+    const month = String(parsed.getMonth() + 1).padStart(2, '0');
+    const year = String(parsed.getFullYear());
+    return `${day}/${month}/${year}`;
+}
+
+function toDisplayHourWithH(value) {
+    const hour = toDisplayHour(value);
+    return hour ? hour.replace(':', 'h') : '';
+}
+
+function toDisplayPlaceAndAddress(place, address) {
+    const normalizedPlace = String(place || '').trim();
+    const normalizedAddress = String(address || '')
+        .trim()
+        .replace(/,\s*(\d{4}\s)/, ' $1');
+    return [normalizedPlace, normalizedAddress].filter(Boolean).join(', ');
+}
+
 function extractText(value) {
     if (!value) return '';
     if (typeof value === 'string') return value;
@@ -186,11 +209,35 @@ export default function NewsStickyNote({
         : hasEnteredViewport
           ? position.y
           : -NOTE_HEIGHT - ENTRY_OFFSET;
+    const places = [
+        note.Place,
+        ...(Array.isArray(note.RendezVous)
+            ? note.RendezVous.map((item) => item?.Place)
+            : []),
+    ].reduce(
+        (acc, place) => {
+            const normalized = String(place || '').trim();
+            const key = normalized.toLowerCase();
+            if (!normalized || acc.seen.has(key)) return acc;
+            acc.seen.add(key);
+            acc.values.push(normalized);
+            return acc;
+        },
+        { seen: new Set(), values: [] }
+    ).values;
+    const firstImage = Array.isArray(note.Images) ? note.Images[0] : null;
+    const firstImageUrl =
+        firstImage?.url ||
+        firstImage?.formats?.large?.url ||
+        firstImage?.formats?.medium?.url ||
+        firstImage?.formats?.small?.url ||
+        firstImage?.formats?.thumbnail?.url ||
+        '';
 
     return (
         <article
             ref={rootRef}
-            className='fixed h-[556px] w-[556px] border border-black bg-linear-to-b from-primary from-0% via-primary via-66% to-light to-100% p-4 text-sm shadow-[0_10px_30px_rgba(0,0,0,0.2)]'
+            className='fixed h-[556px] w-[556px] border border-black bg-linear-to-b from-primary from-0% via-primary via-66% to-light to-100% text-base shadow-[0_10px_30px_rgba(0,0,0,0.2)]'
             style={{
                 transform: `translate3d(${position.x}px, ${yPosition}px, 0) rotate(${position.rotation ?? 0}deg)`,
                 transition: isDragging
@@ -209,65 +256,106 @@ export default function NewsStickyNote({
                 className='absolute top-2.5 right-2.5 z-20 flex h-9 w-9 cursor-pointer items-center justify-center text-black transition-colors duration-200 hover:text-gray-300'
                 aria-label='Fermer le post-it'
             >
-                <MaskIcon src='/svg/croix.svg' className='h-x-body w-6.5' />
+                <MaskIcon src='/svg/croix.svg' className='h-6.5 w-6.5' />
             </button>
 
-            <div className='h-full overflow-y-auto'>
-                <h3 className='text-title'>{note.Title || ''}</h3>
-                {note.Place || note.Address ? (
-                    <p className=''>{note.Place || note.Address}</p>
-                ) : null}
-                {toDisplayDateRange(note.StartDate, note.EndDate) ? (
-                    <p className=''>
-                        {toDisplayDateRange(note.StartDate, note.EndDate)}
-                    </p>
-                ) : null}
+            <div className='h-full overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden'>
+                <div className='post-it-chapo p-[40px] bg-linear-to-b from-primary from-0% via-primary via-66% to-light to-100%'>
+                    <h3 className='post-it-title text-title'>{note.Title}</h3>
+                    {note.event_categories?.[0]?.Name ||
+                    note.event_categories?.[0]?.attributes?.Name ? (
+                        <p className='post-it-category'>
+                            {note.event_categories?.[0]?.Name ||
+                                note.event_categories?.[0]?.attributes?.Name}
+                        </p>
+                    ) : null}
+                    {toDisplayDateRange(note.StartDate, note.EndDate) ? (
+                        <p className='post-it-date'>
+                            {toDisplayDateRange(note.StartDate, note.EndDate)}
+                        </p>
+                    ) : null}
+                    {places.length ? (
+                        <p className='post-it-place'>{places.join(', ')}</p>
+                    ) : null}
 
-                {extractText(note.Text) ? (
-                    <p className=''>{extractText(note.Text)}</p>
-                ) : null}
+                    {extractText(note.Text) ? (
+                        <p className='post-it-text'>{extractText(note.Text)}</p>
+                    ) : null}
+                    {firstImageUrl ? (
+                        <img
+                            src={firstImageUrl}
+                            alt={
+                                firstImage?.alternativeText || note.Title || ''
+                            }
+                            className='mt-3 h-auto w-full object-cover'
+                            loading='lazy'
+                        />
+                    ) : null}
 
-                {Array.isArray(note.Paragraphs) && note.Paragraphs.length ? (
-                    <div className=''>
-                        {note.Paragraphs.map((paragraph, index) => (
-                            <div key={paragraph.id || index}>
-                                {paragraph.Subtitle ? (
-                                    <p className=''>{paragraph.Subtitle}</p>
-                                ) : null}
-                                {paragraph.Text ? (
-                                    <p className=''>
-                                        {extractText(paragraph.Text)}
-                                    </p>
-                                ) : null}
-                            </div>
-                        ))}
-                    </div>
-                ) : null}
+                    {Array.isArray(note.Paragraphs) &&
+                    note.Paragraphs.length ? (
+                        <div>
+                            {note.Paragraphs.map((paragraph, index) => (
+                                <div key={paragraph.id || index}>
+                                    {paragraph.Subtitle ? (
+                                        <p className='post-it-subtitle'>
+                                            {paragraph.Subtitle}
+                                        </p>
+                                    ) : null}
+                                    {paragraph.Text ? (
+                                        <p className='post-it-subtext'>
+                                            {extractText(paragraph.Text)}
+                                        </p>
+                                    ) : null}
+                                </div>
+                            ))}
+                        </div>
+                    ) : null}
+                </div>
 
                 {Array.isArray(note.RendezVous) && note.RendezVous.length ? (
-                    <div className='pb-4'>
+                    <div className='post-it-rendez-vous-section'>
                         {note.RendezVous.map((item, index) => (
-                            <div key={item.id || index}>
+                            <div
+                                className='post-it-rendez-vous p-[40px] bg-linear-to-b from-primary from-0% via-primary via-66% to-light to-100%'
+                                key={item.id || index}
+                            >
                                 {item.Title ? (
-                                    <h4 className=''>{item.Title}</h4>
+                                    <h4 className='post-it-rendez-vous-title text-title'>
+                                        {item.Title}
+                                    </h4>
                                 ) : null}
-                                <p>{toDisplayDate(item.EventDate)}</p>
-                                <p>
-                                    {item.StartHour || item.EndHour
-                                        ? `${toDisplayHour(item.StartHour)}-${toDisplayHour(item.EndHour)}`
-                                        : ''}
-                                </p>
-                                {[item.Place, item.Address]
-                                    .filter(Boolean)
-                                    .join(', ') ? (
-                                    <p>
-                                        {[item.Place, item.Address]
+                                {item.EventDate ||
+                                item.StartHour ||
+                                item.EndHour ? (
+                                    <p className='post-it-rendez-vous-date'>
+                                        {[
+                                            toDisplayDateFullYear(
+                                                item.EventDate
+                                            ),
+                                            item.StartHour || item.EndHour
+                                                ? `${toDisplayHourWithH(item.StartHour)} - ${toDisplayHourWithH(item.EndHour)}`
+                                                : '',
+                                        ]
                                             .filter(Boolean)
                                             .join(', ')}
                                     </p>
                                 ) : null}
+                                {toDisplayPlaceAndAddress(
+                                    item.Place,
+                                    item.Address
+                                ) ? (
+                                    <p className='post-it-rendez-vous-place'>
+                                        {toDisplayPlaceAndAddress(
+                                            item.Place,
+                                            item.Address
+                                        )}
+                                    </p>
+                                ) : null}
                                 {item.Text ? (
-                                    <p>{extractText(item.Text)}</p>
+                                    <p className='post-it-rendez-vous-text'>
+                                        {extractText(item.Text)}
+                                    </p>
                                 ) : null}
                             </div>
                         ))}
