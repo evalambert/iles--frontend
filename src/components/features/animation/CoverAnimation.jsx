@@ -5,30 +5,21 @@ export default function CoverAnimation() {
     const [isFadingOut, setIsFadingOut] = useState(false);
 
     return (
-        <div
-            id="cover-animation"
-            onClick={() => setIsFadingOut(true)}
-            className={`z-[999] w-full h-full fixed top-0 left-0 bg-linear-to-t from-primary to-light to-80% z-50 flex items-center justify-center transition-opacity duration-300 ${
-                isFadingOut ? 'opacity-0 pointer-events-none' : 'opacity-100'
-            }`}
-        >
-            
-            <iframe
-                src="https://lottie.host/embed/b731ccaf-82c9-4df2-8613-81ff81cd8912/4OgzlimggT.lottie"
-                title="Cover animation"
-                className="w-[40vw] h-[40vh] border-0 pointer-events-none"
-            />
-             
+        <>
+            {/* <div
+                id="cover-animation"
+                onClick={() => setIsFadingOut(true)}
+                className={`z-[999] w-full h-full fixed top-0 left-0 bg-linear-to-t from-[#e9fe00ea] to-[#ffffff00] from-50% z-50 flex items-center justify-center transition-opacity duration-300 ${isFadingOut ? 'opacity-0 pointer-events-none' : 'opacity-100'
+                    }`}
+            >
 
-            {/* 
-            <DotLottieReact
-                src="https://lottie.host/b731ccaf-82c9-4df2-8613-81ff81cd8912/4OgzlimggT.lottie"
-                loop
-                autoplay
-            />
-            */}
+                <iframe
+                    src="https://lottie.host/embed/b731ccaf-82c9-4df2-8613-81ff81cd8912/4OgzlimggT.lottie"
+                    title="Cover animation"
+                    className="w-[150vw] h-[150vh] border-0 pointer-events-none"
+                />
 
-
-        </div>
+            </div> */}
+        </>
     );
 }

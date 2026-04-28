@@ -135,7 +135,7 @@ export default function NavIndex({ about, members, lang, selectedPractice, activ
             </div>
             <div
                 id='mobile-nav-panel'
-                className='flex h-[calc(100dvh-var(--spacing-header-height))] lg:h-full max-lg:overflow-y-scroll max-lg:fixed max-lg:left-0 max-lg:w-full max-lg:z-20 max-lg:transition-[top] max-lg:duration-500 max-lg:ease-in-out motion-reduce:max-lg:transition-none'
+                className='flex h-[calc(100dvh-var(--spacing-header-height))] lg:h-full min-h-0 max-lg:overflow-y-scroll max-lg:fixed max-lg:left-0 max-lg:w-full max-lg:z-20 max-lg:transition-[top] max-lg:duration-500 max-lg:ease-in-out motion-reduce:max-lg:transition-none'
                 style={{
                     top: isMobileNavHidden ? '-100vh' : 'var(--spacing-header-height)',
                     transitionDuration: prefersReducedMotion ? '0ms' : undefined,
@@ -144,7 +144,7 @@ export default function NavIndex({ about, members, lang, selectedPractice, activ
             >
 
 
-                <div className='flex-1 border-r flex flex-col' >
+                <div className='flex-1 border-r flex flex-col min-h-0' >
 
                     {/* ————————————————————————————————————————————— */}
                     {/* About */}
@@ -181,7 +181,7 @@ export default function NavIndex({ about, members, lang, selectedPractice, activ
 
                     {/* ————————————————————————————————————————————— */}
                     {/* Practices */}
-                    <div className='flex-1 border-t flex flex-col'>
+                    <div className='flex-1 border-t flex flex-col min-h-0'>
 
                         {/* Practices Title */}
                         <button
@@ -194,23 +194,25 @@ export default function NavIndex({ about, members, lang, selectedPractice, activ
                         </button>
 
                         {/* Practices List */}
-                        <ul className='py-[6px] flex-1 bg-linear-to-t from-primary to-light to-40%'>
-                            {practicesAnchors.map((practice) => {
-                                return (
-                                    <li key={practice}
-                                        className={`${selectedPractice === practice ? 'nav-li-on' : 'nav-li-off'} nav-li`}>
-                                        <a
-                                            href={`#${membersAnchorId}`}
-                                            onClick={(event) => handlePracticeClick(event, practice)}
-                                            className='cursor-pointer w-full h-full block'
-                                            aria-current={selectedPractice === practice ? 'true' : undefined}
-                                        >
-                                            {practice}
-                                        </a>
-                                    </li>
-                                );
-                            })}
-                        </ul>
+                        <div className='overflow-y-auto py-[6px] flex-1 min-h-0 bg-linear-to-t from-primary to-light to-40%'>
+                            <ul >
+                                {practicesAnchors.map((practice) => {
+                                    return (
+                                        <li key={practice}
+                                            className={`${selectedPractice === practice ? 'nav-li-on' : 'nav-li-off'} nav-li`}>
+                                            <a
+                                                href={`#${membersAnchorId}`}
+                                                onClick={(event) => handlePracticeClick(event, practice)}
+                                                className='cursor-pointer w-full h-full block'
+                                                aria-current={selectedPractice === practice ? 'true' : undefined}
+                                            >
+                                                {practice}
+                                            </a>
+                                        </li>
+                                    );
+                                })}
+                            </ul>
+                        </div>
 
                         {/* Mobile Nav Link */}
                         <ul className="lg:hidden border-t hover">
@@ -236,7 +238,7 @@ export default function NavIndex({ about, members, lang, selectedPractice, activ
                     </div>
                 </div>
 
-                <div className='flex-1 lg:border-r flex flex-col' >
+                <div className='flex-1 lg:border-r flex flex-col min-h-0' >
 
                     {/* ————————————————————————————————————————————— */}
                     {/* Members */}
@@ -247,7 +249,7 @@ export default function NavIndex({ about, members, lang, selectedPractice, activ
                     </a>
 
                     {/* Members List */}
-                    <ul className='py-[6px] flex-1 bg-linear-to-t from-primary to-light to-50%'>
+                    <ul className='py-[6px] flex-1 min-h-0 overflow-y-auto bg-linear-to-t from-primary to-light to-50%'>
                         {membersAnchors.map((anchor) => {
                             const anchorId = normalizeAnchor(anchor);
                             const isActive = activeMemberAnchor === anchorId;
