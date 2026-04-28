@@ -118,18 +118,18 @@ export default function MemberSection({
                             {website ? (
                                 <>
 
-                                    <a href={`https://${website}`} target='_blank' className='block'>
+                                    <a href={`https://${website}`} target='_blank' className='block truncate' title={website}>
                                         {website}
                                     </a>
                                 </>
                             ) : null}
 
                             {email ? (
-                                <a href={`mailto:${email}`} className='block'>{email}</a>
+                                <a href={`mailto:${email}`} className='block truncate' title={email}>{email}</a>
                             ) : null}
 
                             {instagramUrl ? (
-                                <a href={instagramUrl} target='_blank' className='block'>
+                                <a href={instagramUrl} target='_blank' className='block truncate' title={instagramName ?? instagramUrl}>
                                     {instagramName ?? instagramUrl}
                                 </a>
                             ) : null}
