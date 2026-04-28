@@ -10,13 +10,13 @@ import {
 } from '../../../assets/scripts/newsOverlayStore';
 import { getCurrentAndFutureNews } from './newsUtils';
 
-function toDisplayDate(value) {
+function toDisplayDateFullYear(value) {
     if (!value) return '';
     const parsed = new Date(value);
     if (Number.isNaN(parsed.getTime())) return '';
     const day = String(parsed.getDate()).padStart(2, '0');
     const month = String(parsed.getMonth() + 1).padStart(2, '0');
-    const year = String(parsed.getFullYear()).slice(-2);
+    const year = String(parsed.getFullYear());
     return `${day}/${month}/${year}`;
 }
 
@@ -30,24 +30,25 @@ function toDisplayDateRange(startDate, endDate) {
 
     if (startValid && endValid) {
         const sameYear = startParsed.getFullYear() === endParsed.getFullYear();
+        const sameMonth = startParsed.getMonth() === endParsed.getMonth();
+        const startDay = String(startParsed.getDate()).padStart(2, '0');
+        const endDay = String(endParsed.getDate()).padStart(2, '0');
+        const endMonth = String(endParsed.getMonth() + 1).padStart(2, '0');
+        const endYear = String(endParsed.getFullYear());
 
-        if (sameYear) {
-            const startDay = String(startParsed.getDate()).padStart(2, '0');
-            const startMonth = String(startParsed.getMonth() + 1).padStart(
-                2,
-                '0'
-            );
-            const endDay = String(endParsed.getDate()).padStart(2, '0');
-            const endMonth = String(endParsed.getMonth() + 1).padStart(2, '0');
-            const year = String(startParsed.getFullYear()).slice(-2);
-            return `${startDay}/${startMonth}-${endDay}/${endMonth}/${year}`;
+        if (sameYear && sameMonth) {
+            return `du ${startDay} au ${endDay}/${endMonth}/${endYear}`;
         }
+
+        return `du ${toDisplayDateFullYear(startDate)} au ${toDisplayDateFullYear(endDate)}`;
     }
 
-    const start = toDisplayDate(startDate);
-    const end = toDisplayDate(endDate);
-    if (start && end) return `${start}-${end}`;
-    return start || end || '';
+    const start = toDisplayDateFullYear(startDate);
+    const end = toDisplayDateFullYear(endDate);
+    if (start && end) return `du ${start} au ${end}`;
+    if (start) return `le ${start}`;
+    if (end) return `le ${end}`;
+    return '';
 }
 
 function getAttrs(item) {
@@ -77,16 +78,15 @@ export default function NewsPreview({ news = [] }) {
     const openCount = storeState.openIds.length;
     const allOpen = totalCount > 0 && openCount === totalCount;
     const allClosed = totalCount > 0 && openCount === 0;
+    const totalNewsCount = closedNews.length;
+    const displayIndex = totalNewsCount
+        ? (activeIndex % totalNewsCount) + 1
+        : 0;
     const previewStateClass = allOpen
         ? 'news-preview-trigger--inverted'
         : allClosed
           ? 'news-preview-trigger--hover-invert'
           : '';
-    const totalNewsCount = closedNews.length;
-    const displayIndex = totalNewsCount
-        ? (activeIndex % totalNewsCount) + 1
-        : 0;
-
     const handleReopenAll = () => {
         const store = getNewsOverlayStore();
         store?.reopenAll();
@@ -94,24 +94,25 @@ export default function NewsPreview({ news = [] }) {
 
     const renderNewsLine = (item) => {
         const attrs = getAttrs(item);
+        const category =
+            attrs.event_categories?.[0]?.Name ||
+            attrs.event_categories?.[0]?.attributes?.Name ||
+            '';
+        const lineParts = [
+            attrs.Title || '',
+            category,
+            toDisplayDateRange(attrs.StartDate, attrs.EndDate),
+            attrs.Place || attrs.Address || '',
+        ].filter(Boolean);
+
         return (
-            <div className='grid h-full grid-cols-4 text-center'>
-                <div className='flex items-center justify-center px-2 font-medium'>
-                    {`Actu ${displayIndex}/${totalNewsCount}`}
-                </div>
-                <div className='flex items-center justify-center px-2'>
-                    <span className='truncate'>{attrs.Title || ''}</span>
-                </div>
-                <div className='flex items-center justify-center px-2'>
-                    <span className='truncate'>
-                        {toDisplayDateRange(attrs.StartDate, attrs.EndDate)}
+            <div className='flex h-full items-center justify-between gap-3 px-2 lg:px-[20px]'>
+                <div className='min-w-0 flex-1 text-left'>
+                    <span className='block truncate'>
+                        {lineParts.join(', ')}
                     </span>
                 </div>
-                <div className='flex items-center justify-center px-2'>
-                    <span className='truncate'>
-                        {attrs.Place || attrs.Address || ''}
-                    </span>
-                </div>
+                <span className='hidden shrink-0 lg:inline'>{`${displayIndex}/${totalNewsCount}`}</span>
             </div>
         );
     };
@@ -128,7 +129,7 @@ export default function NewsPreview({ news = [] }) {
                         handleReopenAll();
                     }
                 }}
-                className={`news-preview-trigger ${previewStateClass} text-center`}
+                className={`news-preview-trigger ${previewStateClass} h-full w-full min-w-0 text-center`}
                 aria-label='Reouvrir les actualites'
             />
         );
@@ -145,7 +146,7 @@ export default function NewsPreview({ news = [] }) {
                     handleReopenAll();
                 }
             }}
-            className={`news-preview-trigger ${previewStateClass} text-left cursor-pointer`}
+            className={`news-preview-trigger ${previewStateClass} h-full w-full min-w-0 text-left cursor-pointer`}
             aria-label='Reouvrir tous les post-it'
         >
             <div className='relative z-10 h-full'>
