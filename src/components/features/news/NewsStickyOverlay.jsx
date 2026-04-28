@@ -23,7 +23,6 @@ function getEffectiveNoteSize() {
         )
     );
 }
-
 function getEffectiveGap(noteSize) {
     return Math.max(MIN_GAP, Math.floor(noteSize * 0.55));
 }
@@ -206,7 +205,7 @@ export default function NewsStickyOverlay({ news = [] }) {
     if (!isHydrated || !openNews.length || !allPositionsReady) return null;
 
     return (
-        <div className='pointer-events-none fixed inset-0 z-60'>
+        <div className='pointer-events-none fixed inset-0 z-[60]'>
             {openNews.map((note) => {
                 const orderIndex = zOrder.indexOf(note.id);
                 const zIndex =
