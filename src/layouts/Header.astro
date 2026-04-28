@@ -39,14 +39,14 @@ const navLabel = isEventPage
         </div>
 
         <div
-            class="col-span-3 lg:col-span-4 flex border-l bg-linear-to-t from-light from-10% to-primary to-70% lg:-ml-px"
+            class="col-span-3 lg:col-span-4 flex min-w-0 border-l bg-linear-to-t from-light from-10% to-primary to-70% lg:-ml-px"
         >
 
-            <div class='h-full w-full'>
+            <div class='h-full min-w-0 flex-1'>
                 <NewsPreview client:load news={news} />
             </div>
 
-            <div class="block lg:hidden border-l h-full items-center p-[10px]">
+            <div class="block lg:hidden shrink-0 border-l h-full items-center p-[10px]">
                 <MobileMenuBtn client:load />
             </div>
         </div>

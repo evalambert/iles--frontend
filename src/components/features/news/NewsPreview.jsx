@@ -106,13 +106,13 @@ export default function NewsPreview({ news = [] }) {
         ].filter(Boolean);
 
         return (
-            <div className='flex h-full items-center justify-between gap-3 px-[20px]'>
+            <div className='flex h-full items-center justify-between gap-3 px-2 lg:px-[20px]'>
                 <div className='min-w-0 flex-1 text-left'>
                     <span className='block truncate'>
                         {lineParts.join(', ')}
                     </span>
                 </div>
-                <span className='shrink-0'>{`${displayIndex}/${totalNewsCount}`}</span>
+                <span className='hidden shrink-0 lg:inline'>{`${displayIndex}/${totalNewsCount}`}</span>
             </div>
         );
     };
@@ -129,7 +129,7 @@ export default function NewsPreview({ news = [] }) {
                         handleReopenAll();
                     }
                 }}
-                className={`news-preview-trigger ${previewStateClass} text-center`}
+                className={`news-preview-trigger ${previewStateClass} h-full w-full min-w-0 text-center`}
                 aria-label='Reouvrir les actualites'
             />
         );
@@ -146,7 +146,7 @@ export default function NewsPreview({ news = [] }) {
                     handleReopenAll();
                 }
             }}
-            className={`news-preview-trigger ${previewStateClass} text-left cursor-pointer`}
+            className={`news-preview-trigger ${previewStateClass} h-full w-full min-w-0 text-left cursor-pointer`}
             aria-label='Reouvrir tous les post-it'
         >
             <div className='relative z-10 h-full'>
