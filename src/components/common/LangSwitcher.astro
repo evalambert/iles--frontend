@@ -9,12 +9,12 @@ const otherLang = safeLang === 'fr' ? 'en' : 'fr';
 const mappedRest = [...rest];
 if (mappedRest.length > 0) {
     const lastIndex = mappedRest.length - 1;
-    if (mappedRest[lastIndex] === 'evenements') mappedRest[lastIndex] = 'events';
-    if (mappedRest[lastIndex] === 'events') mappedRest[lastIndex] = 'evenements';
-    if (mappedRest[lastIndex] === 'evenement') mappedRest[lastIndex] = 'events';
-    if (mappedRest[lastIndex] === 'event') mappedRest[lastIndex] = 'evenements';
+    if (mappedRest[lastIndex] === 'evenements') mappedRest[lastIndex] = 'news';
+    if (mappedRest[lastIndex] === 'events') mappedRest[lastIndex] = 'news';
+    if (mappedRest[lastIndex] === 'evenement') mappedRest[lastIndex] = 'news';
+    if (mappedRest[lastIndex] === 'event') mappedRest[lastIndex] = 'news';
     if (mappedRest[lastIndex] === 'archive') {
-        mappedRest[lastIndex] = otherLang === 'fr' ? 'evenements' : 'events';
+        mappedRest[lastIndex] = 'news';
     }
 }
 const restPath = mappedRest.length ? `/${mappedRest.join('/')}` : '';

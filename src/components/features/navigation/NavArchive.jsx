@@ -12,7 +12,7 @@ export default function NavArchive({
     onCategorySelect,
 }) {
     const newsItems = Array.isArray(news) ? news : [];
-    const archiveAnchorId = normalizeAnchor(lang === 'fr' ? 'Événements' : 'Events');
+    const archiveAnchorId = normalizeAnchor(lang === 'fr' ? 'Actus' : 'News');
     const [isMobileNavHidden, setIsMobileNavHidden] = useState(false);
     const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
     const isDesktopViewport = () => window.matchMedia('(min-width: 1024px)').matches;
@@ -59,14 +59,15 @@ export default function NavArchive({
     // **** Menu Mobile ONLY ****
     const isEventsPage =
         typeof window !== 'undefined' &&
-        (window.location.pathname.endsWith('/events') ||
+        (window.location.pathname.endsWith('/news') ||
+            window.location.pathname.endsWith('/events') ||
             window.location.pathname.endsWith('/evenements') ||
             window.location.pathname.endsWith('/event') ||
             window.location.pathname.endsWith('/evenement') ||
             window.location.pathname.endsWith('/archive'));
-    const eventPath = (lang ?? 'fr') === 'en' ? `/${lang ?? 'fr'}/events` : `/${lang ?? 'fr'}/evenements`;
+    const eventPath = `/${lang ?? 'fr'}/news`;
     const navHref = isEventsPage ? `/${lang ?? 'fr'}` : eventPath;
-    const navLabel = isEventsPage ? (lang === 'en' ? 'Home' : 'Accueil') : lang === "en" ? "Events" : "Événements";
+    const navLabel = isEventsPage ? (lang === 'en' ? 'Home' : 'Accueil') : lang === "en" ? "News" : "Actualités";
     const otherLang = (lang ?? 'fr') === 'fr' ? 'en' : 'fr';
     const switchLangPath = (() => {
         if (typeof window === 'undefined') return `/${otherLang}`;
@@ -76,12 +77,12 @@ export default function NavArchive({
             const mappedRest = [...rest];
             if (mappedRest.length > 0) {
                 const lastIndex = mappedRest.length - 1;
-                if (mappedRest[lastIndex] === 'evenements') mappedRest[lastIndex] = 'events';
-                if (mappedRest[lastIndex] === 'events') mappedRest[lastIndex] = 'evenements';
-                if (mappedRest[lastIndex] === 'evenement') mappedRest[lastIndex] = 'events';
-                if (mappedRest[lastIndex] === 'event') mappedRest[lastIndex] = 'evenements';
+                if (mappedRest[lastIndex] === 'evenements') mappedRest[lastIndex] = 'news';
+                if (mappedRest[lastIndex] === 'events') mappedRest[lastIndex] = 'news';
+                if (mappedRest[lastIndex] === 'evenement') mappedRest[lastIndex] = 'news';
+                if (mappedRest[lastIndex] === 'event') mappedRest[lastIndex] = 'news';
                 if (mappedRest[lastIndex] === 'archive') {
-                    mappedRest[lastIndex] = otherLang === 'fr' ? 'evenements' : 'events';
+                    mappedRest[lastIndex] = 'news';
                 }
             }
             return `/${otherLang}${mappedRest.length ? `/${mappedRest.join('/')}` : ''}`;
@@ -276,10 +277,10 @@ export default function NavArchive({
             <div className='flex-1 lg:border-r flex flex-col' >
 
                 {/* ————————————————————————————————————————————— */}
-                {/* Events */}
-                <a href={`#${normalizeAnchor(lang === "fr" ? "Événements" : "Events")}`} className="block-title">
+                {/* News */}
+                <a href={`#${normalizeAnchor(lang === "fr" ? "Actualités" : "News")}`} className="block-title">
                     <h2>
-                        {lang === "fr" ? "Événements" : "Events"}
+                        {lang === "fr" ? "Actualités" : "News"}
                     </h2>
                 </a>
 

@@ -1,5 +1,0 @@
----
-const { lang } = Astro.params;
-const destination = lang === 'en' ? `/${lang}/events` : `/${lang}/evenements`;
-return Astro.redirect(destination, 301);
----

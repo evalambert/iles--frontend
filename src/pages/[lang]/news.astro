@@ -2,11 +2,8 @@
 import fetchApi from '../../assets/scripts/libs/strapi.js';
 import Layout from '../../layouts/Layout.astro';
 import WrapperArchive from '../../layouts/WrapperArchive.jsx';
-const { lang } = Astro.params;
 
-if (lang !== 'fr') {
-    return Astro.redirect(`/${lang ?? 'en'}/events`, 301);
-}
+const { lang } = Astro.params;
 
 const news = await fetchApi({
     endpoint: 'news',

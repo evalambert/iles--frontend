@@ -6,19 +6,20 @@ import NewsPreview from '../components/features/news/NewsPreview.jsx';
 const { lang = 'fr', news = [] } = Astro.props;
 // const { lang } = Astro.params;
 const isEventPage =
+    Astro.url.pathname.endsWith('/news') ||
     Astro.url.pathname.endsWith('/events') ||
     Astro.url.pathname.endsWith('/evenements') ||
     Astro.url.pathname.endsWith('/event') ||
     Astro.url.pathname.endsWith('/evenement') ||
     Astro.url.pathname.endsWith('/archive');
-const eventPath = lang === 'en' ? `/${lang}/events` : `/${lang}/evenements`;
+const eventPath = `/${lang}/news`;
 const navHref = isEventPage ? `/${lang}` : eventPath;
 
 const navLabel = isEventPage
     ? lang === "en"
         ? "Home"
         : "Accueil"
-    :  lang === "en" ? "Events" : "Événements";
+    :  lang === "en" ? "News" : "Actus";
 ---
 
 <header
@@ -33,7 +34,7 @@ const navLabel = isEventPage
                 rel="home"
                 class="h-[calc(var(--spacing-header-height)-1px)] w-full flex items-center justify-center"
             >
-                <HeaderAnimation />
+                <HeaderAnimation client:load />
             </a>
         </div>
 

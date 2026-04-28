@@ -129,12 +129,28 @@ export default function NewsStickyNote({
     const closeTimeoutRef = useRef(null);
 
     useEffect(() => {
-        const rafId = window.requestAnimationFrame(() => {
+        if (window.__coverAnimationHidden) {
+            const rafId = window.requestAnimationFrame(() => {
+                setHasEnteredViewport(true);
+            });
+            return () => {
+                window.cancelAnimationFrame(rafId);
+            };
+        }
+
+        const handleCoverHidden = () => {
             setHasEnteredViewport(true);
+        };
+
+        window.addEventListener('cover-animation-hidden', handleCoverHidden, {
+            once: true,
         });
 
         return () => {
-            window.cancelAnimationFrame(rafId);
+            window.removeEventListener(
+                'cover-animation-hidden',
+                handleCoverHidden
+            );
         };
     }, []);
 
