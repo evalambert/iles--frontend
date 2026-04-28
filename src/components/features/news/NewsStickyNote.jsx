@@ -167,7 +167,7 @@ export default function NewsStickyNote({
                 <MaskIcon src='/svg/croix.svg' className='h-x-body w-6.5' />
             </button>
 
-            <div className='h-full overflow-y-auto'>
+            <div className='h-full overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden'>
                 <h3 className='text-title'>{note.Title || ''}</h3>
                 {note.Place || note.Address ? (
                     <p className=''>{note.Place || note.Address}</p>
