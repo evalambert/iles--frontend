@@ -5,15 +5,14 @@ import { useEffect, useState } from 'react';
 export default function NavArchive({
     news,
     lang,
-    selectedYear,
+    selectedPeriod,
     selectedCategory,
     activeNewsAnchor,
-    onYearSelect,
+    onPeriodSelect,
     onCategorySelect,
 }) {
     const newsItems = Array.isArray(news) ? news : [];
-    const nowTimestamp = Date.now();
-    const archiveAnchorId = normalizeAnchor(lang === 'fr' ? 'Archive' : 'Archive');
+    const archiveAnchorId = normalizeAnchor(lang === 'fr' ? 'Événements' : 'Events');
     const [isMobileNavHidden, setIsMobileNavHidden] = useState(false);
     const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
     const isDesktopViewport = () => window.matchMedia('(min-width: 1024px)').matches;
@@ -58,30 +57,40 @@ export default function NavArchive({
     };
 
     // **** Menu Mobile ONLY ****
-    const isArchivePage = typeof window !== 'undefined' && window.location.pathname.endsWith('/archive');
-    const navHref = isArchivePage ? `/${lang ?? 'fr'}` : `/${lang ?? 'fr'}/archive`;
-    const navLabel = isArchivePage ? (lang === 'en' ? 'Home' : 'Accueil') : 'Archives';
+    const isEventsPage =
+        typeof window !== 'undefined' &&
+        (window.location.pathname.endsWith('/events') ||
+            window.location.pathname.endsWith('/evenements') ||
+            window.location.pathname.endsWith('/event') ||
+            window.location.pathname.endsWith('/evenement') ||
+            window.location.pathname.endsWith('/archive'));
+    const eventPath = (lang ?? 'fr') === 'en' ? `/${lang ?? 'fr'}/events` : `/${lang ?? 'fr'}/evenements`;
+    const navHref = isEventsPage ? `/${lang ?? 'fr'}` : eventPath;
+    const navLabel = isEventsPage ? (lang === 'en' ? 'Home' : 'Accueil') : lang === "en" ? "Events" : "Événements";
     const otherLang = (lang ?? 'fr') === 'fr' ? 'en' : 'fr';
     const switchLangPath = (() => {
         if (typeof window === 'undefined') return `/${otherLang}`;
 
         const [_, currentLang, ...rest] = window.location.pathname.split('/');
         if (currentLang === 'fr' || currentLang === 'en') {
-            return `/${otherLang}${rest.length ? `/${rest.join('/')}` : ''}`;
+            const mappedRest = [...rest];
+            if (mappedRest.length > 0) {
+                const lastIndex = mappedRest.length - 1;
+                if (mappedRest[lastIndex] === 'evenements') mappedRest[lastIndex] = 'events';
+                if (mappedRest[lastIndex] === 'events') mappedRest[lastIndex] = 'evenements';
+                if (mappedRest[lastIndex] === 'evenement') mappedRest[lastIndex] = 'events';
+                if (mappedRest[lastIndex] === 'event') mappedRest[lastIndex] = 'evenements';
+                if (mappedRest[lastIndex] === 'archive') {
+                    mappedRest[lastIndex] = otherLang === 'fr' ? 'evenements' : 'events';
+                }
+            }
+            return `/${otherLang}${mappedRest.length ? `/${mappedRest.join('/')}` : ''}`;
         }
 
         return `/${otherLang}${window.location.pathname.startsWith('/') ? window.location.pathname : `/${window.location.pathname}`}`;
     })();
     // **** END — Menu Mobile ONLY ****
 
-
-    const years = Array.from(
-        new Set(
-            newsItems
-                .map((item) => item?.StartDate?.slice?.(0, 4))
-                .filter(Boolean)
-        )
-    ).sort((a, b) => Number(b) - Number(a));
 
     const categories = Array.from(
         new Set(
@@ -92,9 +101,20 @@ export default function NavArchive({
         )
     ).sort((a, b) => a.localeCompare(b, lang ?? 'fr'));
 
-    const matchesSelectedYear = (item) => {
-        if (!selectedYear) return true;
-        return item?.StartDate?.startsWith(selectedYear);
+    const matchesSelectedPeriod = (item) => {
+        if (!selectedPeriod) return true;
+        const endTimestamp = getTimestamp(item?.EndDate);
+        const nowTimestamp = Date.now();
+
+        if (selectedPeriod === 'upcoming') {
+            return endTimestamp > nowTimestamp;
+        }
+
+        if (selectedPeriod === 'past') {
+            return endTimestamp <= nowTimestamp;
+        }
+
+        return true;
     };
 
     const matchesSelectedCategory = (item) => {
@@ -110,16 +130,10 @@ export default function NavArchive({
         return getTimestamp(item?.StartDate);
     };
 
-    const hasPastEventDate = (item) => {
-        const relevantTimestamp = getRelevantDateTimestamp(item);
-        return relevantTimestamp !== Number.NEGATIVE_INFINITY && relevantTimestamp < nowTimestamp;
-    };
-
     const filteredNews = newsItems
         .filter(
             (item) =>
-                hasPastEventDate(item) &&
-                matchesSelectedYear(item) &&
+                matchesSelectedPeriod(item) &&
                 matchesSelectedCategory(item)
         )
         .sort((a, b) => {
@@ -128,10 +142,10 @@ export default function NavArchive({
             return getTimestamp(b?.StartDate) - getTimestamp(a?.StartDate);
         });
 
-    const handleYearClick = (event, year) => {
+    const handlePeriodClick = (event, period) => {
         event.preventDefault();
-        const nextSelectedYear = selectedYear === year ? '' : year;
-        onYearSelect?.(nextSelectedYear);
+        const nextSelectedPeriod = selectedPeriod === period ? '' : period;
+        onPeriodSelect?.(nextSelectedPeriod);
     };
 
     const handleCategoryClick = (event, category) => {
@@ -140,7 +154,7 @@ export default function NavArchive({
         onCategorySelect?.(nextSelectedCategory);
     };
 
-    const clearYearFilter = () => onYearSelect?.('');
+    const clearPeriodFilter = () => onPeriodSelect?.('');
     const clearCategoryFilter = () => onCategorySelect?.('');
 
     return <>
@@ -168,29 +182,32 @@ export default function NavArchive({
                     {/* Dates Title */}
                     <button
                         type='button'
-                        onClick={clearYearFilter}
+                        onClick={clearPeriodFilter}
                         className='block-title w-full cursor-pointer'
                     >
                         <h2>
-                            {lang === "fr" ? 'Dates' : 'Dates'}
+                            {lang === "fr" ? 'Période' : 'Period'}
                         </h2>
                     </button>
 
 
                     <ul className='py-[6px] flex-1 bg-linear-to-t from-primary to-light to-40%'>
-                        {years.map((year) => {
+                        {[
+                            { value: 'upcoming', label: lang === 'fr' ? 'À venir' : 'Upcoming' },
+                            { value: 'past', label: lang === 'fr' ? 'Passé' : 'Past' },
+                        ].map((period) => {
                             return (
                                 <li
-                                    key={year}
-                                    className={`nav-li ${selectedYear === year ? 'nav-li-on' : 'nav-li-off'}`}
+                                    key={period.value}
+                                    className={`nav-li ${selectedPeriod === period.value ? 'nav-li-on' : 'nav-li-off'}`}
                                 >
                                     <a
                                         href={`#${archiveAnchorId}`}
                                         className='block h-full w-full'
-                                        onClick={(event) => handleYearClick(event, year)}
-                                        aria-current={selectedYear === year ? 'true' : undefined}
+                                        onClick={(event) => handlePeriodClick(event, period.value)}
+                                        aria-current={selectedPeriod === period.value ? 'true' : undefined}
                                     >
-                                        {year}
+                                        {period.label}
                                     </a>
                                 </li>
                             );
