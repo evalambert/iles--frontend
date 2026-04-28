@@ -7,6 +7,32 @@ import CoverAnimation from '../../components/features/animation/CoverAnimation.j
 
 const { lang } = Astro.params;
 
+const fetchAllMembers = async (locale) => {
+    const pageSize = 100;
+    let page = 1;
+    let pageCount = 1;
+    const allMembers = [];
+
+    while (page <= pageCount) {
+        const membersResponse = await fetchApi({
+            endpoint: 'members',
+            query: {
+                populate: '*',
+                'pagination[page]': String(page),
+                'pagination[pageSize]': String(pageSize),
+            },
+            locale,
+        });
+
+        const pageMembers = membersResponse?.data ?? [];
+        allMembers.push(...pageMembers);
+        pageCount = membersResponse?.meta?.pagination?.pageCount ?? 1;
+        page += 1;
+    }
+
+    return allMembers;
+};
+
 const about = await fetchApi({
     endpoint: 'about',
     query: { 'populate[Sections][populate]': '*' },
@@ -14,12 +40,7 @@ const about = await fetchApi({
     wrappedByKey: 'data',
 });
 
-const members = await fetchApi({
-    endpoint: 'members',
-    query: { populate: '*' },
-    locale: lang,
-    wrappedByKey: 'data',
-});
+const members = await fetchAllMembers(lang);
 
 let news = [];
 try {
