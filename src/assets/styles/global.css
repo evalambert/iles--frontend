@@ -116,6 +116,10 @@ p:last-child {
     @apply opacity-100;
 }
 
+.hover-effect {
+    @apply relative before:absolute before:inset-0 before:bg-linear-to-t before:from-light before:to-primary before:to-60% before:opacity-0 before:transition-opacity before:duration-300 hover:before:opacity-100 ;
+}
+
 .block-title h2 {
     @apply relative z-10 text-title text-center;
 }

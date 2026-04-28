@@ -76,6 +76,19 @@ export default function NavIndex({ about, members, lang, selectedPractice, activ
         };
     }, []);
 
+    useEffect(() => {
+        const handleScrollHide = () => {
+            if (isDesktopViewport()) return;
+            setIsMobileNavHidden(true);
+        };
+
+        window.addEventListener('scroll', handleScrollHide, { passive: true });
+
+        return () => {
+            window.removeEventListener('scroll', handleScrollHide);
+        };
+    }, []);
+
     const handleAnchorClick = () => {
         if (isDesktopViewport()) return;
         setIsMobileNavHidden(true);
@@ -121,7 +134,7 @@ export default function NavIndex({ about, members, lang, selectedPractice, activ
                 .map((practice) => practice?.Name)
                 .filter(Boolean) ?? []
         )
-    );
+    ).sort((a, b) => a.localeCompare(b, lang ?? 'fr', { sensitivity: 'base' }));
 
     return (
         <>
@@ -154,7 +167,7 @@ export default function NavIndex({ about, members, lang, selectedPractice, activ
                         </a>
 
                         {/* About ANCHORS */}
-                        <ul className='py-[6px] flex-1 bg-linear-to-t from-primary to-light to-40%'>
+                        <ul className='py-[10px] flex-1 bg-linear-to-t from-primary to-light to-40%'>
                             {aboutAnchors.map((anchor) => {
                                 const anchorId = normalizeAnchor(anchor);
                                 const isActive = activeAboutAnchor === anchorId;
@@ -190,7 +203,7 @@ export default function NavIndex({ about, members, lang, selectedPractice, activ
                         </button>
 
                         {/* Practices List */}
-                        <div className='overflow-y-auto py-[6px] flex-1 min-h-0 bg-linear-to-t from-primary to-light to-40%'>
+                        <div className='overflow-y-auto py-[10px] flex-1 min-h-0 bg-linear-to-t from-primary to-light to-40%'>
                             <ul >
                                 {practicesAnchors.map((practice) => {
                                     return (
@@ -245,7 +258,7 @@ export default function NavIndex({ about, members, lang, selectedPractice, activ
                     </a>
 
                     {/* Members List */}
-                    <ul className='py-[6px] flex-1 min-h-0 overflow-y-auto bg-linear-to-t from-primary to-light to-50%'>
+                    <ul className='py-[10px] flex-1 min-h-0 overflow-y-auto bg-linear-to-t from-primary to-light to-50%'>
                         {membersAnchors.map((anchor) => {
                             const anchorId = normalizeAnchor(anchor);
                             const isActive = activeMemberAnchor === anchorId;
