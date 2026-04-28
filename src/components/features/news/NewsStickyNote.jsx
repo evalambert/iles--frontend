@@ -253,7 +253,7 @@ export default function NewsStickyNote({
     return (
         <article
             ref={rootRef}
-            className='fixed h-[556px] w-[556px] cursor-grab active:cursor-grabbing border border-black bg-linear-to-b from-primary from-0% via-primary via-66% to-light to-100% text-base shadow-[0_10px_30px_rgba(0,0,0,0.2)]'
+            className='fixed w-full max-w-139 cursor-grab active:cursor-grabbing border border-black bg-linear-to-b from-primary from-0% via-primary via-66% to-light to-100% text-base shadow-[0_10px_30px_rgba(0,0,0,0.2)]'
             style={{
                 transform: `translate3d(${position.x}px, ${yPosition}px, 0) rotate(${position.rotation ?? 0}deg)`,
                 transition: isDragging
@@ -262,6 +262,8 @@ export default function NewsStickyNote({
                 zIndex,
                 touchAction: 'none',
                 pointerEvents: isClosing ? 'none' : 'auto',
+                width: 'min(556px, calc(100vw - 2rem), calc(100dvh - 2rem))',
+                aspectRatio: '1 / 1',
             }}
             onPointerDown={handlePointerDown}
         >
@@ -276,7 +278,7 @@ export default function NewsStickyNote({
             </button>
 
             <div className='h-full overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden'>
-                <div className='post-it-chapo p-[40px] bg-linear-to-b from-primary from-0% via-primary via-66% to-light to-100%'>
+                <div className='post-it-chapo p-[20px] lg:p-[40px] bg-linear-to-b from-primary from-0% via-primary via-66% to-light to-100%'>
                     <h3 className='post-it-title text-title'>{note.Title}</h3>
                     {note.event_categories?.[0]?.Name ||
                     note.event_categories?.[0]?.attributes?.Name ? (
@@ -335,7 +337,7 @@ export default function NewsStickyNote({
                     <div className='post-it-rendez-vous-section'>
                         {note.RendezVous.map((item, index) => (
                             <div
-                                className='post-it-rendez-vous p-[40px] bg-linear-to-b from-primary from-0% via-primary via-66% to-light to-100%'
+                                className='post-it-rendez-vous p-[20px] lg:p-[40px] bg-linear-to-b from-primary from-0% via-primary via-66% to-light to-100%'
                                 key={item.id || index}
                             >
                                 {item.Title ? (

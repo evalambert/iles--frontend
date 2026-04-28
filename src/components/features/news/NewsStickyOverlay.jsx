@@ -13,6 +13,20 @@ const HEADER_SAFE_OFFSET = 90;
 const VIEWPORT_PADDING = 16;
 const MIN_GAP = 120;
 
+function getEffectiveNoteSize() {
+    if (typeof window === 'undefined') return NOTE_SIZE;
+    return Math.floor(
+        Math.min(
+            NOTE_SIZE,
+            window.innerWidth - VIEWPORT_PADDING * 2,
+            window.innerHeight - VIEWPORT_PADDING * 2
+        )
+    );
+}
+function getEffectiveGap(noteSize) {
+    return Math.max(MIN_GAP, Math.floor(noteSize * 0.55));
+}
+
 function getBounds() {
     if (typeof window === 'undefined') {
         return {
@@ -23,13 +37,14 @@ function getBounds() {
         };
     }
 
+    const noteSize = getEffectiveNoteSize();
     const maxX = Math.max(
         VIEWPORT_PADDING,
-        window.innerWidth - NOTE_SIZE - VIEWPORT_PADDING
+        window.innerWidth - noteSize - VIEWPORT_PADDING
     );
     const maxY = Math.max(
         HEADER_SAFE_OFFSET,
-        window.innerHeight - NOTE_SIZE - VIEWPORT_PADDING
+        window.innerHeight - noteSize - VIEWPORT_PADDING
     );
 
     return {
@@ -45,30 +60,32 @@ function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-function isTooClose(candidate, placed) {
+function isTooClose(candidate, placed, minGap) {
     return placed.some((position) => {
         const dx = Math.abs(position.x - candidate.x);
         const dy = Math.abs(position.y - candidate.y);
-        return dx < MIN_GAP && dy < MIN_GAP;
+        return dx < minGap && dy < minGap;
     });
 }
 
 function generateRandomPositions(items) {
     const bounds = getBounds();
+    const noteSize = getEffectiveNoteSize();
+    const minGap = getEffectiveGap(noteSize);
     const placed = [];
     const result = {};
 
     items.forEach((item, index) => {
         let position = null;
 
-        for (let attempt = 0; attempt < 30; attempt += 1) {
+        for (let attempt = 0; attempt < 60; attempt += 1) {
             const candidate = {
                 x: getRandomInt(bounds.minX, bounds.maxX),
                 y: getRandomInt(bounds.minY, bounds.maxY),
                 rotation: getRandomInt(-5, 5),
             };
 
-            if (!isTooClose(candidate, placed)) {
+            if (!isTooClose(candidate, placed, minGap)) {
                 position = candidate;
                 break;
             }
@@ -81,8 +98,15 @@ function generateRandomPositions(items) {
                 y: getRandomInt(bounds.minY, bounds.maxY),
                 rotation: getRandomInt(-5, 5),
             };
-            position.x = Math.min(bounds.maxX, position.x + (index % 3) * 24);
-            position.y = Math.min(bounds.maxY, position.y + (index % 4) * 24);
+            const fallbackStep = Math.max(18, Math.floor(minGap * 0.2));
+            position.x = Math.min(
+                bounds.maxX,
+                position.x + (index % 3) * fallbackStep
+            );
+            position.y = Math.min(
+                bounds.maxY,
+                position.y + (index % 4) * fallbackStep
+            );
         }
 
         placed.push(position);
