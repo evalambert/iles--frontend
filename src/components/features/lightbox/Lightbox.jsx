@@ -90,7 +90,7 @@ export default function Lightbox({
 
                 <button
                     type='button'
-                    className={`absolute left-0 top-1/2 z-10 -translate-y-1/2 cursor-pointer p-[20px] text-black transition-colors duration-200 hover:text-primary ${arrowClassName}`}
+                    className={`absolute left-0 top-1/2 z-10 -translate-y-1/2 cursor-pointer p-[15px] text-black transition-colors duration-200 hover:text-primary ${arrowClassName}`}
                     aria-label='Image precedente'
                     onClick={onPrev}
                 >
@@ -108,7 +108,7 @@ export default function Lightbox({
 
                 <button
                     type='button'
-                    className={`absolute right-0 top-1/2 z-10 -translate-y-1/2 cursor-pointer p-[20px] text-black transition-colors duration-200 hover:text-primary ${arrowClassName}`}
+                    className={`absolute right-0 top-1/2 z-10 -translate-y-1/2 cursor-pointer p-[15px] text-black transition-colors duration-200 hover:text-primary ${arrowClassName}`}
                     aria-label='Image suivante'
                     onClick={onNext}
                 >
