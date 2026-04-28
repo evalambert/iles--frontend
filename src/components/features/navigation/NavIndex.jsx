@@ -7,16 +7,34 @@ export default function NavIndex({ about, members, lang, selectedPractice, activ
     const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
 
     // **** Menu Mobile ONLY ****
-    const isArchivePage = typeof window !== 'undefined' && window.location.pathname.endsWith('/archive');
-    const navHref = isArchivePage ? `/${lang ?? 'fr'}` : `/${lang ?? 'fr'}/archive`;
-    const navLabel = isArchivePage ? (lang === 'en' ? 'Home' : 'Accueil') : 'Archives';
+    const isEventsPage =
+        typeof window !== 'undefined' &&
+        (window.location.pathname.endsWith('/events') ||
+            window.location.pathname.endsWith('/evenements') ||
+            window.location.pathname.endsWith('/event') ||
+            window.location.pathname.endsWith('/evenement') ||
+            window.location.pathname.endsWith('/archive'));
+    const eventPath = (lang ?? 'fr') === 'en' ? `/${lang ?? 'fr'}/events` : `/${lang ?? 'fr'}/evenements`;
+    const navHref = isEventsPage ? `/${lang ?? 'fr'}` : eventPath;
+    const navLabel = isEventsPage ? (lang === 'en' ? 'Home' : 'Accueil') : lang === "en" ? "Events" : "Événements";
     const otherLang = (lang ?? 'fr') === 'fr' ? 'en' : 'fr';
     const switchLangPath = (() => {
         if (typeof window === 'undefined') return `/${otherLang}`;
 
         const [_, currentLang, ...rest] = window.location.pathname.split('/');
         if (currentLang === 'fr' || currentLang === 'en') {
-            return `/${otherLang}${rest.length ? `/${rest.join('/')}` : ''}`;
+            const mappedRest = [...rest];
+            if (mappedRest.length > 0) {
+                const lastIndex = mappedRest.length - 1;
+                if (mappedRest[lastIndex] === 'evenements') mappedRest[lastIndex] = 'events';
+                if (mappedRest[lastIndex] === 'events') mappedRest[lastIndex] = 'evenements';
+                if (mappedRest[lastIndex] === 'evenement') mappedRest[lastIndex] = 'events';
+                if (mappedRest[lastIndex] === 'event') mappedRest[lastIndex] = 'evenements';
+                if (mappedRest[lastIndex] === 'archive') {
+                    mappedRest[lastIndex] = otherLang === 'fr' ? 'evenements' : 'events';
+                }
+            }
+            return `/${otherLang}${mappedRest.length ? `/${mappedRest.join('/')}` : ''}`;
         }
 
         return `/${otherLang}${window.location.pathname.startsWith('/') ? window.location.pathname : `/${window.location.pathname}`}`;

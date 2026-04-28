@@ -6,7 +6,18 @@ const [, currentLang, ...rest] = pathname.split('/');
 const supported = ['fr', 'en'];
 const safeLang = supported.includes(currentLang) ? currentLang : 'fr';
 const otherLang = safeLang === 'fr' ? 'en' : 'fr';
-const restPath = rest.length ? `/${rest.join('/')}` : '';
+const mappedRest = [...rest];
+if (mappedRest.length > 0) {
+    const lastIndex = mappedRest.length - 1;
+    if (mappedRest[lastIndex] === 'evenements') mappedRest[lastIndex] = 'events';
+    if (mappedRest[lastIndex] === 'events') mappedRest[lastIndex] = 'evenements';
+    if (mappedRest[lastIndex] === 'evenement') mappedRest[lastIndex] = 'events';
+    if (mappedRest[lastIndex] === 'event') mappedRest[lastIndex] = 'evenements';
+    if (mappedRest[lastIndex] === 'archive') {
+        mappedRest[lastIndex] = otherLang === 'fr' ? 'evenements' : 'events';
+    }
+}
+const restPath = mappedRest.length ? `/${mappedRest.join('/')}` : '';
 const otherUrl = `/${otherLang}${restPath}`;
 ---
 

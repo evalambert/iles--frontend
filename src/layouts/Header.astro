@@ -5,14 +5,20 @@ import HeaderAnimation from "../components/features/animation/HeaderAnimation.js
 import NewsPreview from '../components/features/news/NewsPreview.jsx';
 const { lang = 'fr', news = [] } = Astro.props;
 // const { lang } = Astro.params;
-const isArchivePage = Astro.url.pathname.endsWith('/archive');
-const navHref = isArchivePage ? `/${lang}` : `/${lang}/archive`;
+const isEventPage =
+    Astro.url.pathname.endsWith('/events') ||
+    Astro.url.pathname.endsWith('/evenements') ||
+    Astro.url.pathname.endsWith('/event') ||
+    Astro.url.pathname.endsWith('/evenement') ||
+    Astro.url.pathname.endsWith('/archive');
+const eventPath = lang === 'en' ? `/${lang}/events` : `/${lang}/evenements`;
+const navHref = isEventPage ? `/${lang}` : eventPath;
 
-const navLabel = isArchivePage
+const navLabel = isEventPage
     ? lang === "en"
         ? "Home"
         : "Accueil"
-    : "Archives";
+    :  lang === "en" ? "Events" : "Événements";
 ---
 
 <header

@@ -10,14 +10,13 @@ gsap.registerPlugin(ScrollTrigger);
 export default function Archive({
   news,
   lang,
-  selectedYear,
+  selectedPeriod,
   selectedCategory,
   onActiveNewsChange,
 }) {
   const sectionRef = useRef(null);
-  const archiveAnchorId = normalizeAnchor(`${lang === "fr" ? "Archive" : "Archive"}`);
+  const archiveAnchorId = normalizeAnchor(`${lang === "fr" ? "Événements" : "Events"}`);
   const newsItems = Array.isArray(news) ? news : [];
-  const nowTimestamp = Date.now();
 
   const getTimestamp = (dateValue) => {
     if (!dateValue) return Number.NEGATIVE_INFINITY;
@@ -25,9 +24,20 @@ export default function Archive({
     return Number.isNaN(timestamp) ? Number.NEGATIVE_INFINITY : timestamp;
   };
 
-  const matchesSelectedYear = (item) => {
-    if (!selectedYear) return true;
-    return item?.StartDate?.startsWith(selectedYear);
+  const matchesSelectedPeriod = (item) => {
+    if (!selectedPeriod) return true;
+    const endTimestamp = getTimestamp(item?.EndDate);
+    const nowTimestamp = Date.now();
+
+    if (selectedPeriod === 'upcoming') {
+      return endTimestamp > nowTimestamp;
+    }
+
+    if (selectedPeriod === 'past') {
+      return endTimestamp <= nowTimestamp;
+    }
+
+    return true;
   };
 
   const matchesSelectedCategory = (item) => {
@@ -43,16 +53,10 @@ export default function Archive({
     return getTimestamp(item?.StartDate);
   };
 
-  const hasPastEventDate = (item) => {
-    const relevantTimestamp = getRelevantDateTimestamp(item);
-    return relevantTimestamp !== Number.NEGATIVE_INFINITY && relevantTimestamp < nowTimestamp;
-  };
-
   const filteredNews = newsItems
     .filter(
       (item) =>
-        hasPastEventDate(item) &&
-        matchesSelectedYear(item) &&
+        matchesSelectedPeriod(item) &&
         matchesSelectedCategory(item)
     )
     .sort((a, b) => {
@@ -91,7 +95,7 @@ export default function Archive({
       if (rafId1) cancelAnimationFrame(rafId1);
       if (rafId2) cancelAnimationFrame(rafId2);
     };
-  }, [selectedYear, selectedCategory, filteredNews.length]);
+  }, [selectedPeriod, selectedCategory, filteredNews.length]);
 
   return (
     <div
