@@ -3,7 +3,7 @@
 export default function HeaderAnimation() {
     return (
         <div>
-            <span>Îles MARDI</span>
+            <img src="/src/assets/images/iles-mardi.gif" alt="Îles MARDI" className="w-auto max-h-[calc(var(--spacing-header-height)-1px)]" />
         </div>
     );
 }
