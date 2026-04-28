@@ -64,7 +64,7 @@ export default function Slider({
                 <>
                     <button
                         type='button'
-                        className={`${prevClassName} absolute left-2 top-1/2 z-10 -translate-y-1/2 cursor-pointer text-black transition-colors duration-200 hover:text-primary ${arrowClassName}`}
+                        className={`${prevClassName} absolute left-0 top-1/2 z-10 -translate-y-1/2 p-[15px] cursor-pointer text-black transition-colors duration-200 hover:text-primary ${arrowClassName}`}
                         aria-label='Slide precedente'
                     >
                         <MaskIcon
@@ -74,7 +74,7 @@ export default function Slider({
                     </button>
                     <button
                         type='button'
-                        className={`${nextClassName} absolute right-2 top-1/2 z-10 -translate-y-1/2 cursor-pointer text-black transition-colors duration-200 hover:text-primary ${arrowClassName}`}
+                        className={`${nextClassName} absolute right-0 top-1/2 z-10 -translate-y-1/2 p-[15px] cursor-pointer text-black transition-colors duration-200 hover:text-primary ${arrowClassName}`}
                         aria-label='Slide suivante'
                     >
                         <MaskIcon

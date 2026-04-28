@@ -71,6 +71,15 @@ export default function NewsPreview({ news = [] }) {
     }, [filteredNews]);
 
     const closedNews = useMemo(() => getClosedNews(storeState), [storeState]);
+    const totalCount = storeState.allNews.length;
+    const openCount = storeState.openIds.length;
+    const allOpen = totalCount > 0 && openCount === totalCount;
+    const allClosed = totalCount > 0 && openCount === 0;
+    const previewStateClass = allOpen
+        ? 'news-preview-trigger--inverted'
+        : allClosed
+            ? 'news-preview-trigger--hover-invert'
+            : '';
     const totalNewsCount = closedNews.length;
     const displayIndex = totalNewsCount
         ? (activeIndex % totalNewsCount) + 1
@@ -117,7 +126,7 @@ export default function NewsPreview({ news = [] }) {
                         handleReopenAll();
                     }
                 }}
-                className='h-full w-full text-center'
+                className={`news-preview-trigger ${previewStateClass} text-center`}
                 aria-label='Reouvrir les actualites'
             />
         );
@@ -134,10 +143,11 @@ export default function NewsPreview({ news = [] }) {
                     handleReopenAll();
                 }
             }}
-            className='h-full w-full text-left cursor-pointer'
+            className={`news-preview-trigger ${previewStateClass} text-left cursor-pointer`}
             aria-label='Reouvrir tous les post-it'
         >
-            {closedNews.length > 1 ? (
+            <div className='relative z-10 h-full'>
+                {closedNews.length > 1 ? (
                 <Swiper
                     modules={[A11y, Autoplay, EffectFade]}
                     slidesPerView={1}
@@ -163,6 +173,7 @@ export default function NewsPreview({ news = [] }) {
             ) : (
                 renderNewsLine(closedNews[0])
             )}
+            </div>
         </div>
     );
 }

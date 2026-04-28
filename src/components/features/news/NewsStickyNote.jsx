@@ -1,6 +1,9 @@
 //src/components/features/news/NewsStickyNote.jsx
 import { useEffect, useRef, useState } from 'react';
 
+const NOTE_HEIGHT = 556;
+const ENTRY_OFFSET = 40;
+
 function MaskIcon({ src, className = '' }) {
     return (
         <span
@@ -94,9 +97,31 @@ export default function NewsStickyNote({
     onBringToFront,
 }) {
     const [position, setPosition] = useState(initialPosition);
+    const [hasEnteredViewport, setHasEnteredViewport] = useState(false);
+    const [isDragging, setIsDragging] = useState(false);
+    const [isClosing, setIsClosing] = useState(false);
     const dragOffsetRef = useRef({ x: 0, y: 0 });
     const draggingRef = useRef(false);
     const rootRef = useRef(null);
+    const closeTimeoutRef = useRef(null);
+
+    useEffect(() => {
+        const rafId = window.requestAnimationFrame(() => {
+            setHasEnteredViewport(true);
+        });
+
+        return () => {
+            window.cancelAnimationFrame(rafId);
+        };
+    }, []);
+
+    useEffect(() => {
+        return () => {
+            if (closeTimeoutRef.current) {
+                window.clearTimeout(closeTimeoutRef.current);
+            }
+        };
+    }, []);
 
     useEffect(() => {
         const handlePointerMove = (event) => {
@@ -110,6 +135,7 @@ export default function NewsStickyNote({
 
         const stopDragging = () => {
             draggingRef.current = false;
+            setIsDragging(false);
         };
 
         window.addEventListener('pointermove', handlePointerMove);
@@ -124,12 +150,13 @@ export default function NewsStickyNote({
     }, []);
 
     const handlePointerDown = (event) => {
-        if (event.button !== 0) return;
+        if (event.button !== 0 || isClosing) return;
 
         const rect = rootRef.current?.getBoundingClientRect();
         if (!rect) return;
 
         draggingRef.current = true;
+        setIsDragging(true);
         dragOffsetRef.current = {
             x: event.clientX - rect.left,
             y: event.clientY - rect.top,
@@ -138,22 +165,40 @@ export default function NewsStickyNote({
     };
 
     const handleClose = () => {
-        onClose?.(note.id);
+        if (isClosing) return;
+        draggingRef.current = false;
+        setIsDragging(false);
+        setIsClosing(true);
+
+        closeTimeoutRef.current = window.setTimeout(() => {
+            onClose?.(note.id);
+        }, 450);
     };
 
     const handleClosePointerDown = (event) => {
         event.stopPropagation();
         draggingRef.current = false;
+        setIsDragging(false);
     };
+
+    const yPosition = isClosing
+        ? -NOTE_HEIGHT - ENTRY_OFFSET
+        : hasEnteredViewport
+          ? position.y
+          : -NOTE_HEIGHT - ENTRY_OFFSET;
 
     return (
         <article
             ref={rootRef}
             className='fixed h-[556px] w-[556px] border border-black bg-linear-to-b from-primary from-0% via-primary via-66% to-light to-100% p-4 text-sm shadow-[0_10px_30px_rgba(0,0,0,0.2)]'
             style={{
-                transform: `translate3d(${position.x}px, ${position.y}px, 0) rotate(${position.rotation ?? 0}deg)`,
+                transform: `translate3d(${position.x}px, ${yPosition}px, 0) rotate(${position.rotation ?? 0}deg)`,
+                transition: isDragging
+                    ? 'none'
+                    : 'transform 450ms cubic-bezier(0.22, 1, 0.36, 1)',
                 zIndex,
                 touchAction: 'none',
+                pointerEvents: isClosing ? 'none' : 'auto',
             }}
             onPointerDown={handlePointerDown}
         >
