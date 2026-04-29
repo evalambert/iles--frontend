@@ -65,12 +65,26 @@ export default function Lightbox({
         const handleKeydown = (event) => {
             if (event.key === 'Escape') {
                 onClose?.();
+                return;
+            }
+
+            if (!canNavigate) return;
+
+            if (event.key === 'ArrowLeft') {
+                event.preventDefault();
+                onPrev?.();
+                return;
+            }
+
+            if (event.key === 'ArrowRight') {
+                event.preventDefault();
+                onNext?.();
             }
         };
 
         window.addEventListener('keydown', handleKeydown);
         return () => window.removeEventListener('keydown', handleKeydown);
-    }, [hasImages, onClose]);
+    }, [hasImages, canNavigate, onClose, onPrev, onNext]);
 
     useEffect(() => {
         const updateViewport = () => {
