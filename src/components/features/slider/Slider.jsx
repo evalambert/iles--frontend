@@ -53,7 +53,8 @@ export default function Slider({
     const sliderId = useId().replace(/:/g, '');
     const prevClassName = `swiper-prev-${sliderId}`;
     const nextClassName = `swiper-next-${sliderId}`;
-    const navigationConfig = navigation
+    const canNavigate = navigation && items.length > 1;
+    const navigationConfig = canNavigate
         ? {
               prevEl: `.${prevClassName}`,
               nextEl: `.${nextClassName}`,
@@ -62,7 +63,7 @@ export default function Slider({
 
     return (
         <div className='relative'>
-            {navigation ? (
+            {canNavigate ? (
                 <>
                     <button
                         type='button'

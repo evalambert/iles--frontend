@@ -38,6 +38,7 @@ export default function Lightbox({
     const [isMobile, setIsMobile] = useState(isMobileViewport);
 
     const hasImages = Array.isArray(images) && images.length > 0;
+    const canNavigate = hasImages && images.length > 1;
     const safeIndex = hasImages
         ? ((currentIndex % images.length) + images.length) % images.length
         : 0;
@@ -103,20 +104,25 @@ export default function Lightbox({
                 <button
                     type='button'
                     onClick={onClose}
-                    className='absolute top-2.5 right-2.5 z-20 flex h-9 w-9 items-center justify-center cursor-pointer text-black transition-colors duration-200 hover:text-primary'
+                    className='absolute top-2.5 right-2.5 z-20 flex h-9 w-9 items-center justify-center cursor-pointer text-black transition-colors duration-200 hover:[&>span]:bg-primary'
                     aria-label='Fermer la lightbox'
                 >
                     <MaskIcon src='/svg/croix.svg' className='h-x-body w-6.5' />
                 </button>
 
-                <button
-                    type='button'
-                    className={`absolute left-0 top-1/2 z-10 -translate-y-1/2 cursor-pointer p-[15px] text-black transition-colors duration-200 hover:text-primary ${arrowClassName}`}
-                    aria-label='Image precedente'
-                    onClick={onPrev}
-                >
-                    <MaskIcon src={prevIconSrc} className='h-19.5 w-y-body' />
-                </button>
+                {canNavigate ? (
+                    <button
+                        type='button'
+                        className={`absolute left-0 top-1/2 z-10 -translate-y-1/2 cursor-pointer p-[15px] text-black transition-colors duration-200 hover:[&>span]:bg-primary ${arrowClassName}`}
+                        aria-label='Image precedente'
+                        onClick={onPrev}
+                    >
+                        <MaskIcon
+                            src={prevIconSrc}
+                            className='h-19.5 w-y-body'
+                        />
+                    </button>
+                ) : null}
 
                 <img
                     src={imageData.src}
@@ -129,14 +135,19 @@ export default function Lightbox({
                     onClick={onNext}
                 />
 
-                <button
-                    type='button'
-                    className={`absolute right-0 top-1/2 z-10 -translate-y-1/2 cursor-pointer p-[15px] text-black transition-colors duration-200 hover:text-primary ${arrowClassName}`}
-                    aria-label='Image suivante'
-                    onClick={onNext}
-                >
-                    <MaskIcon src={nextIconSrc} className='h-19.5 w-y-body' />
-                </button>
+                {canNavigate ? (
+                    <button
+                        type='button'
+                        className={`absolute right-0 top-1/2 z-10 -translate-y-1/2 cursor-pointer p-[15px] text-black transition-colors duration-200 hover:[&>span]:bg-primary ${arrowClassName}`}
+                        aria-label='Image suivante'
+                        onClick={onNext}
+                    >
+                        <MaskIcon
+                            src={nextIconSrc}
+                            className='h-19.5 w-y-body'
+                        />
+                    </button>
+                ) : null}
             </div>
         </div>
     );
