@@ -38,8 +38,9 @@ export default function About({ data, lang, onActiveAboutChange }) {
 
 
       {sections.map((section) => {
-        const firstParagraph = section?.Chapo?.[0];
-        const chapo = firstParagraph?.children?.map((child) => child.text).join(' ') ?? null;
+        // `section.Chapo` provient de Strapi en Rich Text (tableau de noeuds { type, children }).
+        // On le transmet tel quel au composant pour qu'il puisse rendre texte + liens.
+        const chapo = section?.Chapo ?? null;
 
         return (
           <AboutSection

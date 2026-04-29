@@ -16,6 +16,27 @@ export default function Members({ data, lang, selectedPractice, onActiveMemberCh
         return (member?.practices ?? []).some((practice) => practice?.Name === selectedPractice);
     });
 
+    const getSortKey = (value) => {
+        if (typeof value === 'string') return value.trim();
+        if (value == null) return '';
+        return String(value).trim();
+    };
+
+    // Tri alphabétique sur `firstName` puis fallback sur `lastName` si `firstName` est vide.
+    // `index` sert à garder un tri stable quand les clés sont identiques.
+    const sortedMembers = filteredMembers
+        .map((member, index) => {
+            const first = getSortKey(member?.FirstName);
+            const last = getSortKey(member?.LastName);
+            const key = first || last;
+            return { member, index, key };
+        })
+        .sort((a, b) => {
+            const cmp = a.key.localeCompare(b.key, lang ?? 'fr', { sensitivity: 'base' });
+            return cmp !== 0 ? cmp : a.index - b.index;
+        })
+        .map(({ member }) => member);
+
     useEffect(() => {
         if (!sectionRef.current) return;
 
@@ -69,7 +90,7 @@ export default function Members({ data, lang, selectedPractice, onActiveMemberCh
             className='mt-header-height scroll-mt-header-height p-[10px] bg-linear-to-t from-primary to-light to-40%  min-h-[calc(100vh-var(--spacing-header-height))]'
         >
 
-            {filteredMembers.map((member) => (
+            {sortedMembers.map((member) => (
                 <MemberSection
                     key={member.id}
                     firstName={member?.FirstName}
@@ -77,6 +98,7 @@ export default function Members({ data, lang, selectedPractice, onActiveMemberCh
                     bio={member?.Bio}
                     website={member?.Website}
                     email={member?.Email}
+                    instagram={member?.Instagram ?? []}
                     instagramUrl={member?.InstagramUrl}
                     instagramName={member?.InstagramName}
                     practices={member?.practices ?? []}

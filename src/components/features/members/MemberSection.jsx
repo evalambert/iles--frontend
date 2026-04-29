@@ -17,6 +17,7 @@ export default function MemberSection({
     bio,
     website,
     email,
+    instagram,
     instagramUrl,
     instagramName,
     practices,
@@ -27,6 +28,46 @@ export default function MemberSection({
     const memberAnchor = normalizeAnchor(fullName);
     const [lightboxIndex, setLightboxIndex] = useState(null);
     const hasImages = Array.isArray(images) && images.length > 0;
+    const isProbablyUrl = (value) => typeof value === 'string' && /^https?:\/\//i.test(value);
+    const instagramItems = Array.isArray(instagram) ? instagram : [];
+    const normalizedInstagramLinks = instagramItems.length
+        ? instagramItems
+              .map((item) => {
+                  const rawUrl = item?.InstagramUrl;
+                  const rawName = item?.InstagramName;
+
+                  // Certaines données inversent les champs (handle vs URL). On rend robuste :
+                  // - si `InstagramUrl` ne ressemble pas à une URL mais `InstagramName` oui, on inverse.
+                  let href = rawUrl;
+                  let label = rawName;
+
+                  const urlLooksLikeUrl = isProbablyUrl(rawUrl);
+                  const nameLooksLikeUrl = isProbablyUrl(rawName);
+
+                  if (!urlLooksLikeUrl && nameLooksLikeUrl) {
+                      href = rawName;
+                      label = rawUrl;
+                  }
+
+                  if (!href && nameLooksLikeUrl) href = rawName;
+                  if (!label) label = href;
+
+                  if (!href) return null;
+
+                  return {
+                      href,
+                      label,
+                  };
+              })
+              .filter(Boolean)
+        : instagramUrl
+          ? [
+                {
+                    href: instagramUrl,
+                    label: instagramName ?? instagramUrl,
+                },
+            ]
+          : [];
     const sectionRef = useRef(null);
 
     useEffect(() => {
@@ -113,7 +154,7 @@ export default function MemberSection({
                                 ) : null}
                             </div>
                             <div className='col-span-1 max-md:bg-linear-to-t max-md:from-primary max-md:to-light max-md:to-80% max-md:p-[10px] max-md:h-fit'>
-                                {website || email || instagramUrl ? (
+                                {website || email || normalizedInstagramLinks.length ? (
                                     <h3 className='mb-h3-margin'>
                                         Contact :
                                     </h3>
@@ -128,15 +169,23 @@ export default function MemberSection({
                                     </>
                                 ) : null}
 
+                                {normalizedInstagramLinks.map((link, idx) => (
+                                    <a
+                                        // `href` est souvent stable, sinon on fallback sur l'index.
+                                        key={link.href ?? idx}
+                                        href={link.href}
+                                        target='_blank'
+                                        className='block truncate'
+                                        title={link.label ?? link.href}
+                                    >
+                                        {link.label ?? link.href}
+                                    </a>
+                                ))}
+
                                 {email ? (
                                     <a href={`mailto:${email}`} className='block truncate' title={email}>{email}</a>
                                 ) : null}
 
-                                {instagramUrl ? (
-                                    <a href={instagramUrl} target='_blank' className='block truncate' title={instagramName ?? instagramUrl}>
-                                        {instagramName ?? instagramUrl}
-                                    </a>
-                                ) : null}
                             </div>
                         </div>
 

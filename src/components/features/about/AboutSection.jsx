@@ -1,5 +1,5 @@
 //src/components/features/about/AboutSection.jsx
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, Fragment } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { normalizeAnchor } from '../../../assets/scripts/utils/normalizeAnchor';
@@ -44,6 +44,62 @@ export default function AboutSection({ title, chapo, paragraphs, images, onActiv
         return richTextBlocks.map(getNodeText).join(' ');
     };
 
+    // *** Rendu RICHTEXT Chao ***
+    const renderChapo = (chapoBlocks) => {
+        if (!chapoBlocks) return null;
+        if (typeof chapoBlocks === 'string') return <p>{chapoBlocks}</p>;
+        if (!Array.isArray(chapoBlocks) || chapoBlocks.length === 0) return null;
+
+        const renderRichTextChildren = (children = []) =>
+            (Array.isArray(children) ? children : []).map((child, idx) => {
+                if (!child) return null;
+                if (child.type === 'text') {
+                    return <Fragment key={idx}>{child.text ?? ''}</Fragment>;
+                }
+
+                if (child.type === 'link') {
+                    const href = child.url;
+                    const target = child.target;
+                    const rel = target === '_blank' ? 'noopener noreferrer' : undefined;
+
+                    return (
+                        <a
+                            key={idx}
+                            href={href}
+                            target={target}
+                            rel={rel}
+                        >
+                            {(Array.isArray(child.children) ? child.children : []).map(
+                                (linkChild, linkChildIdx) => {
+                                    if (!linkChild) return null;
+                                    if (linkChild.type === 'text') {
+                                        return (
+                                            <Fragment key={linkChildIdx}>
+                                                {linkChild.text ?? ''}
+                                            </Fragment>
+                                        );
+                                    }
+                                    return null;
+                                }
+                            )}
+                        </a>
+                    );
+                }
+
+                return null;
+            });
+
+        return chapoBlocks.map((block, idx) => {
+            if (!block || block.type !== 'paragraph') return null;
+            return (
+                <p key={idx}>
+                    {renderRichTextChildren(block.children)}
+                </p>
+            );
+        });
+    };
+    // *** END — RICHTEXT CHAPO ***
+
     return (
 
 
@@ -57,7 +113,7 @@ export default function AboutSection({ title, chapo, paragraphs, images, onActiv
 
                     <h2 className='text-title mb-title-margin'>{title}</h2>
 
-                    {chapo ? <p>{chapo}</p> : null}
+                    {renderChapo(chapo)}
 
                     {paragraphs.map((paragraph) => {
                         const paragraphText = getRichTextAsString(

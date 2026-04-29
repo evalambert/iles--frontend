@@ -44,6 +44,17 @@ export default function NavIndex({ about, members, lang, selectedPractice, activ
     };
 
     const getMemberFullName = (member) => `${member?.FirstName ?? ''} ${member?.LastName ?? ''}`.trim();
+    const getSortKey = (value) => {
+        if (typeof value === 'string') return value.trim();
+        if (value == null) return '';
+        return String(value).trim();
+    };
+
+    const getMemberSortKey = (member) => {
+        const first = getSortKey(member?.FirstName);
+        const last = getSortKey(member?.LastName);
+        return first || last;
+    };
 
     const membersAnchorId = normalizeAnchor(lang === "fr" ? "Membres" : "Members");
     const isDesktopViewport = () => window.matchMedia('(min-width: 1024px)').matches;
@@ -123,10 +134,15 @@ export default function NavIndex({ about, members, lang, selectedPractice, activ
 
     const filteredMembers = (members ?? []).filter(matchesSelectedPractice);
     const aboutAnchors = about?.Sections?.map((section) => section.Title) ?? [];
-    const membersAnchors =
-        filteredMembers
-            ?.map((member) => getMemberFullName(member))
-            .filter(Boolean) ?? [];
+    const sortedMembers = filteredMembers
+        ?.map((member, index) => ({ member, index, key: getMemberSortKey(member) })) ?? [];
+
+    sortedMembers.sort((a, b) => {
+        const cmp = a.key.localeCompare(b.key, lang ?? 'fr', { sensitivity: 'base' });
+        return cmp !== 0 ? cmp : a.index - b.index;
+    });
+
+    const membersAnchors = sortedMembers.map(({ member }) => getMemberFullName(member)).filter(Boolean) ?? [];
     const practicesAnchors = Array.from(
         new Set(
             members
