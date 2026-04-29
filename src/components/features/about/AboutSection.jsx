@@ -113,29 +113,36 @@ export default function AboutSection({
             className='border scroll-mt-[calc(var(--spacing-header-height)+10px)] mb-[10px] p-[10px] bg-linear-to-t from-primary to-light to-40%'
         >
             <div className='md:grid md:grid-cols-6 md:gap-[10px]'>
-                <div className='md:col-span-4 wysiwyg'>
+                <div className='md:col-span-4 flex flex-col gap-[23px]'>
 
 
                     <h2 className='text-title '>{title}</h2>
 
 
-                    {renderChapo(chapo)}
 
-                    {paragraphs.map((paragraph) => {
-                        const paragraphText = getRichTextAsString(
-                            paragraph?.Text ?? []
-                        );
+                    <div className='flex flex-col gap-[60px]'>
+                        {chapo ? (
+                            <div className='flex flex-col gap-[23px]'>
+                                {renderChapo(chapo)}
+                            </div>
+                        ) : null}
+                        {paragraphs.map((paragraph) => {
+                            const paragraphText = getRichTextAsString(
+                                paragraph?.Text ?? []
+                            );
 
-                        return (
-                            <article key={paragraph.id}>
-                                {paragraph?.Subtitle ? (
-                                    <h3 className=''>{paragraph.Subtitle}</h3>
-                                ) : null}
-                                {paragraphText ? <p>{paragraphText}</p> : null}
-                            </article>
-                        );
-                    })}
-    
+                            return (
+                                <article key={paragraph.id} className='flex flex-col gap-[10px]'>
+                                    {paragraph?.Subtitle ? (
+                                        <h3 className=''>{paragraph.Subtitle}</h3>
+                                    ) : null}
+                                    {paragraphText ? <p>{paragraphText}</p> : null}
+                                </article>
+                            );
+                        })}
+                    </div>
+
+
                 </div>
 
             </div>

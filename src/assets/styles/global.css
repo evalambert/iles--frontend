@@ -88,10 +88,10 @@ html {
     @apply font-inter;
 }
 
-.wysiwyg h2{
+/* .wysiwyg h2{
     @apply mb-[23px];
-}
-.wysiwyg h3,
+} */
+/* .wysiwyg h3,
 .wysiwyg article h3:first-child{
     @apply mt-[60px] mb-[10px];
 }
@@ -101,7 +101,7 @@ html {
 p:last-child {
     @apply mb-0;
 }
-
+ */
 
 
 
