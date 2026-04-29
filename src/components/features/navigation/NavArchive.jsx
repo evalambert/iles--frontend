@@ -236,17 +236,17 @@ export default function NavArchive({
                 </div>
 
                 {/* ————————————————————————————————————————————— */}
-                {/* Natures Filters */}
+                {/* Categories Filters */}
                 <div className='flex-1 flex flex-col border-t'>
 
-                    {/* Natures Title */}
+                    {/* Categories Title */}
                     <button
                         type='button'
                         onClick={clearCategoryFilter}
                         className='block-title w-full cursor-pointer'
                     >
                         <h2>
-                            {lang === 'fr' ? 'Natures' : 'Natures'}
+                            {lang === 'fr' ? 'Catégories' : 'Categories'}
                         </h2>
                     </button>
 

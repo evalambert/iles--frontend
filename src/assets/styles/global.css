@@ -53,6 +53,7 @@
     /* Colors •••••••••••• */
     --color-primary: #EAFE00;
     --color-light: #F0EFEC;
+    --color-text: #2F2F2E;
 }
 
 /* MOBILE (breakpoint lg:) */
@@ -85,7 +86,7 @@ html {
 /* -------------------------------------------------------------------- */
 
 * {
-    @apply font-inter;
+    @apply font-inter text-text;
 }
 
 /* .wysiwyg h2{
@@ -171,6 +172,11 @@ body:has(#mobile-nav-panel[aria-hidden='false']) #open-nav-icon {
 
 body:has(#mobile-nav-panel[aria-hidden='false']) #close-nav-icon {
     display: block;
+}
+
+.slider-arrow.swiper-button-disabled {
+    pointer-events: none;
+    opacity: 0;
 }
 
 

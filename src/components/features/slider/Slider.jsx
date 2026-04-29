@@ -1,5 +1,5 @@
 //src/components/features/slider/Slider.jsx
-import { useId, useState } from 'react';
+import { useId } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination, A11y } from 'swiper/modules';
 import 'swiper/css';
@@ -10,7 +10,7 @@ function MaskIcon({ src, className = '' }) {
     return (
         <span
             aria-hidden='true'
-            className={`pointer-events-none block shrink-0 bg-current ${className}`}
+            className={`pointer-events-none block shrink-0 bg-current hover:bg-primary ${className}`}
             style={{
                 maskImage: `url(${src})`,
                 WebkitMaskImage: `url(${src})`,
@@ -42,9 +42,6 @@ export default function Slider({
     swiperRef = null,
     onSwiper = null,
 }) {
-    const [isAtBeginning, setIsAtBeginning] = useState(true);
-    const [isAtEnd, setIsAtEnd] = useState(false);
-
     if (
         !Array.isArray(items) ||
         !items.length ||
@@ -69,7 +66,7 @@ export default function Slider({
                 <>
                     <button
                         type='button'
-                        className={`${prevClassName} absolute left-0 top-1/2 z-10 -translate-y-1/2 p-[15px] cursor-pointer text-black transition-colors duration-200 hover:text-primary ${isAtBeginning ? 'pointer-events-none opacity-0' : ''} ${arrowClassName}`}
+                        className={`${prevClassName} slider-arrow absolute left-0 top-1/2 z-10 -translate-y-1/2 p-[15px] cursor-pointer text-black transition-colors duration-200 hover:[&>span]:bg-primary ${arrowClassName}`}
                         aria-label='Slide precedente'
                     >
                         <MaskIcon
@@ -79,7 +76,7 @@ export default function Slider({
                     </button>
                     <button
                         type='button'
-                        className={`${nextClassName} absolute right-0 top-1/2 z-10 -translate-y-1/2 p-[15px] cursor-pointer text-black transition-colors duration-200 hover:text-primary ${isAtEnd ? 'pointer-events-none opacity-0' : ''} ${arrowClassName}`}
+                        className={`${nextClassName} slider-arrow absolute right-0 top-1/2 z-10 -translate-y-1/2 p-[15px] cursor-pointer text-black transition-colors duration-200 hover:[&>span]:bg-primary ${arrowClassName}`}
                         aria-label='Slide suivante'
                     >
                         <MaskIcon
@@ -102,18 +99,12 @@ export default function Slider({
                 resizeObserver={true}
                 className={className}
                 onSwiper={(swiper) => {
-                    setIsAtBeginning(swiper.isBeginning);
-                    setIsAtEnd(swiper.isEnd);
                     if (swiperRef) {
                         swiperRef.current = swiper;
                     }
                     if (typeof onSwiper === 'function') {
                         onSwiper(swiper);
                     }
-                }}
-                onSlideChange={(swiper) => {
-                    setIsAtBeginning(swiper.isBeginning);
-                    setIsAtEnd(swiper.isEnd);
                 }}
             >
                 {items.map((item, index) => (

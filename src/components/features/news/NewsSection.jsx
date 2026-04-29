@@ -22,6 +22,30 @@ export default function NewsSection({
     const hasImages = Array.isArray(images) && images.length > 0;
     const newsAnchor = normalizeAnchor(news.Title);
     const sectionRef = useRef(null);
+    const sliderInstanceRef = useRef(null);
+    const forceLayoutTimeoutRef = useRef(null);
+    const FORCE_LAYOUT_DELAY_MS = 350;
+
+    const forceLayoutSync = () => {
+        const swiper = sliderInstanceRef.current;
+        if (!swiper || swiper.destroyed || !swiper.el) return;
+
+        swiper.updateSize();
+        swiper.updateSlides();
+        swiper.updateProgress();
+        swiper.updateSlidesClasses();
+        swiper.update();
+        swiper.slideTo(0, 0, false);
+    };
+
+    const scheduleForceLayoutSync = () => {
+        if (forceLayoutTimeoutRef.current) {
+            clearTimeout(forceLayoutTimeoutRef.current);
+        }
+        forceLayoutTimeoutRef.current = setTimeout(() => {
+            forceLayoutSync();
+        }, FORCE_LAYOUT_DELAY_MS);
+    };
 
     // *** DATE FORMATTING ***
     const parseIsoDate = (value) => {
@@ -145,11 +169,20 @@ export default function NewsSection({
             trigger: sectionRef.current,
             start: 'top 100px',
             end: 'bottom 100px',
-            onEnter: () => onActiveNewsChange?.(newsAnchor),
-            onEnterBack: () => onActiveNewsChange?.(newsAnchor),
+            onEnter: () => {
+                onActiveNewsChange?.(newsAnchor);
+                scheduleForceLayoutSync();
+            },
+            onEnterBack: () => {
+                onActiveNewsChange?.(newsAnchor);
+                scheduleForceLayoutSync();
+            },
         });
 
         return () => {
+            if (forceLayoutTimeoutRef.current) {
+                clearTimeout(forceLayoutTimeoutRef.current);
+            }
             trigger.kill();
         };
     }, [newsAnchor, onActiveNewsChange]);
@@ -187,12 +220,14 @@ export default function NewsSection({
                     className=''
                     slideClassName='!w-fit'
                     spaceBetween={0}
+                    swiperRef={sliderInstanceRef}
                     renderSlide={(image, index) => (
                         <ImageSlider
                             image={image}
                             alt={news.Title || 'news image'}
                             className='w-auto h-[371px] object-cover'
                             preferredFormat='medium'
+                            onLoad={scheduleForceLayoutSync}
                             onClick={() => setLightboxIndex(index)}
                         />
                     )}
