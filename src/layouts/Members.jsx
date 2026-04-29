@@ -90,23 +90,46 @@ export default function Members({ data, lang, selectedPractice, onActiveMemberCh
             className='mt-header-height scroll-mt-header-height p-[10px] bg-linear-to-t from-primary to-light to-40%  min-h-[calc(100vh-var(--spacing-header-height))]'
         >
 
-            {sortedMembers.map((member) => (
-                <MemberSection
-                    key={member.id}
-                    firstName={member?.FirstName}
-                    lastName={member?.LastName}
-                    bio={member?.Bio}
-                    website={member?.Website}
-                    email={member?.Email}
-                    instagram={member?.Instagram ?? []}
-                    instagramUrl={member?.InstagramUrl}
-                    instagramName={member?.InstagramName}
-                    practices={member?.practices ?? []}
-                    images={member?.Images ?? []}
-                    lang={lang}
-                    onActiveMemberChange={onActiveMemberChange}
-                />
-            ))}
+            {sortedMembers.map((member, index) => {
+                if (index === sortedMembers.length - 1) {
+                    return (
+                        <div key={member.id} className='min-h-[calc((100vh-var(--spacing-header-height))-20px)] mt-[10px]'>
+                            <MemberSection
+                                firstName={member?.FirstName}
+                                lastName={member?.LastName}
+                                bio={member?.Bio}
+                                website={member?.Website}
+                                email={member?.Email}
+                                instagram={member?.Instagram ?? []}
+                                instagramUrl={member?.InstagramUrl}
+                                instagramName={member?.InstagramName}
+                                practices={member?.practices ?? []}
+                                images={member?.Images ?? []}
+                                lang={lang}
+                                onActiveMemberChange={onActiveMemberChange}
+                            />
+                        </div>
+                    );
+                }
+
+                return (
+                    <MemberSection
+                        key={member.id}
+                        firstName={member?.FirstName}
+                        lastName={member?.LastName}
+                        bio={member?.Bio}
+                        website={member?.Website}
+                        email={member?.Email}
+                        instagram={member?.Instagram ?? []}
+                        instagramUrl={member?.InstagramUrl}
+                        instagramName={member?.InstagramName}
+                        practices={member?.practices ?? []}
+                        images={member?.Images ?? []}
+                        lang={lang}
+                        onActiveMemberChange={onActiveMemberChange}
+                    />
+                );
+            })}
         </div>
     );
 }

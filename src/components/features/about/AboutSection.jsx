@@ -113,9 +113,10 @@ export default function AboutSection({
             className='border scroll-mt-[calc(var(--spacing-header-height)+10px)] mb-[10px] p-[10px] bg-linear-to-t from-primary to-light to-40%'
         >
             <div className='md:grid md:grid-cols-6 md:gap-[10px]'>
-                <div className='md:col-span-4'>
+                <div className='md:col-span-4 wysiwyg'>
 
-                    <h2 className='text-title mb-title-margin'>{title}</h2>
+
+                    <h2 className='text-title '>{title}</h2>
 
 
                     {renderChapo(chapo)}
@@ -126,21 +127,21 @@ export default function AboutSection({
                         );
 
                         return (
-                            <article key={paragraph.id} className='mt-4'>
+                            <article key={paragraph.id}>
                                 {paragraph?.Subtitle ? (
-                                    <h3 className='mb-h3-margin'>{paragraph.Subtitle}</h3>
+                                    <h3 className=''>{paragraph.Subtitle}</h3>
                                 ) : null}
                                 {paragraphText ? <p>{paragraphText}</p> : null}
                             </article>
                         );
                     })}
-
+    
                 </div>
 
             </div>
 
 
-            <div className='mt-[10px]'>
+            <div className='mt-[23px]'>
                 <Slider
                     items={images}
                     className=''
