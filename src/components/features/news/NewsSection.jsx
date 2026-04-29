@@ -121,6 +121,20 @@ export default function NewsSection({
 
     const formattedDateRange = formatDateRange(news?.StartDate, news?.EndDate);
     const formattedHourRange = formatHourRange(news?.StartHour, news?.EndHour);
+    const hasNewsLocation = Boolean(news?.Place || news?.Address || news?.Country);
+    const rendezVousPlaces = Array.isArray(news?.RendezVous)
+        ? news.RendezVous.reduce(
+              (acc, rendezVous) => {
+                  const normalizedPlace = String(rendezVous?.Place || '').trim();
+                  const key = normalizedPlace.toLowerCase();
+                  if (!normalizedPlace || acc.seen.has(key)) return acc;
+                  acc.seen.add(key);
+                  acc.values.push(normalizedPlace);
+                  return acc;
+              },
+              { seen: new Set(), values: [] }
+          ).values
+        : [];
 
     // *** END — DATE FORMATTING ***
 
@@ -205,7 +219,7 @@ export default function NewsSection({
                 <div className='bg-linear-to-t from-primary to-light to-80% p-[10px]'>
                     <div className='md:grid md:grid-cols-6 md:gap-[10px]'>
                         <div className='md:col-span-4'>
-                            <div className='max-w-[90%]'>
+                            <div className='max-w-[90%] wysiwyg'>
                                 {newsText ? <p>{newsText}</p> : null}
                                 {paragraphs.map((paragraph) => {
                                     const paragraphText = getRichTextAsString(
@@ -218,7 +232,7 @@ export default function NewsSection({
                                             className='mt-4'
                                         >
                                             {paragraph?.Subtitle ? (
-                                                <h3 className='mb-h3-margin'>
+                                                <h3 className=''>
                                                     {paragraph.Subtitle}
                                                 </h3>
                                             ) : null}
@@ -232,42 +246,60 @@ export default function NewsSection({
                         </div>
 
                         <div className='md:col-span-2 grid grid-cols-2 md:gap-[10px] max-md:mt-[20px] max-md:mx-[-10px] max-md:bg-primary'>
-                            <div className='col-span-1 max-md:bg-linear-to-t max-md:from-primary max-md:to-light max-md:to-80% max-md:p-[10px] max-md:h-fit'>
-                                {news?.event_categories?.map((category) => (
-                                    <p key={category.id}>{category.Name}</p>
-                                ))}
-                                {Array.isArray(news?.Links) &&
-                                news.Links.length > 0 ? (
-                                    <ul className='mt-4'>
-                                        {news.Links.map((link) => (
-                                            <li key={link.id}>
-                                                <a
-                                                    href={link.Url}
-                                                    target='_blank'
-                                                    rel='noopener noreferrer'
-                                                >
-                                                    <span className='inline pr-h3-margin'>
-                                                        &#8599;
-                                                    </span>
-                                                    {link.LinkTitle || link.Url}
-                                                </a>
-                                            </li>
+
+                            <div className='col-span-1 max-md:bg-linear-to-t max-md:from-primary max-md:to-light max-md:to-80% max-md:p-[10px] max-md:h-fit flex flex-col gap-[23px] pb-[23px]'>
+                                {news?.event_categories?.length > 0 ? (
+                                    <div>
+                                        {news?.event_categories?.map((category) => (
+                                            <p key={category.id}>{category.Name}</p>
                                         ))}
-                                    </ul>
+                                    </div>
                                 ) : null}
+
+                                {Array.isArray(news?.Links) &&
+                                    news.Links.length > 0 ? (
+                                    <div>
+                                        {Array.isArray(news?.Links) &&
+                                            news.Links.length > 0 ? (
+                                            <ul className='mt-4'>
+                                                {news.Links.map((link) => (
+                                                    <li key={link.id}>
+                                                        <a
+                                                            href={link.InstagramUrl}
+                                                            target='_blank'
+                                                            rel='noopener noreferrer'
+                                                        >
+                                                            <span className='inline pr-h3-margin'>
+                                                                &#8599;
+                                                            </span>
+                                                            {link.InstagramName || link.InstagramUrl}
+                                                        </a>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        ) : null}
+                                    </div>
+                                ) : null}
+
+
+
+
                             </div>
-                            <div className='col-span-1 max-md:bg-linear-to-t max-md:from-primary max-md:to-light max-md:to-80% max-md:p-[10px] max-md:h-fit'>
+
+                            <div className='col-span-1 max-md:bg-linear-to-t max-md:from-primary max-md:to-light max-md:to-80% max-md:p-[10px] max-md:h-fit flex flex-col gap-[23px] pb-[23px]'>
+
                                 {formattedDateRange || formattedHourRange ? (
-                                    <>
+                                    <div>
+
                                         {formattedDateRange ? (
-                                            <>
-                                                <h3 className='mb-h3-margin'>
+                                            <div className="flex flex-col gap-[10px]">
+                                                <h3 className=''>
                                                     {lang === 'fr'
                                                         ? 'Date(s) :'
                                                         : 'Date(s) :'}
                                                 </h3>
                                                 <p> {formattedDateRange}</p>
-                                            </>
+                                            </div>
                                         ) : null}
 
                                         {formattedHourRange ? (
@@ -275,33 +307,40 @@ export default function NewsSection({
                                                 <p>{formattedHourRange}</p>
                                             </>
                                         ) : null}
-                                    </>
-                                ) : null}
 
-                                {news?.Place ||
-                                news?.Address ||
-                                news?.Country ? (
-                                    <>
-                                        <h3 className='mb-h3-margin'>
+                                    </div>
+                                ) : null}
+                                
+                                {hasNewsLocation || rendezVousPlaces.length > 0 ? (
+                                    <div className="flex flex-col gap-[10px] ">
+                                        <h3 className=''>
                                             {lang === 'fr'
                                                 ? 'Lieu :'
                                                 : 'Location :'}
                                         </h3>
                                         <p>
-                                            {news?.Place ? (
+                                            {hasNewsLocation && news?.Place ? (
                                                 <span>{news?.Place}</span>
                                             ) : null}
-                                            <br></br>
-                                            {news?.Address ? (
+                                            {hasNewsLocation && news?.Place && (news?.Address || news?.Country) ? <br /> : null}
+                                            {hasNewsLocation && news?.Address ? (
                                                 <address className='not-italic inline pr-h3-margin'>
                                                     {news?.Address}
                                                 </address>
                                             ) : null}
-                                            {news?.Country ? (
+                                            {hasNewsLocation && news?.Country ? (
                                                 <span>{news?.Country}</span>
                                             ) : null}
+                                            {!hasNewsLocation && rendezVousPlaces.length > 0
+                                                ? rendezVousPlaces.map((place, index) => (
+                                                      <span key={`${place}-${index}`}>
+                                                          {place}
+                                                          {index < rendezVousPlaces.length - 1 ? ', ' : null}
+                                                      </span>
+                                                  ))
+                                                : null}
                                         </p>
-                                    </>
+                                    </div>
                                 ) : null}
                             </div>
                         </div>
@@ -309,31 +348,31 @@ export default function NewsSection({
                 </div>
                 {Array.isArray(news?.RendezVous) && news.RendezVous.length > 0
                     ? news.RendezVous.map((rendezVous) => {
-                          const rendezVousText = getRichTextAsString(
-                              rendezVous?.Text ?? []
-                          );
-                          const rendezVousDate = formatDate(
-                              parseIsoDate(rendezVous?.EventDate)
-                          );
-                          const rendezVousHourRange = formatHourRange(
-                              rendezVous?.StartHour,
-                              rendezVous?.EndHour
-                          );
+                        const rendezVousText = getRichTextAsString(
+                            rendezVous?.Text ?? []
+                        );
+                        const rendezVousDate = formatDate(
+                            parseIsoDate(rendezVous?.EventDate)
+                        );
+                        const rendezVousHourRange = formatHourRange(
+                            rendezVous?.StartHour,
+                            rendezVous?.EndHour
+                        );
 
-                          return (
-                              <NewsRdvSection
-                                  key={
-                                      rendezVous?.id ??
-                                      `${rendezVous?.Title ?? 'rendez-vous'}-${rendezVous?.EventDate ?? ''}`
-                                  }
-                                  rendezVous={rendezVous}
-                                  rendezVousText={rendezVousText}
-                                  rendezVousDate={rendezVousDate}
-                                  rendezVousHourRange={rendezVousHourRange}
-                                  lang={lang}
-                              />
-                          );
-                      })
+                        return (
+                            <NewsRdvSection
+                                key={
+                                    rendezVous?.id ??
+                                    `${rendezVous?.Title ?? 'rendez-vous'}-${rendezVous?.EventDate ?? ''}`
+                                }
+                                rendezVous={rendezVous}
+                                rendezVousText={rendezVousText}
+                                rendezVousDate={rendezVousDate}
+                                rendezVousHourRange={rendezVousHourRange}
+                                lang={lang}
+                            />
+                        );
+                    })
                     : null}
             </div>
         </section>
