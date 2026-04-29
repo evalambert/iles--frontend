@@ -1,4 +1,4 @@
- //src/components/features/slider/Slider.jsx
+//src/components/features/slider/Slider.jsx
 import { useId, useState } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination, A11y } from 'swiper/modules';
@@ -43,6 +43,7 @@ export default function Slider({
     onSwiper = null,
 }) {
     const [isAtBeginning, setIsAtBeginning] = useState(true);
+    const [isAtEnd, setIsAtEnd] = useState(false);
 
     if (
         !Array.isArray(items) ||
@@ -78,7 +79,7 @@ export default function Slider({
                     </button>
                     <button
                         type='button'
-                        className={`${nextClassName} absolute right-0 top-1/2 z-10 -translate-y-1/2 p-[15px] cursor-pointer text-black transition-colors duration-200 hover:text-primary ${arrowClassName}`}
+                        className={`${nextClassName} absolute right-0 top-1/2 z-10 -translate-y-1/2 p-[15px] cursor-pointer text-black transition-colors duration-200 hover:text-primary ${isAtEnd ? 'pointer-events-none opacity-0' : ''} ${arrowClassName}`}
                         aria-label='Slide suivante'
                     >
                         <MaskIcon
@@ -102,6 +103,7 @@ export default function Slider({
                 className={className}
                 onSwiper={(swiper) => {
                     setIsAtBeginning(swiper.isBeginning);
+                    setIsAtEnd(swiper.isEnd);
                     if (swiperRef) {
                         swiperRef.current = swiper;
                     }
@@ -111,6 +113,7 @@ export default function Slider({
                 }}
                 onSlideChange={(swiper) => {
                     setIsAtBeginning(swiper.isBeginning);
+                    setIsAtEnd(swiper.isEnd);
                 }}
             >
                 {items.map((item, index) => (
