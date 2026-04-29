@@ -99,20 +99,37 @@ export default function Archive({
 
   return (
     <div
-    ref={sectionRef}
-    id={archiveAnchorId}
-    className=" mt-header-height scroll-mt-[calc(var(--spacing-header-height)+10px)] p-[10px] bg-linear-to-t from-primary to-light to-40%">
+      ref={sectionRef}
+      id={archiveAnchorId}
+      className=" mt-header-height scroll-mt-[calc(var(--spacing-header-height)+10px)] p-[10px] bg-linear-to-t from-primary to-light to-40%">
       <ul>
-        {filteredNews.map((item) => (
-          <NewsSection
-            key={item.id}
-            news={item}
-            lang={lang}
-            paragraphs={item?.Paragraphs ?? []}
-            images={item?.Images ?? []}
-            onActiveNewsChange={onActiveNewsChange}
-          />
-        ))}
+
+        {filteredNews.map((item, index) => {
+          if (index === filteredNews.length - 1) {
+            return (
+              <div key={item.id} className='min-h-[calc((100vh-var(--spacing-header-height))-20px)] mt-[10px]'>
+                <NewsSection
+                  news={item}
+                  lang={lang}
+                  paragraphs={item?.Paragraphs ?? []}
+                  images={item?.Images ?? []}
+                  onActiveNewsChange={onActiveNewsChange}
+                />
+              </div>
+            );
+          }
+
+          return (
+            <NewsSection
+              key={item.id}
+              news={item}
+              lang={lang}
+              paragraphs={item?.Paragraphs ?? []}
+              images={item?.Images ?? []}
+              onActiveNewsChange={onActiveNewsChange}
+            />
+          );
+        })}
       </ul>
     </div>
   )

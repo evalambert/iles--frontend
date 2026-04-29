@@ -31,7 +31,7 @@
     /* Typography •••••••••••• */
     --font-inter: 'Inter-Regular', 'sans-serif';
     --text-base: 16px;
-    --text-base--line-height: auto;
+    --text-base--line-height: 20px;
 
     --text-title: 25.8px;
     --text-title--line-height: auto;
@@ -53,6 +53,7 @@
     /* Colors •••••••••••• */
     --color-primary: #EAFE00;
     --color-light: #F0EFEC;
+    --color-text: #2F2F2E;
 }
 
 /* MOBILE (breakpoint lg:) */
@@ -85,17 +86,23 @@ html {
 /* -------------------------------------------------------------------- */
 
 * {
-    @apply font-inter;
+    @apply font-inter text-text;
 }
 
-
-p {
-    @apply mb-text-margin;
+/* .wysiwyg h2{
+    @apply mb-[23px];
+} */
+/* .wysiwyg h3,
+.wysiwyg article h3:first-child{
+    @apply mt-[60px] mb-[10px];
 }
-
+.wysiwyg h3:first-child{
+    @apply mt-0;
+}
 p:last-child {
     @apply mb-0;
 }
+ */
 
 
 
@@ -165,6 +172,11 @@ body:has(#mobile-nav-panel[aria-hidden='false']) #open-nav-icon {
 
 body:has(#mobile-nav-panel[aria-hidden='false']) #close-nav-icon {
     display: block;
+}
+
+.slider-arrow.swiper-button-disabled {
+    pointer-events: none;
+    opacity: 0;
 }
 
 

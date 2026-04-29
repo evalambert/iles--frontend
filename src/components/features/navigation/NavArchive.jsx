@@ -85,7 +85,11 @@ export default function NavArchive({
     const switchLangPath = (() => {
         if (typeof window === 'undefined') return `/${otherLang}`;
 
-        const [_, currentLang, ...rest] = window.location.pathname.split('/');
+        const rawPathname = window.location.pathname;
+        const normalizedPathname =
+            rawPathname === '/' ? '/' : rawPathname.replace(/\/+$/, '');
+
+        const [_, currentLang, ...rest] = normalizedPathname.split('/');
         if (currentLang === 'fr' || currentLang === 'en') {
             const mappedRest = [...rest];
             if (mappedRest.length > 0) {
@@ -101,7 +105,9 @@ export default function NavArchive({
             return `/${otherLang}${mappedRest.length ? `/${mappedRest.join('/')}` : ''}`;
         }
 
-        return `/${otherLang}${window.location.pathname.startsWith('/') ? window.location.pathname : `/${window.location.pathname}`}`;
+        return `/${otherLang}${
+            normalizedPathname.startsWith('/') ? normalizedPathname : `/${normalizedPathname}`
+        }`;
     })();
     // **** END — Menu Mobile ONLY ****
 
@@ -230,17 +236,17 @@ export default function NavArchive({
                 </div>
 
                 {/* ————————————————————————————————————————————— */}
-                {/* Natures Filters */}
+                {/* Categories Filters */}
                 <div className='flex-1 flex flex-col border-t'>
 
-                    {/* Natures Title */}
+                    {/* Categories Title */}
                     <button
                         type='button'
                         onClick={clearCategoryFilter}
                         className='block-title w-full cursor-pointer'
                     >
                         <h2>
-                            {lang === 'fr' ? 'Natures' : 'Natures'}
+                            {lang === 'fr' ? 'Catégories' : 'Categories'}
                         </h2>
                     </button>
 
@@ -265,8 +271,8 @@ export default function NavArchive({
                     </ul>
                 </div>
                 {/* Mobile Nav Link */}
-                <ul className="lg:hidden border-t hover">
-                    <li className='relative overflow-hidden block border-b bg-linear-to-t from-primary to-light to-40% py-[15px] px-[10px] min-h-header-height;'>
+                <ul className="lg:hidden border-t hover max-md:flex">
+                    <li className='relative overflow-hidden block border-b bg-linear-to-t from-primary to-light to-40% py-[15px] px-[10px] min-h-header-height max-md:flex-1 max-md:border-r'>
                         <a
                             href={navHref}
                             className='h-full w-full flex items-center justify-center text-title'
@@ -274,7 +280,7 @@ export default function NavArchive({
                             {navLabel}
                         </a>
                     </li>
-                    <li className='relative overflow-hidden block border-b bg-linear-to-t from-primary to-light to-40% py-[15px] px-[10px] min-h-header-height;'>
+                    <li className='relative overflow-hidden block border-b bg-linear-to-t from-primary to-light to-40% py-[15px] px-[10px] min-h-header-height max-md:flex-1'>
                         <a
                             href={switchLangPath}
                             className='text-title block min-w-[2ch] text-center'

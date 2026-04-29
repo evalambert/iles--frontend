@@ -1,7 +1,9 @@
 ---
 // src/components/common/LangSwitcher.astro
 
-const pathname = Astro.url.pathname;
+const rawPathname = Astro.url.pathname;
+// Normalise pour éviter des mismatch SSR/client sur le slash final (/en vs /en/)
+const pathname = rawPathname === '/' ? '/' : rawPathname.replace(/\/+$/, '');
 const [, currentLang, ...rest] = pathname.split('/');
 const supported = ['fr', 'en'];
 const safeLang = supported.includes(currentLang) ? currentLang : 'fr';

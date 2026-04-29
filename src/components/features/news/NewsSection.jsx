@@ -1,4 +1,4 @@
-//src/components/features/news/NewsSection.jsx  
+//src/components/features/news/NewsSection.jsx
 
 import Slider from '../slider/Slider';
 import ImageSlider from '../../common/ImageSlider';
@@ -11,13 +11,41 @@ import { normalizeAnchor } from '../../../assets/scripts/utils/normalizeAnchor';
 
 gsap.registerPlugin(ScrollTrigger);
 
-export default function NewsSection({ news, lang, paragraphs, images, onActiveNewsChange }) {
+export default function NewsSection({
+    news,
+    lang,
+    paragraphs,
+    images,
+    onActiveNewsChange,
+}) {
     const [lightboxIndex, setLightboxIndex] = useState(null);
     const hasImages = Array.isArray(images) && images.length > 0;
     const newsAnchor = normalizeAnchor(news.Title);
     const sectionRef = useRef(null);
+    const sliderInstanceRef = useRef(null);
+    const forceLayoutTimeoutRef = useRef(null);
+    const FORCE_LAYOUT_DELAY_MS = 350;
 
+    const forceLayoutSync = () => {
+        const swiper = sliderInstanceRef.current;
+        if (!swiper || swiper.destroyed || !swiper.el) return;
 
+        swiper.updateSize();
+        swiper.updateSlides();
+        swiper.updateProgress();
+        swiper.updateSlidesClasses();
+        swiper.update();
+        swiper.slideTo(0, 0, false);
+    };
+
+    const scheduleForceLayoutSync = () => {
+        if (forceLayoutTimeoutRef.current) {
+            clearTimeout(forceLayoutTimeoutRef.current);
+        }
+        forceLayoutTimeoutRef.current = setTimeout(() => {
+            forceLayoutSync();
+        }, FORCE_LAYOUT_DELAY_MS);
+    };
 
     // *** DATE FORMATTING ***
     const parseIsoDate = (value) => {
@@ -29,7 +57,11 @@ export default function NewsSection({ news, lang, paragraphs, images, onActiveNe
         const month = Number(parts[1]);
         const day = Number(parts[2]);
 
-        if (!Number.isInteger(year) || !Number.isInteger(month) || !Number.isInteger(day)) {
+        if (
+            !Number.isInteger(year) ||
+            !Number.isInteger(month) ||
+            !Number.isInteger(day)
+        ) {
             return null;
         }
 
@@ -57,14 +89,17 @@ export default function NewsSection({ news, lang, paragraphs, images, onActiveNe
 
         if (startDate && endDate) {
             const sameMonthAndYear =
-                startDate.month === endDate.month && startDate.year === endDate.year;
+                startDate.month === endDate.month &&
+                startDate.year === endDate.year;
 
             if (sameMonthAndYear) {
                 return `${pad2(startDate.day)}-${pad2(endDate.day)}/${pad2(startDate.month)}/${startDate.year}`;
             }
 
             const sameYear = startDate.year === endDate.year;
-            const startFormatted = sameYear ? formatDateWithoutYear(startDate) : formatDate(startDate);
+            const startFormatted = sameYear
+                ? formatDateWithoutYear(startDate)
+                : formatDate(startDate);
             const endFormatted = formatDate(endDate);
 
             if (lang === 'en') {
@@ -105,12 +140,25 @@ export default function NewsSection({ news, lang, paragraphs, images, onActiveNe
         if (singleHour) {
             return lang === 'en' ? `at ${singleHour}` : `à ${singleHour}`;
         }
-
         return '';
     };
 
     const formattedDateRange = formatDateRange(news?.StartDate, news?.EndDate);
     const formattedHourRange = formatHourRange(news?.StartHour, news?.EndHour);
+    const hasNewsLocation = Boolean(news?.Place || news?.Address || news?.Country);
+    const rendezVousPlaces = Array.isArray(news?.RendezVous)
+        ? news.RendezVous.reduce(
+              (acc, rendezVous) => {
+                  const normalizedPlace = String(rendezVous?.Place || '').trim();
+                  const key = normalizedPlace.toLowerCase();
+                  if (!normalizedPlace || acc.seen.has(key)) return acc;
+                  acc.seen.add(key);
+                  acc.values.push(normalizedPlace);
+                  return acc;
+              },
+              { seen: new Set(), values: [] }
+          ).values
+        : [];
 
     // *** END — DATE FORMATTING ***
 
@@ -121,11 +169,20 @@ export default function NewsSection({ news, lang, paragraphs, images, onActiveNe
             trigger: sectionRef.current,
             start: 'top 100px',
             end: 'bottom 100px',
-            onEnter: () => onActiveNewsChange?.(newsAnchor),
-            onEnterBack: () => onActiveNewsChange?.(newsAnchor),
+            onEnter: () => {
+                onActiveNewsChange?.(newsAnchor);
+                scheduleForceLayoutSync();
+            },
+            onEnterBack: () => {
+                onActiveNewsChange?.(newsAnchor);
+                scheduleForceLayoutSync();
+            },
         });
 
         return () => {
+            if (forceLayoutTimeoutRef.current) {
+                clearTimeout(forceLayoutTimeoutRef.current);
+            }
             trigger.kill();
         };
     }, [newsAnchor, onActiveNewsChange]);
@@ -150,24 +207,27 @@ export default function NewsSection({ news, lang, paragraphs, images, onActiveNe
             id={newsAnchor}
             className='border scroll-mt-[calc(var(--spacing-header-height)+10px)] mt-[10px]'
         >
-            <a href={`#${newsAnchor}`} className="block-title border-b border-transparent">
+            <a
+                href={`#${newsAnchor}`}
+                className='block-title border-b border-transparent'
+            >
                 <h2 className='text-title text-center'>{news.Title}</h2>
             </a>
 
             <div>
-
-
                 <Slider
                     items={images}
                     className=''
                     slideClassName='!w-fit'
                     spaceBetween={0}
+                    swiperRef={sliderInstanceRef}
                     renderSlide={(image, index) => (
                         <ImageSlider
                             image={image}
                             alt={news.Title || 'news image'}
                             className='w-auto h-[371px] object-cover'
                             preferredFormat='medium'
+                            onLoad={scheduleForceLayoutSync}
                             onClick={() => setLightboxIndex(index)}
                         />
                     )}
@@ -180,18 +240,21 @@ export default function NewsSection({ news, lang, paragraphs, images, onActiveNe
                         onClose={() => setLightboxIndex(null)}
                         onPrev={() =>
                             setLightboxIndex(
-                                (prev) => (prev - 1 + images.length) % images.length
+                                (prev) =>
+                                    (prev - 1 + images.length) % images.length
                             )
                         }
                         onNext={() =>
-                            setLightboxIndex((prev) => (prev + 1) % images.length)
+                            setLightboxIndex(
+                                (prev) => (prev + 1) % images.length
+                            )
                         }
                     />
                 ) : null}
                 <div className='bg-linear-to-t from-primary to-light to-80% p-[10px]'>
                     <div className='md:grid md:grid-cols-6 md:gap-[10px]'>
                         <div className='md:col-span-4'>
-                            <div className='max-w-[90%]'>
+                            <div className='max-w-[90%] wysiwyg'>
                                 {newsText ? <p>{newsText}</p> : null}
                                 {paragraphs.map((paragraph) => {
                                     const paragraphText = getRichTextAsString(
@@ -199,89 +262,133 @@ export default function NewsSection({ news, lang, paragraphs, images, onActiveNe
                                     );
 
                                     return (
-                                        <article key={paragraph.id} className='mt-4'>
+                                        <article
+                                            key={paragraph.id}
+                                            className='mt-4'
+                                        >
                                             {paragraph?.Subtitle ? (
-                                                <h3 className='mb-h3-margin'>{paragraph.Subtitle}</h3>
+                                                <h3 className=''>
+                                                    {paragraph.Subtitle}
+                                                </h3>
                                             ) : null}
-                                            {paragraphText ? <p>{paragraphText}</p> : null}
+                                            {paragraphText ? (
+                                                <p>{paragraphText}</p>
+                                            ) : null}
                                         </article>
                                     );
                                 })}
                             </div>
                         </div>
-                        <div className='md:col-span-2 grid grid-cols-2 gap-[10px] max-md:mt-[20px]'>
-                            <div className='col-span-1 '>
 
+                        <div className='md:col-span-2 grid grid-cols-2 md:gap-[10px] max-md:mt-[20px] max-md:mx-[-10px] max-md:bg-primary'>
 
-                                {news?.event_categories?.map((category) => (
-                                    <p key={category.id}>{category.Name}</p>
-                                ))}
-                                {Array.isArray(news?.Links) && news.Links.length > 0 ? (
-                                    <ul className='mt-4'>
-                                        {news.Links.map((link) => (
-                                            <li key={link.id}>
-                                                <a
-                                                    href={link.Url}
-                                                    target='_blank'
-                                                    rel='noopener noreferrer'
-                                                >
-                                                    <span className='inline pr-h3-margin'>&#8599;</span>
-                                                    {link.LinkTitle || link.Url}
-                                                </a>
-                                            </li>
+                            <div className='col-span-1 max-md:bg-linear-to-t max-md:from-primary max-md:to-light max-md:to-80% max-md:p-[10px] max-md:h-fit flex flex-col gap-[23px] pb-[23px]'>
+                                {news?.event_categories?.length > 0 ? (
+                                    <div>
+                                        {news?.event_categories?.map((category) => (
+                                            <p key={category.id}>{category.Name}</p>
                                         ))}
-                                    </ul>
+                                    </div>
                                 ) : null}
 
+                                {Array.isArray(news?.Links) &&
+                                    news.Links.length > 0 ? (
+                                    <div>
+                                        {Array.isArray(news?.Links) &&
+                                            news.Links.length > 0 ? (
+                                            <ul className='mt-4'>
+                                                {news.Links.map((link) => (
+                                                    <li key={link.id}>
+                                                        <a
+                                                            href={link.InstagramUrl}
+                                                            target='_blank'
+                                                            rel='noopener noreferrer'
+                                                        >
+                                                            <span className='inline pr-h3-margin'>
+                                                                &#8599;
+                                                            </span>
+                                                            {link.InstagramName || link.InstagramUrl}
+                                                        </a>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        ) : null}
+                                    </div>
+                                ) : null}
+
+
+
+
                             </div>
-                            <div className='col-span-1 '>
 
-                                {formattedDateRange || formattedHourRange ? (<>
-                                    {formattedDateRange ? (
-                                        <>
-                                            <h3 className='mb-h3-margin'>
-                                                {lang === "fr" ? "Date(s) :" : "Date(s) :"}
-                                            </h3>
-                                            <p> {formattedDateRange}</p>
-                                        </>
-                                    ) : null}
+                            <div className='col-span-1 max-md:bg-linear-to-t max-md:from-primary max-md:to-light max-md:to-80% max-md:p-[10px] max-md:h-fit flex flex-col gap-[23px] pb-[23px]'>
 
-                                    {formattedHourRange ? (
-                                        <>
-                                            <p>{formattedHourRange}</p>
-                                        </>
-                                    ) : null}
-                                </>) : null}
+                                {formattedDateRange || formattedHourRange ? (
+                                    <div>
 
+                                        {formattedDateRange ? (
+                                            <div className="flex flex-col gap-[10px]">
+                                                <h3 className=''>
+                                                    {lang === 'fr'
+                                                        ? 'Date(s) :'
+                                                        : 'Date(s) :'}
+                                                </h3>
+                                                <p> {formattedDateRange}</p>
+                                            </div>
+                                        ) : null}
 
+                                        {formattedHourRange ? (
+                                            <>
+                                                <p>{formattedHourRange}</p>
+                                            </>
+                                        ) : null}
 
-                                {news?.Place || news?.Address || news?.Country ? (<>
-                                    <h3 className='mb-h3-margin'>
-                                        {lang === "fr" ? "Lieu :" : "Location :"}
-                                    </h3>
-                                    <p>
-                                        {news?.Place ? <span>{news?.Place}</span> : null}
-                                        <br></br>
-                                        {news?.Address ? <address className='not-italic inline pr-h3-margin'>{news?.Address}</address> : null}
-                                        {news?.Country ? <span>{news?.Country}</span> : null}
-                                    </p>
-                                </>
+                                    </div>
+                                ) : null}
+                                
+                                {hasNewsLocation || rendezVousPlaces.length > 0 ? (
+                                    <div className="flex flex-col gap-[10px] ">
+                                        <h3 className=''>
+                                            {lang === 'fr'
+                                                ? 'Lieu :'
+                                                : 'Location :'}
+                                        </h3>
+                                        <p>
+                                            {hasNewsLocation && news?.Place ? (
+                                                <span>{news?.Place}</span>
+                                            ) : null}
+                                            {hasNewsLocation && news?.Place && (news?.Address || news?.Country) ? <br /> : null}
+                                            {hasNewsLocation && news?.Address ? (
+                                                <address className='not-italic inline pr-h3-margin'>
+                                                    {news?.Address}
+                                                </address>
+                                            ) : null}
+                                            {hasNewsLocation && news?.Country ? (
+                                                <span>{news?.Country}</span>
+                                            ) : null}
+                                            {!hasNewsLocation && rendezVousPlaces.length > 0
+                                                ? rendezVousPlaces.map((place, index) => (
+                                                      <span key={`${place}-${index}`}>
+                                                          {place}
+                                                          {index < rendezVousPlaces.length - 1 ? ', ' : null}
+                                                      </span>
+                                                  ))
+                                                : null}
+                                        </p>
+                                    </div>
                                 ) : null}
                             </div>
                         </div>
-
-
                     </div>
-
-
-
-
-
                 </div>
                 {Array.isArray(news?.RendezVous) && news.RendezVous.length > 0
                     ? news.RendezVous.map((rendezVous) => {
-                        const rendezVousText = getRichTextAsString(rendezVous?.Text ?? []);
-                        const rendezVousDate = formatDate(parseIsoDate(rendezVous?.EventDate));
+                        const rendezVousText = getRichTextAsString(
+                            rendezVous?.Text ?? []
+                        );
+                        const rendezVousDate = formatDate(
+                            parseIsoDate(rendezVous?.EventDate)
+                        );
                         const rendezVousHourRange = formatHourRange(
                             rendezVous?.StartHour,
                             rendezVous?.EndHour
@@ -289,7 +396,10 @@ export default function NewsSection({ news, lang, paragraphs, images, onActiveNe
 
                         return (
                             <NewsRdvSection
-                                key={rendezVous?.id ?? `${rendezVous?.Title ?? 'rendez-vous'}-${rendezVous?.EventDate ?? ''}`}
+                                key={
+                                    rendezVous?.id ??
+                                    `${rendezVous?.Title ?? 'rendez-vous'}-${rendezVous?.EventDate ?? ''}`
+                                }
                                 rendezVous={rendezVous}
                                 rendezVousText={rendezVousText}
                                 rendezVousDate={rendezVousDate}
@@ -299,12 +409,7 @@ export default function NewsSection({ news, lang, paragraphs, images, onActiveNe
                         );
                     })
                     : null}
-
-
-
-
             </div>
-
         </section>
     );
 }

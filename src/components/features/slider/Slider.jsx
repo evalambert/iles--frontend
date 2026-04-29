@@ -10,7 +10,7 @@ function MaskIcon({ src, className = '' }) {
     return (
         <span
             aria-hidden='true'
-            className={`pointer-events-none block shrink-0 bg-current ${className}`}
+            className={`pointer-events-none block shrink-0 bg-current hover:bg-primary ${className}`}
             style={{
                 maskImage: `url(${src})`,
                 WebkitMaskImage: `url(${src})`,
@@ -32,13 +32,15 @@ export default function Slider({
     spaceBetween = 0,
     navigation = true,
     pagination = false,
-    loop = true,
+    loop = false,
     className = '',
     slideClassName = '',
     slideSeparatorClassName = '',
     prevIconSrc = '/svg/fleche-guauche.svg',
     nextIconSrc = '/svg/fleche-droite.svg',
     arrowClassName = '',
+    swiperRef = null,
+    onSwiper = null,
 }) {
     if (
         !Array.isArray(items) ||
@@ -51,7 +53,8 @@ export default function Slider({
     const sliderId = useId().replace(/:/g, '');
     const prevClassName = `swiper-prev-${sliderId}`;
     const nextClassName = `swiper-next-${sliderId}`;
-    const navigationConfig = navigation
+    const canNavigate = navigation && items.length > 1;
+    const navigationConfig = canNavigate
         ? {
               prevEl: `.${prevClassName}`,
               nextEl: `.${nextClassName}`,
@@ -60,11 +63,11 @@ export default function Slider({
 
     return (
         <div className='relative'>
-            {navigation ? (
+            {canNavigate ? (
                 <>
                     <button
                         type='button'
-                        className={`${prevClassName} absolute left-0 top-1/2 z-10 -translate-y-1/2 p-[15px] cursor-pointer text-black transition-colors duration-200 hover:text-primary ${arrowClassName}`}
+                        className={`${prevClassName} slider-arrow absolute left-0 top-1/2 z-10 -translate-y-1/2 p-[15px] cursor-pointer text-black transition-colors duration-200 hover:[&>span]:bg-primary ${arrowClassName}`}
                         aria-label='Slide precedente'
                     >
                         <MaskIcon
@@ -74,7 +77,7 @@ export default function Slider({
                     </button>
                     <button
                         type='button'
-                        className={`${nextClassName} absolute right-0 top-1/2 z-10 -translate-y-1/2 p-[15px] cursor-pointer text-black transition-colors duration-200 hover:text-primary ${arrowClassName}`}
+                        className={`${nextClassName} slider-arrow absolute right-0 top-1/2 z-10 -translate-y-1/2 p-[15px] cursor-pointer text-black transition-colors duration-200 hover:[&>span]:bg-primary ${arrowClassName}`}
                         aria-label='Slide suivante'
                     >
                         <MaskIcon
@@ -92,7 +95,18 @@ export default function Slider({
                 navigation={navigationConfig}
                 pagination={pagination}
                 loop={loop}
+                observer={true}
+                observeParents={true}
+                resizeObserver={true}
                 className={className}
+                onSwiper={(swiper) => {
+                    if (swiperRef) {
+                        swiperRef.current = swiper;
+                    }
+                    if (typeof onSwiper === 'function') {
+                        onSwiper(swiper);
+                    }
+                }}
             >
                 {items.map((item, index) => (
                     <SwiperSlide

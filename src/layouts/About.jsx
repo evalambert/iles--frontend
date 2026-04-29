@@ -9,49 +9,51 @@ import { normalizeAnchor } from '../assets/scripts/utils/normalizeAnchor';
 gsap.registerPlugin(ScrollTrigger);
 
 export default function About({ data, lang, onActiveAboutChange }) {
-  const sectionRef = useRef(null);
-  const sections = data?.Sections ?? [];
+    const sectionRef = useRef(null);
+    const sections = data?.Sections ?? [];
 
-  useEffect(() => {
-    if (!sectionRef.current) return;
+    useEffect(() => {
+        if (!sectionRef.current) return;
 
-    const trigger = ScrollTrigger.create({
-      trigger: sectionRef.current,
-      start: 'top 100px',
-      end: 'bottom 100px',
-      onLeave: () => onActiveAboutChange?.(''),
-      onLeaveBack: () => onActiveAboutChange?.(''),
-    });
+        const trigger = ScrollTrigger.create({
+            trigger: sectionRef.current,
+            start: 'top 100px',
+            end: 'bottom 100px',
+            onLeave: () => onActiveAboutChange?.(''),
+            onLeaveBack: () => onActiveAboutChange?.(''),
+        });
 
-    return () => {
-      trigger.kill();
-    };
-  }, [onActiveAboutChange]);
+        return () => {
+            trigger.kill();
+        };
+    }, [onActiveAboutChange]);
 
-  return (
-    <div
-      ref={sectionRef}
-      id={normalizeAnchor(`${lang === "fr" ? "À propos" : "About"}`)}
-      className=" mt-header-height scroll-mt-[calc(var(--spacing-header-height)+10px)] p-[10px] bg-linear-to-t from-primary to-light to-40%"
-    >
+    return (
+        <div
+            ref={sectionRef}
+            id={normalizeAnchor(`${lang === 'fr' ? 'À propos' : 'About'}`)}
+            className=' mt-header-height scroll-mt-[calc(var(--spacing-header-height)+10px)] p-[10px] bg-linear-to-t from-primary to-light to-40%'
+        >
 
 
 
-      {sections.map((section) => {
-        const firstParagraph = section?.Chapo?.[0];
-        const chapo = firstParagraph?.children?.map((child) => child.text).join(' ') ?? null;
+            {sections.map((section) => {
+                // `section.Chapo` provient de Strapi en Rich Text (tableau de noeuds { type, children }).
+                // On le transmet tel quel au composant pour qu'il puisse rendre texte + liens.
+                const chapo = section?.Chapo ?? null;
 
-        return (
-          <AboutSection
-            key={section.id}
-            title={section.Title}
-            chapo={chapo}
-            paragraphs={section?.Paragraphs ?? []}
-            images={section?.Images ?? []}
-            onActiveAboutChange={onActiveAboutChange}
-          />
-        );
-      })}
-    </div>
-  );
+                return (
+                    <AboutSection
+                        key={section.id}
+                        title={section.Title}
+                        chapo={chapo}
+                        paragraphs={section?.Paragraphs ?? []}
+                        images={section?.Images ?? []}
+                        onActiveAboutChange={onActiveAboutChange}
+                    />
+                );
+            })}
+        </div>
+    );
 }
+

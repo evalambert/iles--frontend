@@ -1,5 +1,5 @@
 //src/components/features/lightbox/Lightbox.jsx
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { buildSrcSet } from '../../../assets/scripts/libs/getImageUrl';
 
 function MaskIcon({ src, className = '' }) {
@@ -32,7 +32,13 @@ export default function Lightbox({
     nextIconSrc = '/svg/fleche-droite.svg',
     arrowClassName = '',
 }) {
+    const isMobileViewport = () =>
+        typeof window !== 'undefined' && window.innerWidth < 768;
+
+    const [isMobile, setIsMobile] = useState(isMobileViewport);
+
     const hasImages = Array.isArray(images) && images.length > 0;
+    const canNavigate = hasImages && images.length > 1;
     const safeIndex = hasImages
         ? ((currentIndex % images.length) + images.length) % images.length
         : 0;
@@ -59,14 +65,44 @@ export default function Lightbox({
         const handleKeydown = (event) => {
             if (event.key === 'Escape') {
                 onClose?.();
+                return;
+            }
+
+            if (!canNavigate) return;
+
+            if (event.key === 'ArrowLeft') {
+                event.preventDefault();
+                onPrev?.();
+                return;
+            }
+
+            if (event.key === 'ArrowRight') {
+                event.preventDefault();
+                onNext?.();
             }
         };
 
         window.addEventListener('keydown', handleKeydown);
         return () => window.removeEventListener('keydown', handleKeydown);
-    }, [hasImages, onClose]);
+    }, [hasImages, canNavigate, onClose, onPrev, onNext]);
 
-    if (!hasImages || !imageData) return null;
+    useEffect(() => {
+        const updateViewport = () => {
+            const mobile = isMobileViewport();
+            setIsMobile(mobile);
+
+            if (mobile) {
+                onClose?.();
+            }
+        };
+
+        updateViewport();
+        window.addEventListener('resize', updateViewport);
+
+        return () => window.removeEventListener('resize', updateViewport);
+    }, [onClose]);
+
+    if (!hasImages || !imageData || isMobile) return null;
 
     return (
         <div
@@ -82,38 +118,50 @@ export default function Lightbox({
                 <button
                     type='button'
                     onClick={onClose}
-                    className='absolute top-2.5 right-2.5 z-20 flex h-9 w-9 items-center justify-center cursor-pointer text-black transition-colors duration-200 hover:text-primary'
+                    className='absolute top-2.5 right-2.5 z-20 flex h-9 w-9 items-center justify-center cursor-pointer text-black transition-colors duration-200 hover:[&>span]:bg-primary'
                     aria-label='Fermer la lightbox'
                 >
                     <MaskIcon src='/svg/croix.svg' className='h-x-body w-6.5' />
                 </button>
 
-                <button
-                    type='button'
-                    className={`absolute left-0 top-1/2 z-10 -translate-y-1/2 cursor-pointer p-[15px] text-black transition-colors duration-200 hover:text-primary ${arrowClassName}`}
-                    aria-label='Image precedente'
-                    onClick={onPrev}
-                >
-                    <MaskIcon src={prevIconSrc} className='h-19.5 w-y-body' />
-                </button>
+                {canNavigate ? (
+                    <button
+                        type='button'
+                        className={`absolute left-0 top-1/2 z-10 -translate-y-1/2 cursor-pointer p-[15px] text-black transition-colors duration-200 hover:[&>span]:bg-primary ${arrowClassName}`}
+                        aria-label='Image precedente'
+                        onClick={onPrev}
+                    >
+                        <MaskIcon
+                            src={prevIconSrc}
+                            className='h-19.5 w-y-body'
+                        />
+                    </button>
+                ) : null}
 
                 <img
                     src={imageData.src}
                     srcSet={imageData.srcSet}
                     sizes='100vw'
+                    /* sizes='90vw' */
+                    security
                     alt={imageData.alt}
                     className='max-h-[90vh] max-w-[90vw] object-contain border border-black'
                     onClick={onNext}
                 />
 
-                <button
-                    type='button'
-                    className={`absolute right-0 top-1/2 z-10 -translate-y-1/2 cursor-pointer p-[15px] text-black transition-colors duration-200 hover:text-primary ${arrowClassName}`}
-                    aria-label='Image suivante'
-                    onClick={onNext}
-                >
-                    <MaskIcon src={nextIconSrc} className='h-19.5 w-y-body' />
-                </button>
+                {canNavigate ? (
+                    <button
+                        type='button'
+                        className={`absolute right-0 top-1/2 z-10 -translate-y-1/2 cursor-pointer p-[15px] text-black transition-colors duration-200 hover:[&>span]:bg-primary ${arrowClassName}`}
+                        aria-label='Image suivante'
+                        onClick={onNext}
+                    >
+                        <MaskIcon
+                            src={nextIconSrc}
+                            className='h-19.5 w-y-body'
+                        />
+                    </button>
+                ) : null}
             </div>
         </div>
     );

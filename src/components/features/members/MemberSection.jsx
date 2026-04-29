@@ -17,6 +17,7 @@ export default function MemberSection({
     bio,
     website,
     email,
+    instagram,
     instagramUrl,
     instagramName,
     practices,
@@ -27,7 +28,72 @@ export default function MemberSection({
     const memberAnchor = normalizeAnchor(fullName);
     const [lightboxIndex, setLightboxIndex] = useState(null);
     const hasImages = Array.isArray(images) && images.length > 0;
+    const isProbablyUrl = (value) => typeof value === 'string' && /^https?:\/\//i.test(value);
+    const instagramItems = Array.isArray(instagram) ? instagram : [];
+    const normalizedInstagramLinks = instagramItems.length
+        ? instagramItems
+              .map((item) => {
+                  const rawUrl = item?.InstagramUrl;
+                  const rawName = item?.InstagramName;
+
+                  // Certaines données inversent les champs (handle vs URL). On rend robuste :
+                  // - si `InstagramUrl` ne ressemble pas à une URL mais `InstagramName` oui, on inverse.
+                  let href = rawUrl;
+                  let label = rawName;
+
+                  const urlLooksLikeUrl = isProbablyUrl(rawUrl);
+                  const nameLooksLikeUrl = isProbablyUrl(rawName);
+
+                  if (!urlLooksLikeUrl && nameLooksLikeUrl) {
+                      href = rawName;
+                      label = rawUrl;
+                  }
+
+                  if (!href && nameLooksLikeUrl) href = rawName;
+                  if (!label) label = href;
+
+                  if (!href) return null;
+
+                  return {
+                      href,
+                      label,
+                  };
+              })
+              .filter(Boolean)
+        : instagramUrl
+          ? [
+                {
+                    href: instagramUrl,
+                    label: instagramName ?? instagramUrl,
+                },
+            ]
+          : [];
     const sectionRef = useRef(null);
+    const sliderInstanceRef = useRef(null);
+    const forceLayoutTimeoutRef = useRef(null);
+    const FORCE_LAYOUT_DELAY_MS = 350;
+
+    const forceLayoutSync = () => {
+        const swiper = sliderInstanceRef.current;
+        if (!swiper || swiper.destroyed || !swiper.el) return;
+
+        // Recalculer les dimensions réelles puis forcer la position sur le 1er slide.
+        swiper.updateSize();
+        swiper.updateSlides();
+        swiper.updateProgress();
+        swiper.updateSlidesClasses();
+        swiper.update();
+        swiper.slideTo(0, 0, false);
+    };
+
+    const scheduleForceLayoutSync = () => {
+        if (forceLayoutTimeoutRef.current) {
+            clearTimeout(forceLayoutTimeoutRef.current);
+        }
+        forceLayoutTimeoutRef.current = setTimeout(() => {
+            forceLayoutSync();
+        }, FORCE_LAYOUT_DELAY_MS);
+    };
 
     useEffect(() => {
         if (!sectionRef.current) return;
@@ -36,11 +102,20 @@ export default function MemberSection({
             trigger: sectionRef.current,
             start: 'top 100px',
             end: 'bottom 100px',
-            onEnter: () => onActiveMemberChange?.(memberAnchor),
-            onEnterBack: () => onActiveMemberChange?.(memberAnchor),
+            onEnter: () => {
+                onActiveMemberChange?.(memberAnchor);
+                scheduleForceLayoutSync();
+            },
+            onEnterBack: () => {
+                onActiveMemberChange?.(memberAnchor);
+                scheduleForceLayoutSync();
+            },
         });
 
         return () => {
+            if (forceLayoutTimeoutRef.current) {
+                clearTimeout(forceLayoutTimeoutRef.current);
+            }
             trigger.kill();
         };
     }, [memberAnchor, onActiveMemberChange]);
@@ -62,12 +137,14 @@ export default function MemberSection({
                     className=''
                     slideClassName='!w-fit'
                     spaceBetween={0}
+                    swiperRef={sliderInstanceRef}
                     renderSlide={(image, index) => (
                         <ImageSlider
                             image={image}
                             alt={fullName || 'member image'}
                             className='w-auto h-[371px] object-cover'
-                            preferredFormat='medium'
+                            sizes='(max-width: 768px) 100vw, auto'
+                            onLoad={scheduleForceLayoutSync}
                             onClick={() => setLightboxIndex(index)}
                         />
                     )}
@@ -90,49 +167,62 @@ export default function MemberSection({
                 ) : null}
                 <div className='bg-linear-to-t from-primary to-light to-80% p-[10px]'>
                     <div className='md:grid md:grid-cols-6 md:gap-[10px]'>
+
                         <div className='md:col-span-4'>
-                            <div className='max-w-[90%]'>
+                            <div className='md:max-w-[90%]'>
                                 {bio ? <p>{bio}</p> : null}
                             </div>
                         </div>
-                        <div className='md:col-span-1 '>
-                            <h3 className='mb-h3-margin'>
-                                {lang === "fr" ? "Pratique(s) :" : "Practice(s) :"}
-                            </h3>
 
-                            {practices.length ? (
-                                <ul>
-                                    {practices.map((practice) => (
-                                        <li key={practice.id}>{practice?.Name}</li>
-                                    ))}
-                                </ul>
-                            ) : null}
-                        </div>
-                        <div className='md:col-span-1 '>
-                            {website || email || instagramUrl ? (
-                                <h3 className='mb-h3-margin'>
-                                    Contact :
+                        <div className='md:col-span-2 grid grid-cols-2 md:gap-[10px] max-md:mt-[20px] max-md:mx-[-10px] max-md:bg-primary'>
+
+                            <div className='col-span-1 max-md:bg-linear-to-t max-md:from-primary max-md:to-light max-md:to-80% max-md:p-[10px] max-md:h-fit'>
+                                <h3 className=''>
+                                    {lang === "fr" ? "Pratique(s) :" : "Practice(s) :"}
                                 </h3>
-                            ) : null}
 
-                            {website ? (
-                                <>
+                                {practices.length ? (
+                                    <ul>
+                                        {practices.map((practice) => (
+                                            <li key={practice.id}>{practice?.Name}</li>
+                                        ))}
+                                    </ul>
+                                ) : null}
+                            </div>
+                            <div className='col-span-1 max-md:bg-linear-to-t max-md:from-primary max-md:to-light max-md:to-80% max-md:p-[10px] max-md:h-fit'>
+                                {website || email || normalizedInstagramLinks.length ? (
+                                    <h3 className=''>
+                                        Contact :
+                                    </h3>
+                                ) : null}
 
-                                    <a href={`https://${website}`} target='_blank' className='block truncate' title={website}>
-                                        {website}
+                                {website ? (
+                                    <>
+
+                                        <a href={`https://${website}`} target='_blank' className='block truncate' title={website}>
+                                            {website}
+                                        </a>
+                                    </>
+                                ) : null}
+
+                                {normalizedInstagramLinks.map((link, idx) => (
+                                    <a
+                                        // `href` est souvent stable, sinon on fallback sur l'index.
+                                        key={`${link.href ?? 'instagram'}-${idx}`}
+                                        href={link.href}
+                                        target='_blank'
+                                        className='block truncate'
+                                        title={link.label ?? link.href}
+                                    >
+                                        {link.label ?? link.href}
                                     </a>
-                                </>
-                            ) : null}
+                                ))}
 
-                            {email ? (
-                                <a href={`mailto:${email}`} className='block truncate' title={email}>{email}</a>
-                            ) : null}
+                                {email ? (
+                                    <a href={`mailto:${email}`} className='block truncate' title={email}>{email}</a>
+                                ) : null}
 
-                            {instagramUrl ? (
-                                <a href={instagramUrl} target='_blank' className='block truncate' title={instagramName ?? instagramUrl}>
-                                    {instagramName ?? instagramUrl}
-                                </a>
-                            ) : null}
+                            </div>
                         </div>
 
                     </div>
