@@ -325,7 +325,7 @@ export default function NewsStickyNote({
                             alt={
                                 firstImage?.alternativeText || note.Title || ''
                             }
-                            className='pointer-events-none mt-3 h-auto w-full object-cover'
+                            className='pointer-events-none h-[400px] w-full object-contain object-left'
                             loading='lazy'
                             draggable={false}
                             onDragStart={(event) => event.preventDefault()}
