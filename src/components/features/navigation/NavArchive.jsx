@@ -265,8 +265,8 @@ export default function NavArchive({
                     </ul>
                 </div>
                 {/* Mobile Nav Link */}
-                <ul className="lg:hidden border-t hover">
-                    <li className='relative overflow-hidden block border-b bg-linear-to-t from-primary to-light to-40% py-[15px] px-[10px] min-h-header-height;'>
+                <ul className="lg:hidden border-t hover max-md:flex">
+                    <li className='relative overflow-hidden block border-b bg-linear-to-t from-primary to-light to-40% py-[15px] px-[10px] min-h-header-height max-md:flex-1 max-md:border-r'>
                         <a
                             href={navHref}
                             className='h-full w-full flex items-center justify-center text-title'
@@ -274,7 +274,7 @@ export default function NavArchive({
                             {navLabel}
                         </a>
                     </li>
-                    <li className='relative overflow-hidden block border-b bg-linear-to-t from-primary to-light to-40% py-[15px] px-[10px] min-h-header-height;'>
+                    <li className='relative overflow-hidden block border-b bg-linear-to-t from-primary to-light to-40% py-[15px] px-[10px] min-h-header-height max-md:flex-1'>
                         <a
                             href={switchLangPath}
                             className='text-title block min-w-[2ch] text-center'
