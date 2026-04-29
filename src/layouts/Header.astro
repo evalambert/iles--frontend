@@ -1,7 +1,7 @@
 ---
 import LangSwitcher from '../components/common/LangSwitcher.astro';
-import MobileMenuBtn from "../components/features/navigation/MobileMenuBtn.jsx";
-import HeaderAnimation from "../components/features/animation/HeaderAnimation.jsx";
+import MobileMenuBtn from '../components/features/navigation/MobileMenuBtn.jsx';
+import HeaderAnimation from '../components/features/animation/HeaderAnimation.jsx';
 import NewsPreview from '../components/features/news/NewsPreview.jsx';
 const { lang = 'fr', news = [] } = Astro.props;
 // const { lang } = Astro.params;
@@ -16,52 +16,57 @@ const eventPath = `/${lang}/news`;
 const navHref = isEventPage ? `/${lang}` : eventPath;
 
 const navLabel = isEventPage
-    ? lang === "en"
-        ? "Home"
-        : "Accueil"
-    :  lang === "en" ? "News" : "Actus";
+    ? lang === 'en'
+        ? 'Home'
+        : 'Accueil'
+    : lang === 'en'
+      ? 'News'
+      : 'Actus';
 ---
 
 <header
-    class="h-header-height border-b fixed top-0 left-0 w-full bg-light z-50 overflow-hidden"
+    class='h-header-height border-b fixed top-0 left-0 w-full bg-light z-50 overflow-hidden'
 >
-    <div class="grid grid-cols-6 h-full">
+    <div class='grid grid-cols-6 h-full'>
         <div
-            class="col-span-3 lg:col-span-1 h-full bg-linear-to-t from-primary from-10% to-light to-70%"
+            class='hover-effect relative overflow-hidden col-span-3 lg:col-span-1 h-full bg-linear-to-t from-primary from-10% to-light to-70%'
         >
             <a
-                href="/"
-                rel="home"
-                class="h-[calc(var(--spacing-header-height)-1px)] w-full flex items-center justify-center"
+                href='/'
+                rel='home'
+                class='relative z-10 h-[calc(var(--spacing-header-height)-1px)] w-full flex items-center justify-center'
             >
                 <HeaderAnimation client:load />
             </a>
         </div>
 
         <div
-            class="col-span-3 lg:col-span-4 flex min-w-0 border-l bg-linear-to-t from-light from-10% to-primary to-70% lg:-ml-px"
+            class='col-span-3 lg:col-span-4 flex min-w-0 border-l bg-linear-to-t from-light from-10% to-primary to-70% lg:-ml-px'
         >
-
             <div class='h-full min-w-0 flex-1'>
                 <NewsPreview client:load news={news} />
             </div>
 
-            <div class="block lg:hidden shrink-0 border-l h-full items-center p-[10px]">
+            <div
+                class='block lg:hidden shrink-0 border-l h-full items-center p-[10px]'
+            >
                 <MobileMenuBtn client:load />
             </div>
         </div>
 
         <div
-            class="hidden lg:flex lg:col-span-1 border-l bg-linear-to-t from-primary to-light to-40% items-center"
+            class='hidden lg:flex lg:col-span-1 border-l bg-linear-to-t from-primary to-light to-40% items-center'
         >
-            <nav class="hover-effect flex-1 h-full flex items-center px-[10px] ">
+            <nav class='hover-effect flex-1 h-full flex items-center px-[10px]'>
                 <a
                     href={navHref}
-                    class="h-full w-full flex items-center justify-center text-title truncate relative z-10"
+                    class='h-full w-full flex items-center justify-center text-title truncate relative z-10'
                     >{navLabel}</a
                 >
             </nav>
-            <div class="hover-effect flex border-l h-full items-center px-[15px] overflow-hidden">
+            <div
+                class='hover-effect flex border-l h-full items-center px-[15px] overflow-hidden'
+            >
                 <LangSwitcher />
             </div>
         </div>

@@ -1,7 +1,13 @@
 ---
 const { lang, legacy } = Astro.params;
 
-const legacyPaths = new Set(['archive', 'event', 'events', 'evenement', 'evenements']);
+const legacyPaths = new Set([
+    'archive',
+    'event',
+    'events',
+    'evenement',
+    'evenements',
+]);
 
 if (legacyPaths.has(legacy ?? '')) {
     return Astro.redirect(`/${lang ?? 'fr'}/news`, 301);
