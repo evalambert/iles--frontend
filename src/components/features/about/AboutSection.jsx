@@ -52,25 +52,32 @@ export default function AboutSection({ title, chapo, paragraphs, images, onActiv
             id={aboutAnchor}
             className="border scroll-mt-[calc(var(--spacing-header-height)+10px)] mb-[10px] p-[10px] bg-linear-to-t from-primary to-light to-40%"
         >
+            <div className='md:grid md:grid-cols-6 md:gap-[10px]'>
+                <div className='md:col-span-4'>
 
-            <h2 className='text-title mb-title-margin'>{title}</h2>
+                    <h2 className='text-title mb-title-margin'>{title}</h2>
 
-            {chapo ? <p>{chapo}</p> : null}
+                    {chapo ? <p>{chapo}</p> : null}
 
-            {paragraphs.map((paragraph) => {
-                const paragraphText = getRichTextAsString(
-                    paragraph?.Text ?? []
-                );
+                    {paragraphs.map((paragraph) => {
+                        const paragraphText = getRichTextAsString(
+                            paragraph?.Text ?? []
+                        );
 
-                return (
-                    <article key={paragraph.id} className='mt-4'>
-                        {paragraph?.Subtitle ? (
-                            <h3 className='mb-h3-margin'>{paragraph.Subtitle}</h3>
-                        ) : null}
-                        {paragraphText ? <p>{paragraphText}</p> : null}
-                    </article>
-                );
-            })}
+                        return (
+                            <article key={paragraph.id} className='mt-4'>
+                                {paragraph?.Subtitle ? (
+                                    <h3 className='mb-h3-margin'>{paragraph.Subtitle}</h3>
+                                ) : null}
+                                {paragraphText ? <p>{paragraphText}</p> : null}
+                            </article>
+                        );
+                    })}
+
+                </div>
+
+            </div>
+
 
             <div className='mt-[10px]'>
                 <Slider

@@ -92,7 +92,7 @@ export default function MemberSection({
                     <div className='md:grid md:grid-cols-6 md:gap-[10px]'>
 
                         <div className='md:col-span-4'>
-                            <div className='max-w-[90%]'>
+                            <div className='md:max-w-[90%]'>
                                 {bio ? <p>{bio}</p> : null}
                             </div>
                         </div>
