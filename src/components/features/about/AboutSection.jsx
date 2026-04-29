@@ -88,8 +88,8 @@ export default function AboutSection({
                         <ImageSlider
                             image={image}
                             alt={title || 'about image'}
-                            sizes='(max-width: 768px) 92vw, (max-width: 1280px) 60vw, 742px'
-                            className='w-auto h-[742px] object-cover'
+                            /*  sizes='(max-width: 768px) 92vw, (max-width: 1280px) 60vw, 742px' */
+                            className='w-auto h-[70vh] md:h-[742px] object-cover'
                             onClick={() => setLightboxIndex(index)}
                         />
                     )}
