@@ -9,7 +9,13 @@ import Slider from '../slider/Slider';
 
 gsap.registerPlugin(ScrollTrigger);
 
-export default function AboutSection({ title, chapo, paragraphs, images, onActiveAboutChange }) {
+export default function AboutSection({
+    title,
+    chapo,
+    paragraphs,
+    images,
+    onActiveAboutChange,
+}) {
     const [lightboxIndex, setLightboxIndex] = useState(null);
     const hasImages = Array.isArray(images) && images.length > 0;
     const sectionRef = useRef(null);
@@ -45,14 +51,11 @@ export default function AboutSection({ title, chapo, paragraphs, images, onActiv
     };
 
     return (
-
-
         <section
             ref={sectionRef}
             id={aboutAnchor}
-            className="border scroll-mt-[calc(var(--spacing-header-height)+10px)] mb-[10px] p-[10px] bg-linear-to-t from-primary to-light to-40%"
+            className='border scroll-mt-[calc(var(--spacing-header-height)+10px)] mb-[10px] p-[10px] bg-linear-to-t from-primary to-light to-40%'
         >
-
             <h2 className='text-title mb-title-margin'>{title}</h2>
 
             {chapo ? <p>{chapo}</p> : null}
@@ -65,7 +68,9 @@ export default function AboutSection({ title, chapo, paragraphs, images, onActiv
                 return (
                     <article key={paragraph.id} className='mt-4'>
                         {paragraph?.Subtitle ? (
-                            <h3 className='mb-h3-margin'>{paragraph.Subtitle}</h3>
+                            <h3 className='mb-h3-margin'>
+                                {paragraph.Subtitle}
+                            </h3>
                         ) : null}
                         {paragraphText ? <p>{paragraphText}</p> : null}
                     </article>
@@ -83,13 +88,13 @@ export default function AboutSection({ title, chapo, paragraphs, images, onActiv
                         <ImageSlider
                             image={image}
                             alt={title || 'about image'}
+                            sizes='(max-width: 768px) 92vw, (max-width: 1280px) 60vw, 742px'
                             className='w-auto h-[742px] object-cover'
                             onClick={() => setLightboxIndex(index)}
                         />
                     )}
                 />
             </div>
-
 
             {lightboxIndex !== null && hasImages ? (
                 <Lightbox
@@ -103,9 +108,7 @@ export default function AboutSection({ title, chapo, paragraphs, images, onActiv
                         )
                     }
                     onNext={() =>
-                        setLightboxIndex(
-                            (prev) => (prev + 1) % images.length
-                        )
+                        setLightboxIndex((prev) => (prev + 1) % images.length)
                     }
                 />
             ) : null}
