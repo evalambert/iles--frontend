@@ -62,6 +62,7 @@ export default function Lightbox({
     useEffect(() => {
         if (!hasImages) return undefined;
 
+        
         const handleKeydown = (event) => {
             if (event.key === 'Escape') {
                 onClose?.();
