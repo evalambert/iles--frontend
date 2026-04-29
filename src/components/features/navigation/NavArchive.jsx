@@ -85,7 +85,11 @@ export default function NavArchive({
     const switchLangPath = (() => {
         if (typeof window === 'undefined') return `/${otherLang}`;
 
-        const [_, currentLang, ...rest] = window.location.pathname.split('/');
+        const rawPathname = window.location.pathname;
+        const normalizedPathname =
+            rawPathname === '/' ? '/' : rawPathname.replace(/\/+$/, '');
+
+        const [_, currentLang, ...rest] = normalizedPathname.split('/');
         if (currentLang === 'fr' || currentLang === 'en') {
             const mappedRest = [...rest];
             if (mappedRest.length > 0) {
@@ -101,7 +105,9 @@ export default function NavArchive({
             return `/${otherLang}${mappedRest.length ? `/${mappedRest.join('/')}` : ''}`;
         }
 
-        return `/${otherLang}${window.location.pathname.startsWith('/') ? window.location.pathname : `/${window.location.pathname}`}`;
+        return `/${otherLang}${
+            normalizedPathname.startsWith('/') ? normalizedPathname : `/${normalizedPathname}`
+        }`;
     })();
     // **** END — Menu Mobile ONLY ****
 
