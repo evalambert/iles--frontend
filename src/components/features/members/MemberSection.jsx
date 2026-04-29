@@ -69,6 +69,31 @@ export default function MemberSection({
             ]
           : [];
     const sectionRef = useRef(null);
+    const sliderInstanceRef = useRef(null);
+    const forceLayoutTimeoutRef = useRef(null);
+    const FORCE_LAYOUT_DELAY_MS = 350;
+
+    const forceLayoutSync = () => {
+        const swiper = sliderInstanceRef.current;
+        if (!swiper || swiper.destroyed || !swiper.el) return;
+
+        // Recalculer les dimensions réelles puis forcer la position sur le 1er slide.
+        swiper.updateSize();
+        swiper.updateSlides();
+        swiper.updateProgress();
+        swiper.updateSlidesClasses();
+        swiper.update();
+        swiper.slideTo(0, 0, false);
+    };
+
+    const scheduleForceLayoutSync = () => {
+        if (forceLayoutTimeoutRef.current) {
+            clearTimeout(forceLayoutTimeoutRef.current);
+        }
+        forceLayoutTimeoutRef.current = setTimeout(() => {
+            forceLayoutSync();
+        }, FORCE_LAYOUT_DELAY_MS);
+    };
 
     useEffect(() => {
         if (!sectionRef.current) return;
@@ -77,11 +102,20 @@ export default function MemberSection({
             trigger: sectionRef.current,
             start: 'top 100px',
             end: 'bottom 100px',
-            onEnter: () => onActiveMemberChange?.(memberAnchor),
-            onEnterBack: () => onActiveMemberChange?.(memberAnchor),
+            onEnter: () => {
+                onActiveMemberChange?.(memberAnchor);
+                scheduleForceLayoutSync();
+            },
+            onEnterBack: () => {
+                onActiveMemberChange?.(memberAnchor);
+                scheduleForceLayoutSync();
+            },
         });
 
         return () => {
+            if (forceLayoutTimeoutRef.current) {
+                clearTimeout(forceLayoutTimeoutRef.current);
+            }
             trigger.kill();
         };
     }, [memberAnchor, onActiveMemberChange]);
@@ -103,12 +137,14 @@ export default function MemberSection({
                     className=''
                     slideClassName='!w-fit'
                     spaceBetween={0}
+                    swiperRef={sliderInstanceRef}
                     renderSlide={(image, index) => (
                         <ImageSlider
                             image={image}
                             alt={fullName || 'member image'}
                             className='w-auto h-[371px] object-cover'
-                            preferredFormat='medium'
+                            sizes='(max-width: 768px) 100vw, auto'
+                            onLoad={scheduleForceLayoutSync}
                             onClick={() => setLightboxIndex(index)}
                         />
                     )}
@@ -172,7 +208,7 @@ export default function MemberSection({
                                 {normalizedInstagramLinks.map((link, idx) => (
                                     <a
                                         // `href` est souvent stable, sinon on fallback sur l'index.
-                                        key={link.href ?? idx}
+                                        key={`${link.href ?? 'instagram'}-${idx}`}
                                         href={link.href}
                                         target='_blank'
                                         className='block truncate'

@@ -1,5 +1,5 @@
-//src/components/features/slider/Slider.jsx
-import { useId } from 'react';
+ //src/components/features/slider/Slider.jsx
+import { useId, useState } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination, A11y } from 'swiper/modules';
 import 'swiper/css';
@@ -32,14 +32,18 @@ export default function Slider({
     spaceBetween = 0,
     navigation = true,
     pagination = false,
-    loop = true,
+    loop = false,
     className = '',
     slideClassName = '',
     slideSeparatorClassName = '',
     prevIconSrc = '/svg/fleche-guauche.svg',
     nextIconSrc = '/svg/fleche-droite.svg',
     arrowClassName = '',
+    swiperRef = null,
+    onSwiper = null,
 }) {
+    const [isAtBeginning, setIsAtBeginning] = useState(true);
+
     if (
         !Array.isArray(items) ||
         !items.length ||
@@ -64,7 +68,7 @@ export default function Slider({
                 <>
                     <button
                         type='button'
-                        className={`${prevClassName} absolute left-0 top-1/2 z-10 -translate-y-1/2 p-[15px] cursor-pointer text-black transition-colors duration-200 hover:text-primary ${arrowClassName}`}
+                        className={`${prevClassName} absolute left-0 top-1/2 z-10 -translate-y-1/2 p-[15px] cursor-pointer text-black transition-colors duration-200 hover:text-primary ${isAtBeginning ? 'pointer-events-none opacity-0' : ''} ${arrowClassName}`}
                         aria-label='Slide precedente'
                     >
                         <MaskIcon
@@ -92,7 +96,22 @@ export default function Slider({
                 navigation={navigationConfig}
                 pagination={pagination}
                 loop={loop}
+                observer={true}
+                observeParents={true}
+                resizeObserver={true}
                 className={className}
+                onSwiper={(swiper) => {
+                    setIsAtBeginning(swiper.isBeginning);
+                    if (swiperRef) {
+                        swiperRef.current = swiper;
+                    }
+                    if (typeof onSwiper === 'function') {
+                        onSwiper(swiper);
+                    }
+                }}
+                onSlideChange={(swiper) => {
+                    setIsAtBeginning(swiper.isBeginning);
+                }}
             >
                 {items.map((item, index) => (
                     <SwiperSlide
