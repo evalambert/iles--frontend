@@ -123,10 +123,12 @@ export default function NewsStickyNote({
     const [hasEnteredViewport, setHasEnteredViewport] = useState(false);
     const [isDragging, setIsDragging] = useState(false);
     const [isClosing, setIsClosing] = useState(false);
+    const [isMobileViewport, setIsMobileViewport] = useState(false);
     const dragOffsetRef = useRef({ x: 0, y: 0 });
     const draggingRef = useRef(false);
     const rootRef = useRef(null);
     const closeTimeoutRef = useRef(null);
+    const canDrag = !isMobileViewport;
 
     useEffect(() => {
         if (window.__coverAnimationHidden) {
@@ -163,6 +165,20 @@ export default function NewsStickyNote({
     }, []);
 
     useEffect(() => {
+        const mediaQuery = window.matchMedia('(max-width: 767px)');
+        const updateViewport = () => {
+            setIsMobileViewport(mediaQuery.matches);
+        };
+
+        updateViewport();
+        mediaQuery.addEventListener('change', updateViewport);
+
+        return () => {
+            mediaQuery.removeEventListener('change', updateViewport);
+        };
+    }, []);
+
+    useEffect(() => {
         const handlePointerMove = (event) => {
             if (!draggingRef.current) return;
             setPosition((current) => ({
@@ -190,6 +206,8 @@ export default function NewsStickyNote({
 
     const handlePointerDown = (event) => {
         if (event.button !== 0 || isClosing) return;
+        onBringToFront?.(note.id);
+        if (!canDrag) return;
 
         const rect = rootRef.current?.getBoundingClientRect();
         if (!rect) return;
@@ -200,7 +218,6 @@ export default function NewsStickyNote({
             x: event.clientX - rect.left,
             y: event.clientY - rect.top,
         };
-        onBringToFront?.(note.id);
     };
 
     const handleClose = () => {
@@ -253,14 +270,14 @@ export default function NewsStickyNote({
     return (
         <article
             ref={rootRef}
-            className='fixed w-full max-w-139 cursor-grab active:cursor-grabbing border border-black bg-linear-to-b from-primary from-0% via-primary via-66% to-light to-100% text-base shadow-[0_10px_30px_rgba(0,0,0,0.2)]'
+            className={`fixed w-full max-w-139 border border-black bg-linear-to-b from-primary from-0% via-primary via-66% to-light to-100% text-base shadow-[0_10px_30px_rgba(0,0,0,0.2)] ${canDrag ? 'cursor-grab active:cursor-grabbing' : ''}`}
             style={{
                 transform: `translate3d(${position.x}px, ${yPosition}px, 0) rotate(${position.rotation ?? 0}deg)`,
                 transition: isDragging
                     ? 'none'
                     : 'transform 450ms cubic-bezier(0.22, 1, 0.36, 1)',
                 zIndex,
-                touchAction: 'none',
+                touchAction: canDrag ? 'none' : 'auto',
                 pointerEvents: isClosing ? 'none' : 'auto',
                 width: 'min(556px, calc(100vw - 2rem), calc(100dvh - 2rem))',
                 aspectRatio: '1 / 1',

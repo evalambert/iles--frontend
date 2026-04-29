@@ -119,6 +119,7 @@ export default function AboutSection({
 
 
                     {renderChapo(chapo)}
+                    
 
                     {paragraphs.map((paragraph) => {
                         const paragraphText = getRichTextAsString(
