@@ -82,7 +82,6 @@ export default function AboutSection({
                     items={images}
                     className=''
                     slideClassName='!w-fit'
-                    slideSeparatorClassName='border-r border-black'
                     spaceBetween={0}
                     renderSlide={(image, index) => (
                         <ImageSlider
