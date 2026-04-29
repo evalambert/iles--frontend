@@ -209,8 +209,10 @@ export default function NewsSection({ news, lang, paragraphs, images, onActiveNe
                                 })}
                             </div>
                         </div>
-                        <div className='md:col-span-2 grid grid-cols-2 gap-[10px] max-md:mt-[20px]'>
-                            <div className='col-span-1 '>
+                     
+                        <div className='md:col-span-2 grid grid-cols-2 md:gap-[10px] max-md:mt-[20px] max-md:mx-[-10px] max-md:bg-primary'>
+
+                            <div className='col-span-1 max-md:bg-linear-to-t max-md:from-primary max-md:to-light max-md:to-80% max-md:p-[10px] max-md:h-fit'>
 
 
                                 {news?.event_categories?.map((category) => (
@@ -234,7 +236,7 @@ export default function NewsSection({ news, lang, paragraphs, images, onActiveNe
                                 ) : null}
 
                             </div>
-                            <div className='col-span-1 '>
+                            <div className='col-span-1 max-md:bg-linear-to-t max-md:from-primary max-md:to-light max-md:to-80% max-md:p-[10px] max-md:h-fit'>
 
                                 {formattedDateRange || formattedHourRange ? (<>
                                     {formattedDateRange ? (

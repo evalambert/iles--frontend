@@ -90,49 +90,54 @@ export default function MemberSection({
                 ) : null}
                 <div className='bg-linear-to-t from-primary to-light to-80% p-[10px]'>
                     <div className='md:grid md:grid-cols-6 md:gap-[10px]'>
+
                         <div className='md:col-span-4'>
                             <div className='max-w-[90%]'>
                                 {bio ? <p>{bio}</p> : null}
                             </div>
                         </div>
-                        <div className='md:col-span-1 '>
-                            <h3 className='mb-h3-margin'>
-                                {lang === "fr" ? "Pratique(s) :" : "Practice(s) :"}
-                            </h3>
 
-                            {practices.length ? (
-                                <ul>
-                                    {practices.map((practice) => (
-                                        <li key={practice.id}>{practice?.Name}</li>
-                                    ))}
-                                </ul>
-                            ) : null}
-                        </div>
-                        <div className='md:col-span-1 '>
-                            {website || email || instagramUrl ? (
+                        <div className='md:col-span-2 grid grid-cols-2 md:gap-[10px] max-md:mt-[20px] max-md:mx-[-10px] max-md:bg-primary'>
+
+                            <div className='col-span-1 max-md:bg-linear-to-t max-md:from-primary max-md:to-light max-md:to-80% max-md:p-[10px] max-md:h-fit'>
                                 <h3 className='mb-h3-margin'>
-                                    Contact :
+                                    {lang === "fr" ? "Pratique(s) :" : "Practice(s) :"}
                                 </h3>
-                            ) : null}
 
-                            {website ? (
-                                <>
+                                {practices.length ? (
+                                    <ul>
+                                        {practices.map((practice) => (
+                                            <li key={practice.id}>{practice?.Name}</li>
+                                        ))}
+                                    </ul>
+                                ) : null}
+                            </div>
+                            <div className='col-span-1 max-md:bg-linear-to-t max-md:from-primary max-md:to-light max-md:to-80% max-md:p-[10px] max-md:h-fit'>
+                                {website || email || instagramUrl ? (
+                                    <h3 className='mb-h3-margin'>
+                                        Contact :
+                                    </h3>
+                                ) : null}
 
-                                    <a href={`https://${website}`} target='_blank' className='block truncate' title={website}>
-                                        {website}
+                                {website ? (
+                                    <>
+
+                                        <a href={`https://${website}`} target='_blank' className='block truncate' title={website}>
+                                            {website}
+                                        </a>
+                                    </>
+                                ) : null}
+
+                                {email ? (
+                                    <a href={`mailto:${email}`} className='block truncate' title={email}>{email}</a>
+                                ) : null}
+
+                                {instagramUrl ? (
+                                    <a href={instagramUrl} target='_blank' className='block truncate' title={instagramName ?? instagramUrl}>
+                                        {instagramName ?? instagramUrl}
                                     </a>
-                                </>
-                            ) : null}
-
-                            {email ? (
-                                <a href={`mailto:${email}`} className='block truncate' title={email}>{email}</a>
-                            ) : null}
-
-                            {instagramUrl ? (
-                                <a href={instagramUrl} target='_blank' className='block truncate' title={instagramName ?? instagramUrl}>
-                                    {instagramName ?? instagramUrl}
-                                </a>
-                            ) : null}
+                                ) : null}
+                            </div>
                         </div>
 
                     </div>
