@@ -1,4 +1,5 @@
 //src/components/features/news/NewsStickyNote.jsx
+import { normalizeAnchor } from '../../../assets/scripts/utils/normalizeAnchor';
 import { useEffect, useRef, useState } from 'react';
 
 const NOTE_HEIGHT = 556;
@@ -23,16 +24,6 @@ function MaskIcon({ src, className = '' }) {
     );
 }
 
-function toDisplayDate(value) {
-    if (!value) return '';
-    const parsed = new Date(value);
-    if (Number.isNaN(parsed.getTime())) return '';
-    const day = String(parsed.getDate()).padStart(2, '0');
-    const month = String(parsed.getMonth() + 1).padStart(2, '0');
-    const year = String(parsed.getFullYear()).slice(-2);
-    return `${day}/${month}/${year}`;
-}
-
 function toDisplayDateRange(startDate, endDate) {
     if (!startDate && !endDate) return '';
 
@@ -43,22 +34,21 @@ function toDisplayDateRange(startDate, endDate) {
 
     if (startValid && endValid) {
         const sameYear = startParsed.getFullYear() === endParsed.getFullYear();
+        const sameMonth = startParsed.getMonth() === endParsed.getMonth();
+        const startDay = String(startParsed.getDate()).padStart(2, '0');
+        const endDay = String(endParsed.getDate()).padStart(2, '0');
+        const endMonth = String(endParsed.getMonth() + 1).padStart(2, '0');
+        const endYear = String(endParsed.getFullYear());
 
-        if (sameYear) {
-            const startDay = String(startParsed.getDate()).padStart(2, '0');
-            const startMonth = String(startParsed.getMonth() + 1).padStart(
-                2,
-                '0'
-            );
-            const endDay = String(endParsed.getDate()).padStart(2, '0');
-            const endMonth = String(endParsed.getMonth() + 1).padStart(2, '0');
-            const year = String(startParsed.getFullYear());
-            return `${startDay}/${startMonth}-${endDay}/${endMonth}/${year}`;
+        if (sameYear && sameMonth) {
+            return `${startDay}-${endDay}/${endMonth}/${endYear}`;
         }
+
+        return `${toDisplayDateFullYear(startDate)}-${toDisplayDateFullYear(endDate)}`;
     }
 
-    const start = toDisplayDate(startDate);
-    const end = toDisplayDate(endDate);
+    const start = toDisplayDateFullYear(startDate);
+    const end = toDisplayDateFullYear(endDate);
     if (start && end) return `${start}-${end}`;
     return start || end || '';
 }
@@ -113,6 +103,7 @@ function extractText(value) {
 }
 
 export default function NewsStickyNote({
+    lang = 'fr',
     note,
     initialPosition,
     zIndex,
@@ -129,6 +120,10 @@ export default function NewsStickyNote({
     const rootRef = useRef(null);
     const closeTimeoutRef = useRef(null);
     const canDrag = !isMobileViewport;
+
+
+    const newsAnchor = normalizeAnchor(note.Title);
+
 
     useEffect(() => {
         if (window.__coverAnimationHidden) {
@@ -297,7 +292,9 @@ export default function NewsStickyNote({
             <div className='h-full overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden'>
                 <div className='post-it-chapo p-[20px] lg:p-[40px] bg-linear-to-b from-primary from-0% via-primary via-66% to-light to-100% flex flex-col gap-[10px]'>
 
-                    <h3 className='post-it-title text-title'>{note.Title}</h3>
+                    <a href={`news#${newsAnchor}`} rel='noreferrer'>
+                        <h3 className='post-it-title text-title'>{note.Title}</h3>
+                    </a>
 
                     <div className='flex flex-col gap-[23px]'>
                         <div>
@@ -344,18 +341,21 @@ export default function NewsStickyNote({
                             </ul>
                         ) : null}
 
-                        {firstImageUrl ? (
-                            <img
-                                src={firstImageUrl}
-                                alt={
-                                    firstImage?.alternativeText || note.Title || ''
-                                }
-                                className='pointer-events-none h-[400px] w-full object-contain object-left'
-                                loading='lazy'
-                                draggable={false}
-                                onDragStart={(event) => event.preventDefault()}
-                            />
-                        ) : null}
+
+                        <a href={`news#${newsAnchor}`} rel='noreferrer' className='block w-fit'>
+                            {firstImageUrl ? (
+                                <img
+                                    src={firstImageUrl}
+                                    alt={
+                                        firstImage?.alternativeText || note.Title || ''
+                                    }
+                                    className='pointer-events-none h-[400px] w-full object-contain object-left'
+                                    loading='lazy'
+                                    draggable={false}
+                                    onDragStart={(event) => event.preventDefault()}
+                                />
+                            ) : null}
+                        </a>
                     </div>
 
                 </div>

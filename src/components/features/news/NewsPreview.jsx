@@ -20,7 +20,14 @@ function toDisplayDateFullYear(value) {
     return `${day}/${month}/${year}`;
 }
 
-function toDisplayDateRange(startDate, endDate) {
+function toDisplayDateRange(startDate, endDate, lang) {
+    const isEn = lang === 'en';
+    const range =
+        isEn
+            ? ([a, b]) => `from ${a} to ${b}`
+            : ([a, b]) => `du ${a} au ${b}`;
+    const single = isEn ? (d) => `on ${d}` : (d) => `le ${d}`;
+
     if (!startDate && !endDate) return '';
 
     const startParsed = startDate ? new Date(startDate) : null;
@@ -37,17 +44,20 @@ function toDisplayDateRange(startDate, endDate) {
         const endYear = String(endParsed.getFullYear());
 
         if (sameYear && sameMonth) {
-            return `du ${startDay} au ${endDay}/${endMonth}/${endYear}`;
+            return range([startDay, `${endDay}/${endMonth}/${endYear}`]);
         }
 
-        return `du ${toDisplayDateFullYear(startDate)} au ${toDisplayDateFullYear(endDate)}`;
+        return range([
+            toDisplayDateFullYear(startDate),
+            toDisplayDateFullYear(endDate),
+        ]);
     }
 
     const start = toDisplayDateFullYear(startDate);
     const end = toDisplayDateFullYear(endDate);
-    if (start && end) return `du ${start} au ${end}`;
-    if (start) return `le ${start}`;
-    if (end) return `le ${end}`;
+    if (start && end) return range([start, end]);
+    if (start) return single(start);
+    if (end) return single(end);
     return '';
 }
 
@@ -55,7 +65,7 @@ function getAttrs(item) {
     return item?.attributes ?? item ?? {};
 }
 
-export default function NewsPreview({ news = [] }) {
+export default function NewsPreview({ news = [], lang = 'fr' }) {
     const filteredNews = useMemo(() => getCurrentAndFutureNews(news), [news]);
     const [activeIndex, setActiveIndex] = useState(0);
     const [storeState, setStoreState] = useState({
@@ -101,7 +111,7 @@ export default function NewsPreview({ news = [] }) {
         const lineParts = [
             attrs.Title || '',
             category,
-            toDisplayDateRange(attrs.StartDate, attrs.EndDate),
+            toDisplayDateRange(attrs.StartDate, attrs.EndDate, lang),
             attrs.Place || attrs.Address || '',
         ].filter(Boolean);
 

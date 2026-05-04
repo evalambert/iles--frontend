@@ -1,4 +1,5 @@
 //src/components/features/news/NewsRdvSection.jsx
+import { renderStrapiRichTextBlocks } from '../../../assets/scripts/utils/renderStrapiRichText';
 
 export default function NewsRdvSection({ rendezVous, rendezVousText, rendezVousDate, rendezVousHourRange, lang }) {
     return (
@@ -10,10 +11,11 @@ export default function NewsRdvSection({ rendezVous, rendezVousText, rendezVousD
                 <div className='md:col-span-4'>
                     <div className='max-w-[90%] wysiwyg'>
                         {rendezVous?.Title ? (
-                            <h3 className=''>{rendezVous.Title}</h3>
+                            <h3 className='mb-[10px]'>{rendezVous.Title}</h3>
                         ) : null}
-                        {rendezVousText ? <p>{rendezVousText}
-                        </p> : null}
+                        {rendezVousText
+                            ? renderStrapiRichTextBlocks(rendezVousText)
+                            : null}
                     </div>
                 </div>
                 <div className='md:col-span-2 grid grid-cols-2 md:gap-[10px] max-md:mt-[20px] max-md:mx-[-10px] max-md:bg-primary'>

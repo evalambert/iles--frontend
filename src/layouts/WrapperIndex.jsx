@@ -12,7 +12,7 @@ export default function WrapperIndex({ about, members, lang, news = [] }) {
 
     return (
         <div className='lg:grid lg:grid-cols-6'>
-            <NewsStickyOverlay news={news} />
+            <NewsStickyOverlay lang={lang} news={news} />
             
             {/* Navigation */}
             <div className='lg:col-span-2 lg:h-[calc(100vh-var(--spacing-header-height))] lg:sticky top-0'>
