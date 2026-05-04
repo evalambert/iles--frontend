@@ -8,6 +8,7 @@ import { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { normalizeAnchor } from '../../../assets/scripts/utils/normalizeAnchor';
+import { renderStrapiRichTextBlocks } from '../../../assets/scripts/utils/renderStrapiRichText';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -187,20 +188,6 @@ export default function NewsSection({
         };
     }, [newsAnchor, onActiveNewsChange]);
 
-    // Fonction pour extraire le texte d'un noeud Rich Text
-    const getNodeText = (node) => {
-        if (!node) return '';
-        if (node.type === 'text') return node.text ?? '';
-        if (!Array.isArray(node.children)) return '';
-        return node.children.map(getNodeText).join('');
-    };
-
-    // Fonction pour convertir un tableau de noeuds Rich Text en une chaîne de texte
-    const getRichTextAsString = (richTextBlocks = []) => {
-        return richTextBlocks.map(getNodeText).join(' ');
-    };
-    const newsText = getRichTextAsString(news?.Text ?? []);
-
     return (
         <section
             ref={sectionRef}
@@ -255,13 +242,8 @@ export default function NewsSection({
                     <div className='md:grid md:grid-cols-6 md:gap-[10px]'>
                         <div className='md:col-span-4'>
                             <div className='max-w-[90%] wysiwyg'>
-                                {newsText ? <p>{newsText}</p> : null}
-                                {paragraphs.map((paragraph) => {
-                                    const paragraphText = getRichTextAsString(
-                                        paragraph?.Text ?? []
-                                    );
-
-                                    return (
+                                {renderStrapiRichTextBlocks(news?.Text)}
+                                {paragraphs.map((paragraph) => (
                                         <article
                                             key={paragraph.id}
                                             className='mt-4'
@@ -271,12 +253,11 @@ export default function NewsSection({
                                                     {paragraph.Subtitle}
                                                 </h3>
                                             ) : null}
-                                            {paragraphText ? (
-                                                <p>{paragraphText}</p>
-                                            ) : null}
+                                            {renderStrapiRichTextBlocks(
+                                                paragraph?.Text ?? []
+                                            )}
                                         </article>
-                                    );
-                                })}
+                                    ))}
                             </div>
                         </div>
 
@@ -383,9 +364,7 @@ export default function NewsSection({
                 </div>
                 {Array.isArray(news?.RendezVous) && news.RendezVous.length > 0
                     ? news.RendezVous.map((rendezVous) => {
-                        const rendezVousText = getRichTextAsString(
-                            rendezVous?.Text ?? []
-                        );
+                        const rendezVousText = rendezVous?.Text ?? [];
                         const rendezVousDate = formatDate(
                             parseIsoDate(rendezVous?.EventDate)
                         );

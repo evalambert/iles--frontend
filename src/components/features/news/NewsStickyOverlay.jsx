@@ -116,7 +116,7 @@ function generateRandomPositions(items) {
     return result;
 }
 
-export default function NewsStickyOverlay({ news = [] }) {
+export default function NewsStickyOverlay({ lang = 'fr', news = [] }) {
     const filteredNews = useMemo(() => getCurrentAndFutureNews(news), [news]);
     const [storeState, setStoreState] = useState({
         allNews: filteredNews,
@@ -218,6 +218,7 @@ export default function NewsStickyOverlay({ news = [] }) {
                         className='pointer-events-auto'
                     >
                         <NewsStickyNote
+                            lang={lang}
                             note={note}
                             initialPosition={positions[note.id]}
                             zIndex={zIndex}
