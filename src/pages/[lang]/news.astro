@@ -2,8 +2,10 @@
 import fetchApi from '../../assets/scripts/libs/strapi.js';
 import Layout from '../../layouts/Layout.astro';
 import WrapperArchive from '../../layouts/WrapperArchive.jsx';
+import { getPageSeo } from '../../config/seo';
 
 const { lang } = Astro.params;
+const seo = getPageSeo(lang ?? 'fr', 'news');
 
 const news = await fetchApi({
     endpoint: 'news',
@@ -19,6 +21,10 @@ const news = await fetchApi({
 });
 ---
 
-<Layout>
+<Layout
+    lang={lang}
+    title={seo.title}
+    description={seo.description}
+>
     <WrapperArchive client:load news={news} lang={lang} />
 </Layout>
