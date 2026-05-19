@@ -1,24 +1,31 @@
 ---
-import fetchApi from '../../assets/scripts/libs/strapi.js';
+import { fetchAllPaginated } from '../../assets/scripts/libs/strapi.js';
 import Layout from '../../layouts/Layout.astro';
 import WrapperArchive from '../../layouts/WrapperArchive.jsx';
+import { getPageSeo } from '../../config/seo';
 
 const { lang } = Astro.params;
+const seo = getPageSeo(lang ?? 'fr', 'news');
 
-const news = await fetchApi({
+const newsQuery = {
+    'populate[Paragraphs][populate]': '*',
+    'populate[Images][populate]': '*',
+    'populate[event_categories][populate]': '*',
+    'populate[Links][populate]': '*',
+    'populate[RendezVous][populate]': '*',
+};
+
+const news = await fetchAllPaginated({
     endpoint: 'news',
-    query: {
-        'populate[Paragraphs][populate]': '*',
-        'populate[Images][populate]': '*',
-        'populate[event_categories][populate]': '*',
-        'populate[Links][populate]': '*',
-        'populate[RendezVous][populate]': '*',
-    },
+    query: newsQuery,
     locale: lang,
-    wrappedByKey: 'data',
 });
 ---
 
-<Layout>
+<Layout
+    lang={lang}
+    title={seo.title}
+    description={seo.description}
+>
     <WrapperArchive client:load news={news} lang={lang} />
 </Layout>

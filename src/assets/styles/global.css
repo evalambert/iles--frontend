@@ -89,6 +89,9 @@ html {
     @apply font-inter text-text;
 }
 
+p a{
+    @apply underline underline-offset-3;
+}
 /* .wysiwyg h2{
     @apply mb-[23px];
 } */

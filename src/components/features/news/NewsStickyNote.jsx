@@ -292,9 +292,9 @@ export default function NewsStickyNote({
             <div className='h-full overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden'>
                 <div className='post-it-chapo p-[20px] lg:p-[40px] bg-linear-to-b from-primary from-0% via-primary via-66% to-light to-100% flex flex-col gap-[10px]'>
 
-                    <a href={`news#${newsAnchor}`} rel='noreferrer'>
-                        <h3 className='post-it-title text-title'>{note.Title}</h3>
-                    </a>
+
+                    <h3 className='post-it-title text-title'>{note.Title}</h3>
+
 
                     <div className='flex flex-col gap-[23px]'>
                         <div>
@@ -315,6 +315,16 @@ export default function NewsStickyNote({
                                 {places.length ? (
                                     <p className='post-it-place'>{places.join(', ')}</p>
                                 ) : null}
+                            </div>
+                            <div>
+                                <a
+                                    href={`/${lang}/news#${newsAnchor}`}
+                                    rel='noreferrer'
+                                    className='block w-fit group'
+                                >
+                                    <span class="inline pr-h3-margin">&#8599;</span>
+                                    <span className="group-hover:underline group-hover:underline-offset-3">{lang === 'en' ? 'More info' : 'Plus d\'infos'}</span>                                    
+                                </a>
                             </div>
                         </div>
 
@@ -342,20 +352,20 @@ export default function NewsStickyNote({
                         ) : null}
 
 
-                        <a href={`news#${newsAnchor}`} rel='noreferrer' className='block w-fit'>
-                            {firstImageUrl ? (
-                                <img
-                                    src={firstImageUrl}
-                                    alt={
-                                        firstImage?.alternativeText || note.Title || ''
-                                    }
-                                    className='pointer-events-none h-[400px] w-full object-contain object-left'
-                                    loading='lazy'
-                                    draggable={false}
-                                    onDragStart={(event) => event.preventDefault()}
-                                />
-                            ) : null}
-                        </a>
+
+                        {firstImageUrl ? (
+                            <img
+                                src={firstImageUrl}
+                                alt={
+                                    firstImage?.alternativeText || note.Title || ''
+                                }
+                                className='pointer-events-none h-[400px] w-full object-contain object-left'
+                                loading='lazy'
+                                draggable={false}
+                                onDragStart={(event) => event.preventDefault()}
+                            />
+                        ) : null}
+
                     </div>
 
                 </div>

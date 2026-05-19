@@ -7,6 +7,8 @@ import react from '@astrojs/react';
 import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
+  site: process.env.SITE_URL ?? 'https://lesilesmardi.be',
+
   output: 'server',
 
   adapter: vercel({
