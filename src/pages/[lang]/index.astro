@@ -4,8 +4,10 @@ import fetchApi, { fetchAllPaginated } from '../../assets/scripts/libs/strapi.js
 import Layout from '../../layouts/Layout.astro';
 import WrapperIndex from '../../layouts/WrapperIndex.jsx';
 import CoverAnimation from '../../components/features/animation/CoverAnimation.jsx';
+import { getPageSeo } from '../../config/seo';
 
 const { lang } = Astro.params;
+const seo = getPageSeo(lang ?? 'fr', 'home');
 
 const fetchAllMembers = async (locale) => {
     const pageSize = 100;
@@ -54,7 +56,12 @@ try {
 }
 ---
 
-<Layout lang={lang} news={news}>
+<Layout
+    lang={lang}
+    news={news}
+    title={seo.title}
+    description={seo.description}
+>
     <CoverAnimation client:load />
     <WrapperIndex
         client:load
