@@ -22,7 +22,7 @@ export const SEO_BY_PAGE: Record<Locale, Record<PageKey, PageSeo>> = {
                 'Gérées par et pour les artistes, Les Îles Mardi constituent un laboratoire de création fonctionnant sur un modèle coopératif : une plateforme dédiée à la collaboration, à l’horizontalité. Créées en 2021, Les Îles Mardi se sont développées jusqu’à accueillir aujourd’hui 40 créateur·ices et initiatives artistiques multidisciplinaires au sein d’un bâtiment réaffecté du quartier européen.',
         },
         news: {
-            title: 'Actu',
+            title: 'Actus',
             description:
                 'Gérées par et pour les artistes, Les Îles Mardi constituent un laboratoire de création fonctionnant sur un modèle coopératif : une plateforme dédiée à la collaboration, à l’horizontalité. Créées en 2021, Les Îles Mardi se sont développées jusqu’à accueillir aujourd’hui 40 créateur·ices et initiatives artistiques multidisciplinaires au sein d’un bâtiment réaffecté du quartier européen.',
         },
