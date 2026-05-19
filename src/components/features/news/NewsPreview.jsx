@@ -1,5 +1,5 @@
 //src/components/features/news/NewsPreview.jsx
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { A11y, Autoplay, EffectFade } from 'swiper/modules';
 import 'swiper/css';
@@ -8,6 +8,7 @@ import {
     getClosedNews,
     getNewsOverlayStore,
 } from '../../../assets/scripts/newsOverlayStore';
+import { shouldStartWithAllClosed } from '../../../assets/scripts/libs/newsStickyEntry';
 import { getCurrentAndFutureNews } from './newsUtils';
 
 function toDisplayDateFullYear(value) {
@@ -73,12 +74,19 @@ export default function NewsPreview({ news = [], lang = 'fr' }) {
         openIds: filteredNews.map((item) => item.id),
     });
 
+    useLayoutEffect(() => {
+        const store = getNewsOverlayStore();
+        if (!store) return undefined;
+
+        const startWithAllClosed = shouldStartWithAllClosed();
+        store.initialize(filteredNews, { startWithAllClosed });
+        setStoreState(store.getState());
+    }, [filteredNews]);
+
     useEffect(() => {
         const store = getNewsOverlayStore();
         if (!store) return undefined;
 
-        store.initialize(filteredNews);
-        setStoreState(store.getState());
         const unsubscribe = store.subscribe(setStoreState);
         return unsubscribe;
     }, [filteredNews]);

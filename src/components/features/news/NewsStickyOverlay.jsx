@@ -1,10 +1,14 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { useRef } from 'react';
 import NewsStickyNote from './NewsStickyNote';
 import {
     getNewsOverlayStore,
     getOpenNews,
 } from '../../../assets/scripts/newsOverlayStore';
+import {
+    markStickyEntrySkippedForSession,
+    shouldStartWithAllClosed,
+} from '../../../assets/scripts/libs/newsStickyEntry';
 import { getCurrentAndFutureNews } from './newsUtils';
 
 const BASE_Z_INDEX = 70;
@@ -132,12 +136,19 @@ export default function NewsStickyOverlay({ lang = 'fr', news = [] }) {
         setIsHydrated(true);
     }, []);
 
+    useLayoutEffect(() => {
+        const store = getNewsOverlayStore();
+        if (!store) return undefined;
+
+        const startWithAllClosed = shouldStartWithAllClosed();
+        store.initialize(filteredNews, { startWithAllClosed });
+        setStoreState(store.getState());
+    }, [filteredNews]);
+
     useEffect(() => {
         const store = getNewsOverlayStore();
         if (!store) return undefined;
 
-        store.initialize(filteredNews);
-        setStoreState(store.getState());
         const unsubscribe = store.subscribe(setStoreState);
         return unsubscribe;
     }, [filteredNews]);
@@ -195,7 +206,9 @@ export default function NewsStickyOverlay({ lang = 'fr', news = [] }) {
 
     const handleClose = (id) => {
         const store = getNewsOverlayStore();
-        store?.closeOne(id);
+        if (store?.closeOne(id)) {
+            markStickyEntrySkippedForSession();
+        }
     };
 
     const handleBringToFront = (id) => {

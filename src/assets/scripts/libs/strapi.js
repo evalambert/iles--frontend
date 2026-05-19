@@ -54,3 +54,36 @@ export default async function fetchApi({
         throw error;
     }
 }
+
+/**
+ * Récupère toutes les entrées d'un endpoint paginé Strapi
+ */
+export async function fetchAllPaginated({
+    endpoint,
+    query = {},
+    locale,
+    pageSize = 100,
+}) {
+    let page = 1;
+    let pageCount = 1;
+    const allItems = [];
+
+    while (page <= pageCount) {
+        const response = await fetchApi({
+            endpoint,
+            query: {
+                ...query,
+                'pagination[page]': String(page),
+                'pagination[pageSize]': String(pageSize),
+            },
+            locale,
+        });
+
+        const pageItems = response?.data ?? [];
+        allItems.push(...pageItems);
+        pageCount = response?.meta?.pagination?.pageCount ?? 1;
+        page += 1;
+    }
+
+    return allItems;
+}

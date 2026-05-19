@@ -41,7 +41,8 @@ function createStore() {
             listeners.add(listener);
             return () => listeners.delete(listener);
         },
-        initialize(newsList = []) {
+        initialize(newsList = [], options = {}) {
+            const { startWithAllClosed = false } = options;
             const sanitized = Array.isArray(newsList)
                 ? newsList.filter((item) => item && item.id != null)
                 : [];
@@ -51,7 +52,9 @@ function createStore() {
 
             state = {
                 allNews: sanitized,
-                openIds: sanitized.map((item) => item.id),
+                openIds: startWithAllClosed
+                    ? []
+                    : sanitized.map((item) => item.id),
                 signature,
                 initialized: true,
                 reopenVersion: 1,
@@ -61,11 +64,13 @@ function createStore() {
         closeOne(id) {
             if (id == null) return;
             if (!state.openIds.includes(id)) return;
+            const nextOpenIds = state.openIds.filter((openId) => openId !== id);
             state = {
                 ...state,
-                openIds: state.openIds.filter((openId) => openId !== id),
+                openIds: nextOpenIds,
             };
             emit();
+            return nextOpenIds.length === 0;
         },
         reopenAll() {
             if (!state.allNews.length) return;

@@ -1,6 +1,6 @@
 ---
 //src/pages/[lang]/index.astro
-import fetchApi from '../../assets/scripts/libs/strapi.js';
+import fetchApi, { fetchAllPaginated } from '../../assets/scripts/libs/strapi.js';
 import Layout from '../../layouts/Layout.astro';
 import WrapperIndex from '../../layouts/WrapperIndex.jsx';
 import CoverAnimation from '../../components/features/animation/CoverAnimation.jsx';
@@ -44,11 +44,10 @@ const members = await fetchAllMembers(lang);
 
 let news = [];
 try {
-    news = await fetchApi({
+    news = await fetchAllPaginated({
         endpoint: 'news',
         query: { populate: '*' },
         locale: lang,
-        wrappedByKey: 'data',
     });
 } catch (error) {
     news = [];
